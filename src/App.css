@@ -7,7 +7,10 @@
 
 .experiment canvas {
   display: block;
+  cursor: grab;
 }
+
+.experiment canvas:active { cursor: grabbing; }
 
 .fallback {
   padding: 24px;
@@ -20,7 +23,7 @@
   inset: 28px 32px auto;
   display: flex;
   justify-content: space-between;
-  color: #7d8da5;
+  color: #67648c;
   font: 10px/1.5 system-ui, sans-serif;
   letter-spacing: 0.18em;
   pointer-events: none;
@@ -30,8 +33,88 @@
   position: absolute;
   inset: auto 24px 24px;
   margin: 0;
-  color: #93a0b4;
+  color: #615e83;
   text-align: center;
   font: 11px/1.6 system-ui, sans-serif;
   pointer-events: none;
 }
+
+.moru-reaction {
+  position: absolute; top: 0; left: 0;
+  pointer-events: none; opacity: 0;
+  will-change: transform, opacity;
+  min-width: 68px; text-align: center;
+}
+.moru-speech {
+  position: relative; padding: 4px 10px;
+  color: #fff9ea; font: 500 17px/1.6 system-ui, sans-serif;
+  letter-spacing: .14em; white-space: nowrap;
+  text-shadow: 0 1px 3px #495177, 0 0 12px #fff5f0, 0 0 28px #c9b0ff;
+}
+.moru-reaction[data-tone="hearts"] .moru-speech { color: #fff0f6; }
+.moru-reaction[data-tone="question"] .moru-speech { color: #e7fcff; }
+.moru-fx { position: relative; height: 0; }
+.reaction-glyph {
+  position: absolute; left: 50%; bottom: 2px;
+  font: 25px/1 system-ui, sans-serif; color: #e67bb8;
+  text-shadow: 0 0 9px #fff0fa, 0 0 18px #e7b5ff;
+  animation: moru-float 2.4s ease-out both;
+  animation-delay: calc(var(--i) * .11s);
+}
+.reaction-glyph.sparkles { color: #e1b864; font-size: 24px; }
+.reaction-glyph.question { color: #699dc8; font-size: 25px; }
+.reaction-glyph.joy { color: #d88bc7; }
+@keyframes moru-float {
+  0% { opacity: 0; transform: translate(calc((var(--i) - 1) * 33px - 12px), 12px) scale(.65); }
+  20% { opacity: .95; }
+  70% { opacity: .85; }
+  100% { opacity: 0; transform: translate(calc((var(--i) - 1) * 45px - 12px), -18px) scale(1.05); }
+}
+.moru-actions {
+  position: absolute;
+  bottom: 64px;
+  right: 28px;
+  display: flex;
+  gap: 8px;
+}
+.moru-actions button {
+  width: 38px;
+  height: 38px;
+  border: 1px solid #fff5ff90;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #fff4f0aa, #d1c3f07a);
+  box-shadow: 0 3px 18px #a299d033;
+  backdrop-filter: blur(8px);
+  color: #665d8d;
+  font: 19px system-ui, sans-serif;
+  cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+.moru-actions button:hover { background: #fff2ffc0; transform: translateY(-2px); }
+.moru-actions button:focus-visible { outline: 2px solid #eae3f1; outline-offset: 4px; }
+.moru-actions button:disabled { opacity: .35; cursor: default; }
+
+/* Procedural silhouettes instead of platform-dependent emoji. */
+.reaction-glyph:not(.question) { width: 15px; height: 15px; background: #fff0bc; filter: drop-shadow(0 0 5px #fff5d9); }
+.reaction-glyph.sparkles, .reaction-glyph.joy { clip-path: polygon(50% 0, 61% 38%, 100% 50%, 61% 62%, 50% 100%, 39% 62%, 0 50%, 39% 38%); }
+.reaction-glyph.hearts { background: #f2a5ce; clip-path: polygon(50% 95%, 7% 51%, 0 29%, 8% 10%, 26% 3%, 42% 10%, 50% 23%, 58% 10%, 74% 3%, 92% 10%, 100% 29%, 93% 51%); }
+.reaction-glyph:nth-child(2) { width: 11px; height: 11px; }
+.reaction-glyph:nth-child(3) { width: 18px; height: 18px; }
+
+.world-clock { position: absolute; top: calc(56px + env(safe-area-inset-top)); left: 32px; color: #fff5e8; text-shadow: 0 1px 5px #364466; font: 11px/1.6 system-ui; letter-spacing: .08em; }
+.world-clock select { display: block; margin-top: 7px; max-width: 110px; background: #ffffff55; border: 0; border-radius: 8px; padding: 4px; color: #364466; }
+.touch-stick, .touch-jump { display: none; }
+@media (pointer: coarse), (max-width: 600px) {
+  .world-caption { inset: calc(20px + env(safe-area-inset-top)) 20px auto; font-size: 9px; }
+  .world-clock { top: calc(45px + env(safe-area-inset-top)); left: 20px; }
+  .world-status { bottom: calc(8px + env(safe-area-inset-bottom)); font-size: 9px; max-height: 30px; overflow: hidden; }
+  .moru-actions { right: calc(20px + env(safe-area-inset-right)); bottom: calc(48px + env(safe-area-inset-bottom)); gap: 6px; }
+  .moru-actions button { width: 44px; height: 44px; touch-action: none; }
+  .touch-jump { display: block; }
+  .touch-stick { display: grid; place-items: center; position: absolute; left: calc(24px + env(safe-area-inset-left)); bottom: calc(44px + env(safe-area-inset-bottom)); width: 100px; height: 100px; border-radius: 50%; background: #d5e9ec28; border: 1px solid #fff9e86b; touch-action: none; user-select: none; }
+  .touch-stick span { width: 34px; height: 34px; border-radius: 50%; background: #fff4ec8c; box-shadow: 0 0 12px #d9cafa4d; pointer-events: none; }
+}
+
+.mobile-hint { display: none; }
+.world-caption, .world-status { color: #e7edf1; text-shadow: 0 1px 4px #24304f; }
+@media (pointer: coarse), (max-width: 600px) { .desktop-hint { display: none; } .mobile-hint { display: inline; } }
