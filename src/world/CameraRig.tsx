@@ -17,8 +17,8 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
   }, [camera, distance, player])
   useFrame((_, delta) => {
     // Fixed world heading: W travels into the scene; reversing does not orbit the camera.
-    target.current.set(player.current.position.x, player.current.position.y + 3.4, player.current.position.z + distance)
-    desiredFocus.current.copy(player.current.position).y += 1.5
+    target.current.set(player.current.position.x, player.current.groundY + (player.current.position.y - player.current.groundY) * 0.25 + 3.4, player.current.position.z + distance)
+    desiredFocus.current.set(player.current.position.x, player.current.groundY + (player.current.position.y - player.current.groundY) * 0.35 + 1.5, player.current.position.z)
     const blend = 1 - Math.exp(-4 * Math.min(delta, 0.05))
     camera.position.lerp(target.current, blend)
     focus.current.lerp(desiredFocus.current, blend)

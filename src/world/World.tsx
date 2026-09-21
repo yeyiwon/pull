@@ -27,10 +27,14 @@ function World({ onReady, onError }: { onReady: () => void; onError: () => void 
       if (event.target instanceof HTMLElement && (event.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName))) return
       if (!MOVE_KEYS.has(event.code) || event.metaKey || event.ctrlKey || event.altKey) return
       event.preventDefault()
+      if (!event.repeat && !input.keys.has(event.code)) {
+        if (event.code === 'Space') input.jumpRequested = true
+        if (event.code === 'KeyE') input.listenRequested = true
+      }
       input.keys.add(event.code)
     }
     function up(event: KeyboardEvent) { input.keys.delete(event.code) }
-    function reset() { input.keys.clear() }
+    function reset() { input.keys.clear(); input.jumpRequested = false; input.listenRequested = false }
     function visibility() { if (document.hidden) reset() }
     window.addEventListener('keydown', down)
     window.addEventListener('keyup', up)
