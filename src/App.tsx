@@ -22,12 +22,12 @@ function App() {
       </Canvas>
       <div className="world-caption">
         <span>PULL</span>
-        <span>CHARACTER WORLD / 00</span>
+        <span>PLAYABLE WORLD / 01</span>
       </div>
       <p className="world-status" role="status">
         {status === 'loading' ? '세계에 들어가는 중…' : status === 'error'
           ? '캐릭터를 불러오지 못했습니다. 페이지를 새로고침해 주세요.'
-          : '천천히 다가가 보세요. 캐릭터를 클릭하면 반응합니다.'}
+          : 'WASD / Arrow Keys — Move · Shift — Run'}
       </p>
     </main>
   )

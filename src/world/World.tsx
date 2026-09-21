@@ -1,12 +1,10 @@
 import { Component, Suspense, useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
-import { useThree } from '@react-three/fiber'
-import { Vector2 } from 'three'
+import { createPlayer, MOVE_KEYS } from './locomotion.ts'
 import Character from './Character.tsx'
 import Environment from './Environment.tsx'
 import CameraRig from './CameraRig.tsx'
 
-export type WorldPointer = { position: Vector2; active: boolean }
 
 class CharacterBoundary extends Component<
   { children: ReactNode; onError: () => void },
@@ -22,35 +20,30 @@ class CharacterBoundary extends Component<
 }
 
 function World({ onReady, onError }: { onReady: () => void; onError: () => void }) {
-  const { gl } = useThree()
-  const pointer = useRef<WorldPointer>({ position: new Vector2(), active: false })
-
+  const player = useRef(createPlayer())
   useEffect(() => {
-    const canvas = gl.domElement
-    const input = pointer.current
-    function move(event: PointerEvent) {
-      const rect = canvas.getBoundingClientRect()
-      input.position.set(((event.clientX - rect.left) / rect.width) * 2 - 1,
-        1 - ((event.clientY - rect.top) / rect.height) * 2)
-      input.active = true
+    const input = player.current
+    function down(event: KeyboardEvent) {
+      if (event.target instanceof HTMLElement && (event.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName))) return
+      if (!MOVE_KEYS.has(event.code) || event.metaKey || event.ctrlKey || event.altKey) return
+      event.preventDefault()
+      input.keys.add(event.code)
     }
-    function reset() { input.active = false; input.position.set(0, 0) }
-    function release(event: PointerEvent) { if (event.pointerType !== 'mouse') reset() }
-    canvas.addEventListener('pointermove', move)
-    canvas.addEventListener('pointerdown', move)
-    canvas.addEventListener('pointerleave', reset)
-    canvas.addEventListener('pointercancel', reset)
-    canvas.addEventListener('pointerup', release)
+    function up(event: KeyboardEvent) { input.keys.delete(event.code) }
+    function reset() { input.keys.clear() }
+    function visibility() { if (document.hidden) reset() }
+    window.addEventListener('keydown', down)
+    window.addEventListener('keyup', up)
     window.addEventListener('blur', reset)
+    document.addEventListener('visibilitychange', visibility)
     return () => {
-      canvas.removeEventListener('pointermove', move)
-      canvas.removeEventListener('pointerdown', move)
-      canvas.removeEventListener('pointerleave', reset)
-      canvas.removeEventListener('pointercancel', reset)
-      canvas.removeEventListener('pointerup', release)
+      reset()
+      window.removeEventListener('keydown', down)
+      window.removeEventListener('keyup', up)
       window.removeEventListener('blur', reset)
+      document.removeEventListener('visibilitychange', visibility)
     }
-  }, [gl])
+  }, [])
 
   return (
     <>
@@ -58,10 +51,10 @@ function World({ onReady, onError }: { onReady: () => void; onError: () => void 
       <Environment />
       <CharacterBoundary onError={onError}>
         <Suspense fallback={null}>
-          <Character pointer={pointer} onReady={onReady} />
+          <Character player={player} onReady={onReady} />
         </Suspense>
       </CharacterBoundary>
-      <CameraRig pointer={pointer} />
+      <CameraRig player={player} />
     </>
   )
 }

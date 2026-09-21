@@ -1,79 +1,60 @@
 import { useEffect, useMemo, useRef } from 'react'
 import type { RefObject } from 'react'
 import { useFrame, useLoader } from '@react-three/fiber'
-import { AnimationMixer, Box3, Group, MathUtils, Mesh, Vector3 } from 'three'
+import { Box3, Group, Mesh, Vector3 } from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
-import type { WorldPointer } from './World.tsx'
+import { clone } from 'three/addons/utils/SkeletonUtils.js'
+import { createLocomotion, movePlayer } from './locomotion.ts'
+import type { Player } from './locomotion.ts'
 
-function Character({ pointer, onReady }: {
-  pointer: RefObject<WorldPointer>
-  onReady: () => void
-}) {
-  // useLoader caches this URL; geometry, materials and embedded textures stay shared.
-  const gltf = useLoader(GLTFLoader, '/models/character.glb')
+function Character({ player, onReady }: { player: RefObject<Player>; onReady: () => void }) {
+  // Filenames are preserved: the first contains Running, the second Walking.
+  const [runningAsset, walkingAsset] = useLoader(GLTFLoader,
+    ['/models/character-walk.glb', '/models/character-run..glb'])
   const root = useRef<Group>(null)
-  const motion = useRef({ time: 0, hop: 1, center: new Vector3() })
   const model = useMemo(() => {
-    // The inspected asset has one static mesh and no skeleton.
-    const scene = gltf.scene.clone(true)
+    const scene = clone(runningAsset.scene)
     scene.traverse((object) => {
-      if (object instanceof Mesh) {
-        object.castShadow = true
-        object.receiveShadow = true
-      }
+      if (object instanceof Mesh) { object.castShadow = true; object.receiveShadow = true; object.frustumCulled = false }
     })
     const bounds = new Box3().setFromObject(scene)
     const size = bounds.getSize(new Vector3())
     const center = bounds.getCenter(new Vector3())
-    const scale = 2.8 / Math.max(size.y, 0.001)
-    return { scene, scale, offset: new Vector3(-center.x, -bounds.min.y, -center.z) }
-  }, [gltf])
-  const idle = useMemo(() => gltf.animations.find((clip) =>
-    /(^|[\s_.|-])idle([\s_.|\d-]|$)/i.test(clip.name)), [gltf])
-  const mixer = useMemo(() => new AnimationMixer(model.scene), [model.scene])
-
+    const walking = walkingAsset.animations.find((clip) => clip.name === 'Walking')?.clone()
+    const running = runningAsset.animations.find((clip) => clip.name === 'Running')?.clone()
+    if (!walking || !running) throw new Error('Expected inspected Walking/Running clips are missing')
+    // Both exports begin at 0.066667s. Remove the initial hold without changing assets.
+    for (const clip of [walking, running]) {
+      const start = Math.min(...clip.tracks.map((track) => track.times[0]))
+      clip.tracks.forEach((track) => track.shift(-start))
+      clip.resetDuration()
+    }
+    return { scene, scale: 2.8 / size.y, offset: new Vector3(-center.x, -bounds.min.y, -center.z), walking, running }
+  }, [runningAsset, walkingAsset])
+  const animation = useRef<ReturnType<typeof createLocomotion> | null>(null)
   useEffect(() => {
-    if (!idle) return
-    const action = mixer.clipAction(idle)
-    action.reset().play()
-    return () => { mixer.stopAllAction(); mixer.uncacheRoot(model.scene) }
-  }, [idle, mixer, model.scene])
+    const controller = createLocomotion(model.scene, model.walking, model.running)
+    animation.current = controller
+    onReady()
+    return () => { controller.dispose(); animation.current = null }
+  }, [model, onReady])
 
-  useEffect(() => { onReady() }, [onReady])
-
-  useFrame(({ camera, size }, delta) => {
-    if (!root.current) return
+  useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05)
-    const state = motion.current
-    state.time += dt
-    state.hop = Math.min(1, state.hop + dt / 0.9)
-    if (idle) mixer.update(dt)
-
-    // Compare the pointer with the projected torso, not with guessed bone names.
-    state.center.set(0, 1.5, 1).project(camera)
-    const dx = (pointer.current.position.x - state.center.x) * size.width / size.height
-    const dy = pointer.current.position.y - state.center.y
-    const near = pointer.current.active ? Math.max(0, 1 - Math.hypot(dx, dy) / 0.65) : 0
-    const blend = 1 - Math.exp(-2.8 * dt)
-    root.current.rotation.y = MathUtils.lerp(root.current.rotation.y,
-      MathUtils.clamp(dx * 0.2, -0.07, 0.07) * near, blend)
-    root.current.rotation.x = MathUtils.lerp(root.current.rotation.x,
-      -MathUtils.clamp(dy * 0.12, -0.035, 0.035) * near, blend)
-    const breath = idle ? 0 : Math.sin(state.time * 1.1) * 0.003
-    root.current.scale.y = 1 + breath
-    root.current.position.y = Math.sin(state.hop * Math.PI) ** 2 * 0.12
-  })
+    movePlayer(player.current, dt)
+    animation.current?.update(player.current.state, dt)
+    if (root.current) {
+      root.current.position.copy(player.current.position)
+      root.current.quaternion.copy(player.current.rotation)
+    }
+  }, -1)
 
   return (
-    <group ref={root} position={[0, 0, 1]} onClick={(event) => {
-      event.stopPropagation()
-      motion.current.hop = 0
-    }}>
+    <group ref={root} position={[0, 0, 1]} rotation={[0, Math.PI, 0]}>
       <group scale={model.scale}>
         <primitive object={model.scene} position={model.offset} dispose={null} />
       </group>
     </group>
   )
 }
-
 export default Character
