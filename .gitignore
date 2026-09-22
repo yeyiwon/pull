@@ -28,3 +28,19 @@ dist-ssr
 .env.*
 !.env.example
 .vercel
+
+# Source-only assets: runtime model and /public/moru/clips remain visible.
+/public/characters/moru/full-life.glb
+/public/characters/moru/MORU_Rescue.glb
+/public/moru/moru-funnydancing-03.glb
+/public/moru/moru-love-you-pop-dance.glb
+/public/moru/moru-penguin-walk.glb
+/public/moru/moru-pod-baby-groove.glb
+/public/moru/moru-regular-jump.glb
+/public/moru/moru-skip-forward-inplace.glb
+/public/moru/moru-superlove-pop-dance.glb
+/public/moru/moru-you-groove.glb
+/asset-source/
+*.blend
+*.blend1
+*.blend2
