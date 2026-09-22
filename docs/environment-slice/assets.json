@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "status": "BLOCKED_AWAITING_AUTHORED_ASSETS",
+  "units": "meters",
+  "upAxis": "+Y",
+  "assets": [
+    {"id":"home","file":"hero_house.glb","requiredNodes":["HomeRoot","Walls_Cutaway","Roof_Cutaway","DoorPivot","WindowGlass","Interior","Foundation"],"triangleBudget":90000,"requiresNormalMap":true,"status":"MISSING"},
+    {"id":"bridge","file":"bridge_detail.glb","requiredNodes":["BridgeRoot","Deck","Supports"],"triangleBudget":30000,"requiresNormalMap":true,"status":"MISSING"},
+    {"id":"tree","file":"hero_tree_01.glb","requiredNodes":["TreeRoot","Trunk","Canopy_Spring","Canopy_Summer","Canopy_Autumn"],"triangleBudget":50000,"requiresNormalMap":true,"status":"MISSING"},
+    {"id":"landmark","file":"pull_landmark.glb","requiredNodes":["LandmarkRoot","Stone","Moss","GlassInlay"],"triangleBudget":40000,"requiresNormalMap":true,"status":"MISSING"},
+    {"id":"riverbank","file":"riverbank_slice.glb","requiredNodes":["RiverbankRoot","Soil","ShallowBed","GrassEdge"],"triangleBudget":35000,"requiresNormalMap":true,"status":"MISSING"},
+    {"id":"rocks","file":"river_rocks_set.glb","requiredNodes":["Rock_A","Rock_B","Rock_C","Rock_D"],"triangleBudget":18000,"requiresNormalMap":true,"status":"MISSING"},
+    {"id":"vegetation","file":"vegetation_set.glb","requiredNodes":["Fern_A","Grass_A","Flower_A"],"triangleBudget":12000,"requiresNormalMap":false,"status":"MISSING"},
+    {"id":"distant","file":"distant_landscape.glb","requiredNodes":["LandscapeRoot","Ridge_Near","Ridge_Far","FloatingIsland"],"triangleBudget":18000,"requiresNormalMap":false,"status":"MISSING"}
+  ],
+  "approval": {"structuralValidationIsVisualApproval":false,"requiredViews":["main-day","main-sunset","main-night","house-close","bridge-close","tree-close","rain","winter"],"requiresUserVisualApproval":true}
+}

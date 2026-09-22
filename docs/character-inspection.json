@@ -1,0 +1,830 @@
+{
+  "MORU": {
+    "meshes": 1,
+    "joints": [
+      57
+    ],
+    "animations": 56,
+    "morphs": [
+      "EyeBlink_L",
+      "EyeBlink_R",
+      "EyeLookLeft",
+      "EyeLookRight",
+      "EyeLookUp",
+      "EyeLookDown",
+      "EyeWide",
+      "Mouth_Smile",
+      "Mouth_Surprised",
+      "Breathing",
+      "Ear_Soft_L",
+      "Ear_Soft_R",
+      "Hair_Sway"
+    ],
+    "clips": [
+      {
+        "name": "Idle_Base",
+        "loop": true,
+        "layer": "BODY",
+        "duration": 6.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Idle_LookAround",
+        "loop": true,
+        "layer": "BODY",
+        "duration": 6.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Idle_Curious",
+        "loop": true,
+        "layer": "BODY",
+        "duration": 6.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Idle_Happy",
+        "loop": true,
+        "layer": "BODY",
+        "duration": 6.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Idle_Calm",
+        "loop": true,
+        "layer": "BODY",
+        "duration": 6.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Idle_Sleepy",
+        "loop": true,
+        "layer": "BODY",
+        "duration": 6.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Idle_Attentive",
+        "loop": true,
+        "layer": "BODY",
+        "duration": 6.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Short_Breathe_and_Look_Around",
+        "loop": true,
+        "layer": "BODY",
+        "duration": 8.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Neutral",
+        "loop": true,
+        "layer": "BODY",
+        "duration": 1.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Walking",
+        "loop": true,
+        "layer": "BODY",
+        "duration": 1.0833333333333333,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Running",
+        "loop": true,
+        "layer": "BODY",
+        "duration": 0.7083333333333334,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Look_Around_Dumbfounded",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 3.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Listening_Gesture",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 3.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Hop_with_Arms_Raised",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 2.4166666666666665,
+        "rootMotion": "vertical_only"
+      },
+      {
+        "name": "Regular_Jump",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 1.9583333333333333,
+        "rootMotion": "vertical_only"
+      },
+      {
+        "name": "Wave_One_Hand",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 2.5,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Bubble_Dance",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 4.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Turn_Left",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 1.5,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Turn_Right",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 1.5,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Sit",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 1.7083333333333333,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Sit_To_Stand",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 1.7083333333333333,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Rest",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Rest_To_Stand",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "stretch",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 2.5,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "tiny_hop",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 1.0,
+        "rootMotion": "vertical_only"
+      },
+      {
+        "name": "excited_hop",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 1.25,
+        "rootMotion": "vertical_only"
+      },
+      {
+        "name": "happy_bounce",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 1.5,
+        "rootMotion": "vertical_only"
+      },
+      {
+        "name": "curious_lean",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "tiny_body_shift",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "settle_down",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "shake_body",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 1.4166666666666667,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Surprised_Recoil",
+        "loop": false,
+        "layer": "BODY",
+        "duration": 1.4166666666666667,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "sit_idle",
+        "loop": true,
+        "layer": "BODY",
+        "duration": 4.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Rest_Idle",
+        "loop": true,
+        "layer": "BODY",
+        "duration": 4.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "glance_left",
+        "loop": false,
+        "layer": "HEAD_ATTENTION",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "glance_right",
+        "loop": false,
+        "layer": "HEAD_ATTENTION",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "glance_up",
+        "loop": false,
+        "layer": "HEAD_ATTENTION",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "glance_down",
+        "loop": false,
+        "layer": "HEAD_ATTENTION",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "head_tilt_left",
+        "loop": false,
+        "layer": "HEAD_ATTENTION",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "head_tilt_right",
+        "loop": false,
+        "layer": "HEAD_ATTENTION",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "sleepy_nod",
+        "loop": false,
+        "layer": "HEAD_ATTENTION",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "inspect_ground",
+        "loop": false,
+        "layer": "HEAD_ATTENTION",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "inspect_object",
+        "loop": false,
+        "layer": "HEAD_ATTENTION",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "look_behind",
+        "loop": false,
+        "layer": "HEAD_ATTENTION",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "look_at_sky",
+        "loop": false,
+        "layer": "HEAD_ATTENTION",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "look_at_nuu",
+        "loop": false,
+        "layer": "HEAD_ATTENTION",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "shared_attention",
+        "loop": false,
+        "layer": "HEAD_ATTENTION",
+        "duration": 2.0,
+        "rootMotion": "in_place"
+      },
+      {
+        "name": "Face_Blink",
+        "layer": "FACE_EYES",
+        "duration": 0.25,
+        "loop": false,
+        "rootMotion": "none"
+      },
+      {
+        "name": "Face_QuickBlink",
+        "layer": "FACE_EYES",
+        "duration": 0.16666666666666666,
+        "loop": false,
+        "rootMotion": "none"
+      },
+      {
+        "name": "Face_SlowBlink",
+        "layer": "FACE_EYES",
+        "duration": 0.75,
+        "loop": false,
+        "rootMotion": "none"
+      },
+      {
+        "name": "Face_DoubleBlink",
+        "layer": "FACE_EYES",
+        "duration": 0.6666666666666666,
+        "loop": false,
+        "rootMotion": "none"
+      },
+      {
+        "name": "Face_Happy",
+        "layer": "FACE_EYES",
+        "duration": 2.0,
+        "loop": true,
+        "rootMotion": "none"
+      },
+      {
+        "name": "Face_Sleepy",
+        "layer": "FACE_EYES",
+        "duration": 2.0,
+        "loop": true,
+        "rootMotion": "none"
+      },
+      {
+        "name": "Face_Surprised",
+        "layer": "FACE_EYES",
+        "duration": 2.0,
+        "loop": true,
+        "rootMotion": "none"
+      },
+      {
+        "name": "Breathing_Subtle",
+        "layer": "BREATHING",
+        "duration": 4.0,
+        "loop": true,
+        "rootMotion": "none"
+      },
+      {
+        "name": "Secondary_Soft",
+        "layer": "SECONDARY",
+        "duration": 4.0,
+        "loop": true,
+        "rootMotion": "none"
+      }
+    ],
+    "attachments": [
+      "Face_Attach",
+      "Head_Attach",
+      "Neck_Attach",
+      "Hand_R_Attach",
+      "Hand_L_Attach",
+      "Back_Attach"
+    ]
+  },
+  "NUU": {
+    "meshes": 1,
+    "joints": [
+      66
+    ],
+    "animations": 48,
+    "morphs": [
+      "EyeBlink_L",
+      "EyeBlink_R",
+      "EyeLookLeft",
+      "EyeLookRight",
+      "EyeLookUp",
+      "EyeLookDown",
+      "EyeWide",
+      "Breathing"
+    ],
+    "clips": [
+      {
+        "name": "Idle_Base",
+        "layer": "LOCOMOTION",
+        "loop": true,
+        "duration": 4.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Idle_Calm",
+        "layer": "LOCOMOTION",
+        "loop": true,
+        "duration": 4.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Idle_Observe",
+        "layer": "LOCOMOTION",
+        "loop": true,
+        "duration": 4.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Idle_Curious",
+        "layer": "LOCOMOTION",
+        "loop": true,
+        "duration": 4.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Idle_Happy",
+        "layer": "LOCOMOTION",
+        "loop": true,
+        "duration": 4.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Idle_Sleepy",
+        "layer": "LOCOMOTION",
+        "loop": true,
+        "duration": 4.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Idle_Attentive",
+        "layer": "LOCOMOTION",
+        "loop": true,
+        "duration": 4.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Neutral",
+        "layer": "LOCOMOTION",
+        "loop": true,
+        "duration": 1.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Walk",
+        "layer": "LOCOMOTION",
+        "loop": true,
+        "duration": 1.5,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Run",
+        "layer": "LOCOMOTION",
+        "loop": true,
+        "duration": 0.75,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Turn_Left",
+        "layer": "LOCOMOTION",
+        "loop": false,
+        "duration": 1.5,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Turn_Right",
+        "layer": "LOCOMOTION",
+        "loop": false,
+        "duration": 1.5,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Sit",
+        "layer": "LOCOMOTION",
+        "loop": false,
+        "duration": 2.0,
+        "rootMotion": "in_place",
+        "recovery": "Sit_To_Stand"
+      },
+      {
+        "name": "Sit_Idle",
+        "layer": "LOCOMOTION",
+        "loop": true,
+        "duration": 4.0,
+        "rootMotion": "in_place",
+        "recovery": "Sit_To_Stand"
+      },
+      {
+        "name": "Sit_To_Stand",
+        "layer": "LOCOMOTION",
+        "loop": false,
+        "duration": 2.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Rest",
+        "layer": "LOCOMOTION",
+        "loop": false,
+        "duration": 2.5,
+        "rootMotion": "in_place",
+        "recovery": "Rest_To_Stand"
+      },
+      {
+        "name": "Rest_Idle",
+        "layer": "LOCOMOTION",
+        "loop": true,
+        "duration": 4.0,
+        "rootMotion": "in_place",
+        "recovery": "Rest_To_Stand"
+      },
+      {
+        "name": "Rest_To_Stand",
+        "layer": "LOCOMOTION",
+        "loop": false,
+        "duration": 2.5,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "stretch",
+        "layer": "LOCOMOTION",
+        "loop": false,
+        "duration": 3.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Step_Backward",
+        "layer": "LOCOMOTION",
+        "loop": false,
+        "duration": 1.7916666666666667,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Approach",
+        "layer": "LOCOMOTION",
+        "loop": false,
+        "duration": 2.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "small_step_closer",
+        "layer": "LOCOMOTION",
+        "loop": false,
+        "duration": 2.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "gentle_happy_motion",
+        "layer": "LOCOMOTION",
+        "loop": false,
+        "duration": 2.5,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Surprise",
+        "layer": "LOCOMOTION",
+        "loop": false,
+        "duration": 1.5833333333333333,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Sleepy",
+        "layer": "LOCOMOTION",
+        "loop": false,
+        "duration": 3.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "settle_down",
+        "layer": "LOCOMOTION",
+        "loop": false,
+        "duration": 2.5,
+        "rootMotion": "in_place",
+        "recovery": "Rest_To_Stand"
+      },
+      {
+        "name": "curious_lean",
+        "layer": "LOCOMOTION",
+        "loop": false,
+        "duration": 2.5,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "gentle_head_tilt",
+        "layer": "HEAD_ATTENTION",
+        "loop": false,
+        "duration": 3.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "slow_look_left",
+        "layer": "HEAD_ATTENTION",
+        "loop": false,
+        "duration": 3.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "slow_look_right",
+        "layer": "HEAD_ATTENTION",
+        "loop": false,
+        "duration": 3.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "look_at_sky",
+        "layer": "HEAD_ATTENTION",
+        "loop": false,
+        "duration": 3.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Look_Down",
+        "layer": "HEAD_ATTENTION",
+        "loop": false,
+        "duration": 3.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "inspect_flower",
+        "layer": "HEAD_ATTENTION",
+        "loop": false,
+        "duration": 3.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "inspect_ground",
+        "layer": "HEAD_ATTENTION",
+        "loop": false,
+        "duration": 3.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "look_at_moru",
+        "layer": "HEAD_ATTENTION",
+        "loop": false,
+        "duration": 3.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "look_at_user",
+        "layer": "HEAD_ATTENTION",
+        "loop": false,
+        "duration": 3.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "slow_blink_reaction",
+        "layer": "HEAD_ATTENTION",
+        "loop": false,
+        "duration": 3.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "sleepy_nod",
+        "layer": "HEAD_ATTENTION",
+        "loop": false,
+        "duration": 3.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "tiny_shake",
+        "layer": "HEAD_ATTENTION",
+        "loop": false,
+        "duration": 3.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Look_Around",
+        "layer": "HEAD_ATTENTION",
+        "loop": false,
+        "duration": 3.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Secondary_Soft",
+        "layer": "SECONDARY_MOTION",
+        "loop": true,
+        "duration": 4.0,
+        "rootMotion": "in_place",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Face_Blink",
+        "layer": "FACE_EYES",
+        "loop": false,
+        "duration": 0.25,
+        "rootMotion": "none",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Face_SlowBlink",
+        "layer": "FACE_EYES",
+        "loop": false,
+        "duration": 0.7916666666666666,
+        "rootMotion": "none",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Face_DoubleBlink",
+        "layer": "FACE_EYES",
+        "loop": false,
+        "duration": 0.75,
+        "rootMotion": "none",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Face_Relaxed",
+        "layer": "FACE_EYES",
+        "loop": true,
+        "duration": 2.0,
+        "rootMotion": "none",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Face_Attentive",
+        "layer": "FACE_EYES",
+        "loop": true,
+        "duration": 2.0,
+        "rootMotion": "none",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Face_Sleepy",
+        "layer": "FACE_EYES",
+        "loop": true,
+        "duration": 2.0,
+        "rootMotion": "none",
+        "recovery": "Neutral"
+      },
+      {
+        "name": "Breathing_Subtle",
+        "layer": "BREATHING",
+        "loop": true,
+        "duration": 4.0,
+        "rootMotion": "none",
+        "recovery": "Neutral"
+      }
+    ],
+    "attachments": []
+  }
+}

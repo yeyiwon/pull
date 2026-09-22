@@ -1,12 +1,23 @@
+import { speechEnvelope } from '../characters/presentation.ts'
+import { conversationSession } from '../conversation/session.ts'
 import { useEffect, useRef } from 'react'
 import type { RefObject } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Vector3 } from 'three'
 import type { Player } from './locomotion.ts'
-import { createPersonality } from './personality.ts'
+import { createMoruMind, brainCommands } from './brain/mind.ts'
+import { observeWorld, userControlsMoru } from './brain/observation.ts'
+import { getMemorySession } from './brain/memory.ts'
+import { audio } from '../audio/AudioManager.ts'
 import { worldTime } from './worldTime.ts'
+import { moru } from '../characters/expression.ts'
+import { homeState } from './homeSpace.ts'
+import { livingWorld } from './livingWorld.ts'
+import { streamCenter, streamWidth } from './terrain.ts'
 import type { Reaction } from './personality.ts'
 
+function clearEvents(player:Player){player.events.length=0}
+function markBrainAction(player:Player){player.brainRequested=true}
 function present(node: HTMLDivElement, reaction: Reaction) {
   const speech = node.querySelector<HTMLElement>('.moru-speech')
   const fx = node.querySelector<HTMLElement>('.moru-fx')
@@ -14,38 +25,99 @@ function present(node: HTMLDivElement, reaction: Reaction) {
   if (speech) { speech.textContent = reaction.speech ?? ''; speech.hidden = !reaction.speech }
   if (fx) {
     fx.replaceChildren()
-    const symbols = { HEARTS: ['♡', '♥', '♡'], SPARKLES: ['✧', '✦', '✧'], QUESTION: ['?'], JOY: ['♪', '✧', '♫'] }
+    const symbols = { HEARTS: ['♡', '♡'], SPARKLES: ['✧', '✧'], QUESTION: ['?'], JOY: ['♪'], SURPRISE: ['!'] }
     if (reaction.fx) for (const [i, text] of symbols[reaction.fx].entries()) {
       const span = document.createElement('span')
-      span.textContent = reaction.fx === 'QUESTION' ? text : '';  span.className = `reaction-glyph ${reaction.fx === "JOY" ? (i === 1 ? "hearts" : "sparkles") : reaction.fx.toLowerCase()}`
+      span.textContent = text; span.className = `reaction-glyph ${reaction.fx.toLowerCase()}`
       span.style.setProperty('--i', String(i)); fx.append(span)
     }
   }
 }
-function setBlur(node: HTMLDivElement, age: number) {
-  node.style.filter = `blur(${Math.max(0, 1 - age / .3) * 3}px)`
-}
+function blurText(node: HTMLDivElement, blur: number) { node.style.filter = `blur(${blur}px)` }
 function paint(node: HTMLDivElement, opacity: string, transform?: string) {
   node.style.opacity = opacity
   if (transform) node.style.transform = transform
 }
 
 function SpeechBubble({ player, element }: { player: RefObject<Player>; element: RefObject<HTMLDivElement | null> }) {
-  const personality = useRef(createPersonality())
+  const brain = useRef<ReturnType<typeof createMoruMind> | null>(null)
+  const active = useRef({ age: 0, duration: 0 })
+  const semantic = useRef({elapsed:0,idle:0,returned:false,userVersion:0})
+  useEffect(() => {
+    const memory=getMemorySession()
+    moru.setAutonomy(false)
+    const controller = createMoruMind({visits:memory.memory.visitCount,debug:import.meta.env.DEV,execute:intent=>{
+      const p=player.current
+      if(userControlsMoru(p)||p.state!=='IDLE'||p.actionRequested||p.listenRequested)return {action:null,speech:null,emote:false}
+      const fx={heart:'HEARTS',sparkle:'SPARKLES',question:'QUESTION',surprise:'SURPRISE',music:'JOY'} as const
+      const offered=(intent.speech||intent.emote)?moru.offer({event:'BRAIN',speech:intent.speech??undefined,fx:intent.emote?fx[intent.emote]:undefined,duration:2.8},'brain'):false
+      const acted=intent.action?moru.perform(intent.action,'brain',false):false
+      if(acted&&p.actionRequested)markBrainAction(p)
+      return {action:acted?intent.action:null,speech:offered?intent.speech:null,emote:offered&&!!intent.emote}
+    }})
+    const detach=conversationSession.attach({snapshot:controller.snapshot,hold:controller.holdConversation,
+      listen(){moru.cancelSpeech();active.current.duration=0;moru.perform('listen','user',false)},
+      speak(response){
+        const p=player.current;if(userControlsMoru(p))return false
+        const fx={heart:'HEARTS',sparkle:'SPARKLES',question:'QUESTION',surprise:'SURPRISE',music:'JOY'} as const
+        active.current.duration=0
+        const offered=moru.offer({event:'BRAIN',speech:response.speech,fx:response.emote?fx[response.emote]:undefined,duration:Math.min(8,2.8+response.speech.length*.07)},'conversation')
+        if(response.action)moru.perform(response.action,'user',false)
+        return offered
+      },cancel(){moru.cancelSpeech();active.current.duration=0},
+    })
+    brainCommands.trigger=controller.trigger;brainCommands.converse=async text=>{await conversationSession.send(text);return controller.intent}
+    brain.current = controller
+    const suspend = () => { if (document.hidden){controller.suspend();conversationSession.cancel()} memory.save() }
+    const leave = () => {controller.suspend();memory.save()}
+    const returned = () => { if (!document.hidden) semantic.current.returned=true }
+    document.addEventListener('visibilitychange', returned)
+    document.addEventListener('visibilitychange', suspend)
+    window.addEventListener('pagehide', leave)
+    return () => { document.removeEventListener('visibilitychange', returned); detach();controller.dispose(); memory.save(); brainCommands.trigger=null;brainCommands.converse=null;moru.setAutonomy(true);brain.current = null; document.removeEventListener('visibilitychange', suspend); window.removeEventListener('pagehide', leave) }
+  }, [player])
   const projected = useRef(new Vector3())
   const headTop = useRef(new Vector3())
-  const active = useRef({ age: 0, duration: 0 })
+  const emotePoint = useRef(new Vector3())
+  const cameraRight = useRef(new Vector3())
+  const reducedMotion = useRef(false)
+  useEffect(() => {
+    const preference = matchMedia('(prefers-reduced-motion: reduce)')
+    const update = () => { reducedMotion.current = preference.matches }
+    update(); preference.addEventListener('change', update)
+    return () => preference.removeEventListener('change', update)
+  }, [])
   useEffect(() => {
     const node = element.current
     return () => { if (node) paint(node, '0') }
   }, [element])
   useFrame(({ camera, size }, delta) => {
-    const reaction = personality.current.update(player.current, Math.min(delta, 0.05), worldTime.current.hour)
+    if (document.hidden) return
+    const pState=player.current
+    const available=pState.state==='IDLE'&&!pState.actionRequested&&!pState.jumpRequested&&pState.isGrounded
+    moru.update(Math.min(delta,.05),{hour:worldTime.current.hour,season:worldTime.realWorld.season,weather:livingWorld.weather?.type??'clear',inside:homeState.inside,
+      nearWater:Math.abs(pState.position.x-streamCenter(pState.position.z))<streamWidth(pState.position.z)+2,idle:available})
+    const clock=semantic.current
+    const dt=Math.min(delta,.1)
+    clock.elapsed+=dt;clock.idle=available&&!userControlsMoru(pState)?clock.idle+dt:0
+    // Rendering tracks the head every frame; decisions and semantic reads run at 1 Hz.
+    if(clock.elapsed>=1){
+      const elapsed=clock.elapsed;clock.elapsed=0
+      const memory=getMemorySession();memory.tick(elapsed)
+      let interacted=moru.userVersion!==clock.userVersion
+      for(const event of pState.events){memory.event(event);interacted=true}
+      clearEvents(pState);clock.userVersion=moru.userVersion
+      brain.current?.tick(observeWorld(pState,{idle:clock.idle,interacted,returned:clock.returned,actions:moru.recentActions,speech:moru.recentSpeech}),elapsed)
+      clock.returned=false
+    }
+    const reaction=moru.take()
     const node = element.current
     if (!node) return
     // No stacking: the short FX cooldown and longer speech cooldown keep channels sparse.
     if (reaction && active.current.age >= active.current.duration) {
       present(node, reaction)
+      if (reaction.fx === 'JOY' || reaction.fx === 'HEARTS') void audio.play('moru_happy', 'character', 'emotion')
+      else if (reaction.fx === 'QUESTION') void audio.play('moru_curious', 'character', 'emotion')
       active.current = { age: 0, duration: reaction.duration }
     }
     active.current.age += delta
@@ -56,13 +128,29 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
     // Project an upper envelope above the ears, plus a fixed pixel gap at every zoom.
     headTop.current.copy(player.current.headPosition).addScaledVector(player.current.up, .3).project(camera)
     const visible = p.z >= -1 && p.z <= 1 && Math.abs(p.x) < .92 && Math.abs(p.y) < .88
-    const opacity = Math.min(1, age / .3, (duration - age) / .75)
-    const rise = 4 * Math.min(1, age / .45) + 5 * Math.max(0, age - 1.5)
+    const { opacity, rise, blur } = speechEnvelope(age, duration, reducedMotion.current)
     const y = Math.min((-p.y * .5 + .5) * size.height, (-headTop.current.y * .5 + .5) * size.height) - 20 - rise
-    setBlur(node, age)
-    const scale = .92 + .08 * Math.min(1, age / .35)
+    blurText(node, blur)
+    const anchorX = Math.max(Math.min(150,size.width*.42),Math.min(size.width-Math.min(150,size.width*.42),(p.x*.5+.5)*size.width))
+    const anchorY = Math.max(node.offsetHeight+24,y)
     paint(node, visible ? String(Math.max(0, opacity)) : '0',
-      `translate(${(p.x * .5 + .5) * size.width}px, ${Math.max(70, y)}px) translate(-50%, -100%) scale(${scale})`)
+      `translate(${Math.max(Math.min(150,size.width*.42),Math.min(size.width-Math.min(150,size.width*.42),(p.x * .5 + .5) * size.width))}px, ${Math.max(node.offsetHeight+24, y)}px) translate(-50%, -100%)`)
+    // Lightweight DOM glyphs anchored at projected world positions, not screen-fixed confetti.
+    cameraRight.current.setFromMatrixColumn(camera.matrixWorld, 0)
+    const glyphs = node.querySelectorAll<HTMLElement>('.reaction-glyph')
+    glyphs.forEach((glyph, index) => {
+      const t = Math.max(0, Math.min(1, (age - .3 - index * .12) / Math.max(.1, duration - .6)))
+      const side = index % 2 === 0 ? 1 : -1
+      emotePoint.current.copy(player.current.headPosition)
+        .addScaledVector(cameraRight.current, side * (.6 + index * .1))
+        .addScaledVector(player.current.up, reducedMotion.current ? .05 : .05 + t * .22)
+        .project(camera)
+      const point = emotePoint.current
+      glyph.style.left = `${(point.x * .5 + .5) * size.width - anchorX}px`
+      glyph.style.top = `${(-point.y * .5 + .5) * size.height - anchorY}px`
+      glyph.style.opacity = String(Math.sin(Math.PI * t) * .78)
+      glyph.style.fontSize = `${Math.max(12, Math.min(23, 160 / camera.position.distanceTo(player.current.headPosition)))}px`
+    })
   })
   return null
 }

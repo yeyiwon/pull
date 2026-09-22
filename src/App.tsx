@@ -1,13 +1,22 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState, useSyncExternalStore } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { PCFShadowMap } from 'three'
-import { createPlayer, requestAction } from './world/locomotion.ts'
+import { createPlayer } from './world/locomotion.ts'
 import World from './world/World.tsx'
+import BrainInspector from './world/brain/BrainInspector.tsx'
 import WorldClock from './world/WorldClock.tsx'
 import TouchControls from './world/TouchControls.tsx'
+import CharacterInspector from './characters/CharacterInspector.tsx'
+import GraphicsControls from './graphics/GraphicsControls.tsx'
+import AudioControls from './audio/AudioControls.tsx'
+import ActionControls from './characters/ActionControls.tsx'
+import ConversationInput from './conversation/ConversationInput.tsx'
+import { conversationSession } from './conversation/session.ts'
 import './App.css'
 
+
 function App() {
+  const conversation=useSyncExternalStore(conversationSession.subscribe,conversationSession.getSnapshot)
   const player = useRef(createPlayer())
   const bubble = useRef<HTMLDivElement>(null)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
@@ -29,13 +38,13 @@ function App() {
         <div className="moru-speech" />
         <div className="moru-fx" />
       </div>
-      <WorldClock />
-      <TouchControls player={player} disabled={status !== 'ready'} />
-      <div className="moru-actions" aria-label="Moru actions">
-        <button className="touch-jump" type="button" aria-label="Jump" disabled={status !== 'ready'} onClick={() => { player.current.jumpRequested = true }}>↑</button>
-        <button type="button" aria-label="Wave" title="Wave · 1" disabled={status !== 'ready'} onClick={() => requestAction(player.current, 'WAVE')}>👋</button>
-        <button type="button" aria-label="Bubble Dance" title="Bubble Dance · 2" disabled={status !== 'ready'} onClick={() => requestAction(player.current, 'BUBBLE_DANCE')}>♪</button>
-      </div>
+      <WorldClock player={player} />
+      <AudioControls />
+      <GraphicsControls />
+      {import.meta.env.DEV && <><BrainInspector /><CharacterInspector /></>}
+      <TouchControls player={player} disabled={status !== 'ready'||conversation.phase!=='closed'} />
+      <ActionControls player={player} disabled={status !== 'ready'||conversation.phase!=='closed'} />
+      <ConversationInput player={player} disabled={status!=='ready'}/>
       <div className="world-caption">
         <span>PULL</span>
         <span>MORU / DREAM BLOOM</span>

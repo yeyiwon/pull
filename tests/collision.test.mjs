@@ -27,7 +27,7 @@ test('jump height and ring opening are respected, while grounded ring base is so
 })
 test('all collision placements are finite and playable boundary is retained', () => {
   assert.ok(WORLD_OBSTACLES.length > 50)
-  for (const o of WORLD_OBSTACLES) assert.ok(Object.values(o).every(Number.isFinite) && o.rx > 0 && o.rz > 0)
+  for (const o of WORLD_OBSTACLES) assert.ok([o.x,o.z,o.rx,o.rz,o.angle,o.bottom,o.top].every(Number.isFinite) && o.rx > 0 && o.rz > 0)
   const p = new Vector3(89, 0, 0)
   moveWithCollisions(p, new Vector3(1, 0, 0), 10, [])
   assert.equal(p.x, 90)

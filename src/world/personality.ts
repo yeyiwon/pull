@@ -1,7 +1,7 @@
 import type { MoruEvent, Player } from './locomotion.ts'
 
-type ReactionEvent = MoruEvent | 'REPEATED_JUMP' | 'LONG_IDLE' | 'RUN_STOP' | 'ENTRY' | 'LATE_NIGHT'
-export type ReactionFX = 'HEARTS' | 'SPARKLES' | 'QUESTION' | 'JOY'
+type ReactionEvent = MoruEvent | 'REPEATED_JUMP' | 'LONG_IDLE' | 'RUN_STOP' | 'ENTRY' | 'LATE_NIGHT' | 'BRAIN'
+export type ReactionFX = 'HEARTS' | 'SPARKLES' | 'QUESTION' | 'JOY' | 'SURPRISE'
 // Optional channels are requests, not a claim that the current asset supports them.
 export type Reaction = { event: ReactionEvent; speech?: string; fx?: ReactionFX; duration: number; expression?: 'SMILE' | 'HAPPY' | 'CURIOUS'; sound?: string }
 // Events remain independent of presentation. Future sound assets can be mapped here.
@@ -73,5 +73,21 @@ export function createPersonality(random = Math.random, { greet = true } = {}) {
       }
       return reaction
     },
+  }
+}
+
+// Brain owns decisions; this shared policy owns presentation cadence.
+export function createBrainPolicy(random = Math.random) {
+  let nextSpeech = 0, nextFX = 0, lastSpeech = ''
+  return (decision: import('./brain/decision.ts').MoruBrainDecision, time: number) => {
+    const result = { ...decision }
+    if (time < nextSpeech || result.speech === lastSpeech) result.speech = null
+    if (result.speech) {
+      lastSpeech = result.speech
+      nextSpeech = time + MORU_PERSONALITY.speechCooldown + random() * MORU_PERSONALITY.speechCooldownVariation
+    }
+    if (time < nextFX) result.reaction = 'none'
+    if (result.reaction !== 'none') nextFX = time + 8
+    return result
   }
 }

@@ -1,0 +1,242 @@
+{
+  "/Users/yeiwon/Desktop/moru.glb": {
+    "sha256": "057549618d392cad4342579d33272be197c685156c70f99064e75e461f2cbe59",
+    "generator": {
+      "generator": "Khronos glTF Blender I/O v4.5.51",
+      "version": "2.0"
+    },
+    "materials": [
+      {
+        "doubleSided": true,
+        "name": "BakedMaterial",
+        "pbrMetallicRoughness": {
+          "baseColorTexture": {
+            "index": 0
+          },
+          "metallicRoughnessTexture": {
+            "index": 1
+          }
+        }
+      }
+    ],
+    "samplers": [
+      {
+        "magFilter": 9729,
+        "minFilter": 9987
+      }
+    ],
+    "textures": [
+      {
+        "sampler": 0,
+        "source": 0
+      },
+      {
+        "sampler": 0,
+        "source": 1
+      }
+    ],
+    "extensions": null,
+    "images": [
+      {
+        "name": "texture_0",
+        "mime": "image/png",
+        "bytes": 14876960,
+        "sha256": "6d38aec954ca4e0078a3f4366d38cc93de3baca1883b9d918a46d0bf30a34a73",
+        "pngSize": [
+          4096,
+          4096
+        ]
+      },
+      {
+        "name": "texture_0_metallic_roughness",
+        "mime": "image/png",
+        "bytes": 7751961,
+        "sha256": "20ef5ad189b74bd71ce9483bf8cbdeba48dd7cfbdcb03053d768027216a81635",
+        "pngSize": [
+          4096,
+          4096
+        ]
+      }
+    ]
+  },
+  "/Users/yeiwon/Desktop/nuu_smart.glb": {
+    "sha256": "b161e2c2cdb27e9dccd05d68ddfd2f7d1d01e348c09c26172395351a7a535c96",
+    "generator": {
+      "generator": "Khronos glTF Blender I/O v4.5.51",
+      "version": "2.0"
+    },
+    "materials": [
+      {
+        "doubleSided": true,
+        "name": "BakedMaterial",
+        "pbrMetallicRoughness": {
+          "baseColorTexture": {
+            "index": 0
+          },
+          "metallicRoughnessTexture": {
+            "index": 1
+          }
+        }
+      }
+    ],
+    "samplers": [
+      {
+        "magFilter": 9729,
+        "minFilter": 9987
+      }
+    ],
+    "textures": [
+      {
+        "sampler": 0,
+        "source": 0
+      },
+      {
+        "sampler": 0,
+        "source": 1
+      }
+    ],
+    "extensions": null,
+    "images": [
+      {
+        "name": "texture_0",
+        "mime": "image/png",
+        "bytes": 12720787,
+        "sha256": "644c343953b1835576db1b8d9a9d7993ba74274b2afefbb08c4bec4b57747fdb",
+        "pngSize": [
+          4096,
+          4096
+        ]
+      },
+      {
+        "name": "texture_0_metallic_roughness",
+        "mime": "image/png",
+        "bytes": 5057780,
+        "sha256": "dd89b6928a0f5b6d400bcd7dbfd84f34856a28e2945c7d3557af835e000bd501",
+        "pngSize": [
+          4096,
+          4096
+        ]
+      }
+    ]
+  },
+  "/Users/yeiwon/Developer/pull/public/characters/moru/full-life.glb": {
+    "sha256": "b12476135283ed8109a4a40d82b780006386b515d16b1ae1c2a03e9d56488c17",
+    "generator": {
+      "generator": "Khronos glTF Blender I/O v5.2.40",
+      "version": "2.0"
+    },
+    "materials": [
+      {
+        "doubleSided": true,
+        "name": "BakedMaterial",
+        "pbrMetallicRoughness": {
+          "baseColorTexture": {
+            "index": 0
+          },
+          "metallicRoughnessTexture": {
+            "index": 1
+          }
+        }
+      }
+    ],
+    "samplers": [
+      {
+        "magFilter": 9729,
+        "minFilter": 9987
+      }
+    ],
+    "textures": [
+      {
+        "sampler": 0,
+        "source": 0
+      },
+      {
+        "sampler": 0,
+        "source": 1
+      }
+    ],
+    "extensions": null,
+    "images": [
+      {
+        "name": "texture_0",
+        "mime": "image/png",
+        "bytes": 14876960,
+        "sha256": "6d38aec954ca4e0078a3f4366d38cc93de3baca1883b9d918a46d0bf30a34a73",
+        "pngSize": [
+          4096,
+          4096
+        ]
+      },
+      {
+        "name": "texture_0_metallic_roughness",
+        "mime": "image/png",
+        "bytes": 7751961,
+        "sha256": "20ef5ad189b74bd71ce9483bf8cbdeba48dd7cfbdcb03053d768027216a81635",
+        "pngSize": [
+          4096,
+          4096
+        ]
+      }
+    ]
+  },
+  "/Users/yeiwon/Developer/pull/public/characters/nuu/full-life.glb": {
+    "sha256": "60ee890bcb1bdc987d586fcd7f1ee907ecb19d6ef5cc2872a569dbdfffc6a6a8",
+    "generator": {
+      "generator": "Khronos glTF Blender I/O v5.2.40",
+      "version": "2.0"
+    },
+    "materials": [
+      {
+        "doubleSided": true,
+        "name": "BakedMaterial",
+        "pbrMetallicRoughness": {
+          "baseColorTexture": {
+            "index": 0
+          },
+          "metallicRoughnessTexture": {
+            "index": 1
+          }
+        }
+      }
+    ],
+    "samplers": [
+      {
+        "magFilter": 9729,
+        "minFilter": 9987
+      }
+    ],
+    "textures": [
+      {
+        "sampler": 0,
+        "source": 0
+      },
+      {
+        "sampler": 0,
+        "source": 1
+      }
+    ],
+    "extensions": null,
+    "images": [
+      {
+        "name": "texture_0",
+        "mime": "image/png",
+        "bytes": 12720787,
+        "sha256": "644c343953b1835576db1b8d9a9d7993ba74274b2afefbb08c4bec4b57747fdb",
+        "pngSize": [
+          4096,
+          4096
+        ]
+      },
+      {
+        "name": "texture_0_metallic_roughness",
+        "mime": "image/png",
+        "bytes": 5057780,
+        "sha256": "dd89b6928a0f5b6d400bcd7dbfd84f34856a28e2945c7d3557af835e000bd501",
+        "pngSize": [
+          4096,
+          4096
+        ]
+      }
+    ]
+  }
+}

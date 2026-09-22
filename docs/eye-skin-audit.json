@@ -1,0 +1,139 @@
+{
+  "moru": {
+    "eyeVertices": 983,
+    "morphInfluences": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "head": "mixamorigHead",
+    "weightedBones": [
+      "Bone_031",
+      "Bone_032",
+      "Bone_029",
+      "Bone_017",
+      "mixamorigHead",
+      "Bone_030",
+      "Bone_018"
+    ],
+    "boneParents": {
+      "Bone_031": "Bone_032",
+      "Bone_032": "mixamorigHead",
+      "Bone_029": "Bone_030",
+      "Bone_017": "Bone_018",
+      "mixamorigHead": "Bone_017",
+      "Bone_030": "mixamorigHead",
+      "Bone_018": "Bone_002"
+    },
+    "rotationOnlyWithAllMorphsZero": {
+      "down": {
+        "maxLocalPairDistanceChangePercent": 65.39869515176949,
+        "samples": 2324
+      },
+      "up": {
+        "maxLocalPairDistanceChangePercent": 65.85442091849045,
+        "samples": 2324
+      },
+      "left": {
+        "maxLocalPairDistanceChangePercent": 53.2854182670087,
+        "samples": 2324
+      },
+      "right": {
+        "maxLocalPairDistanceChangePercent": 42.51544863457709,
+        "samples": 2324
+      },
+      "tilt-left": {
+        "maxLocalPairDistanceChangePercent": 32.31511258554758,
+        "samples": 2324
+      },
+      "tilt-right": {
+        "maxLocalPairDistanceChangePercent": 31.736629479438406,
+        "samples": 2324
+      }
+    }
+  },
+  "nuu": {
+    "eyeVertices": 787,
+    "morphInfluences": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "head": "Bone_041",
+    "weightedBones": [
+      "Bone_058",
+      "Bone_047",
+      "Bone_051",
+      "Bone_057",
+      "Bone_050",
+      "Bone_049",
+      "Bone_041",
+      "Bone_045",
+      "Bone_060",
+      "Bone_062",
+      "Bone_056",
+      "Bone_002",
+      "Bone_065",
+      "Bone_048",
+      "Bone_054"
+    ],
+    "boneParents": {
+      "Bone_058": "Bone_041",
+      "Bone_047": "Bone_041",
+      "Bone_051": "Bone_041",
+      "Bone_057": "Bone_058",
+      "Bone_050": "Bone_051",
+      "Bone_049": "Bone_041",
+      "Bone_041": "Bone_042",
+      "Bone_045": "Bone_041",
+      "Bone_060": "Bone_041",
+      "Bone_062": "Bone_041",
+      "Bone_056": "Bone_041",
+      "Bone_002": "Bone_003",
+      "Bone_065": "Bone_041",
+      "Bone_048": "Bone_049",
+      "Bone_054": "Bone_041"
+    },
+    "rotationOnlyWithAllMorphsZero": {
+      "down": {
+        "maxLocalPairDistanceChangePercent": 1.320580847921049,
+        "samples": 1367
+      },
+      "up": {
+        "maxLocalPairDistanceChangePercent": 1.0428492214487606,
+        "samples": 1367
+      },
+      "left": {
+        "maxLocalPairDistanceChangePercent": 0.6401814986801924,
+        "samples": 1367
+      },
+      "right": {
+        "maxLocalPairDistanceChangePercent": 0.5549236397431101,
+        "samples": 1367
+      },
+      "tilt-left": {
+        "maxLocalPairDistanceChangePercent": 0.7759298954757687,
+        "samples": 1367
+      },
+      "tilt-right": {
+        "maxLocalPairDistanceChangePercent": 0.9211466554579051,
+        "samples": 1367
+      }
+    }
+  }
+}

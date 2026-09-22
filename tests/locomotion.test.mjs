@@ -19,7 +19,7 @@ async function load(name) {
   json.buffers = [{ byteLength: binary.length, uri: `data:application/octet-stream;base64,${binary.toString('base64')}` }]
   return new GLTFLoader().parseAsync(JSON.stringify(json), '')
 }
-const files = { IDLE: 'moru-idle', WALK: 'moru-walk', RUN: 'moru-run', CONFUSED: 'moru-confused', LISTEN: 'moru-listen', JUMP: 'moru-raised', WAVE: 'moru-wave-one-hand', BUBBLE_DANCE: 'moru-bubble-dance' }
+const files = { IDLE: 'moru-idle', WALK: 'moru-walk', RUN: 'moru-run', CONFUSED: 'moru-idle', LISTEN: 'moru-listen', JUMP: 'moru-raised', WAVE: 'moru-wave-one-hand', BUBBLE_DANCE: 'moru-bubble-dance' }
 const assets = Object.fromEntries(await Promise.all(Object.entries(files).map(async ([key, file]) => [key, await load(file)])))
 const clips = Object.fromEntries(Object.entries(assets).map(([key, asset]) => [key, asset.animations[0]]))
 clips.JUMP = AnimationUtils.subclip(clips.JUMP, clips.JUMP.name, 19, 38, 24)
@@ -40,9 +40,9 @@ test('all direction keys, normalized diagonal, frame-rate independent walk/run',
     assert.ok(Math.abs(p.position.z - 1 - z * 2.1) < 1e-8)
   }
   for (const fps of [30, 60, 120]) for (const run of [false, true]) {
-    const p = createPlayer(); p.keys.add('KeyW'); p.keys.add('KeyD'); if (run) p.keys.add('ShiftLeft')
+    const p = createPlayer(); p.position.set(-45,0,1); p.keys.add('KeyW'); p.keys.add('KeyD'); if (run) p.keys.add('ShiftLeft')
     for (let i = 0; i < fps; i++) movePlayer(p, 1 / fps)
-    assert.ok(Math.abs(p.position.distanceTo(new Vector3(0, 0, 1)) - (run ? 4.6 : 2.1)) < 1e-8)
+    assert.ok(Math.abs(p.position.distanceTo(new Vector3(-45, 0, 1)) - (run ? 4.6 : 2.1)) < 1e-8)
   }
 })
 
@@ -53,19 +53,18 @@ test('idle, walking, running jumps land once; airborne requests do not queue', (
     assert.equal(s.player.state, 'AIRBORNE'); assert.ok(s.player.position.y > .5)
     s.player.jumpRequested = true; s.player.listenRequested = true; s.tick(.2, fps)
     assert.equal(s.player.state, 'AIRBORNE')
-    s.tick(1, fps); assert.equal(s.player.isGrounded, true); assert.equal(s.player.position.y, 0)
+    s.tick(1, fps); assert.equal(s.player.isGrounded, true); assert.equal(s.player.position.y, s.player.groundY)
     assert.equal(s.player.verticalVelocity, 0); assert.equal(s.player.state, keys.length === 0 ? 'IDLE' : keys.length === 1 ? 'WALK' : 'RUN')
     s.controller.dispose()
   }
 })
 
-test('real gesture clips finish, movement interrupts, automatic confused returns idle', () => {
+test('real gesture clips finish, movement interrupts, idle never starts removed look-around', () => {
   const s = setup(); s.player.listenRequested = true; s.tick(.1)
   assert.equal(s.player.state, 'LISTEN'); s.tick(10); assert.equal(s.player.state, 'IDLE')
   s.player.listenRequested = true; s.tick(.1); s.player.keys.add('KeyW'); s.tick(.1)
   assert.equal(s.player.state, 'WALK'); s.player.keys.clear()
-  for (let i = 0; i < 1300 && s.player.state !== 'CONFUSED'; i++) s.tick(1 / 60)
-  assert.equal(s.player.state, 'CONFUSED'); s.tick(7); assert.equal(s.player.state, 'IDLE')
+  s.tick(30); assert.equal(s.player.state, 'IDLE')
   s.player.listenRequested = true; s.tick(.1); s.player.jumpRequested = true; s.tick(.1)
   assert.equal(s.player.state, 'AIRBORNE'); s.tick(1); assert.equal(s.player.state, 'IDLE')
   s.controller.dispose()
@@ -142,8 +141,8 @@ test('Wave and Dance one-shots finish, cancel for movement, reject airborne requ
   }
 })
 
-test('all nine loaded Moru models have no facial morph controls', async () => {
-  for (const asset of [...Object.values(assets), await load('moru-jump')]) {
+test('all retained locomotion sources have no facial morph controls', async () => {
+  for (const asset of Object.values(assets)) {
     let bones = 0
     asset.scene.traverse(object => {
       if (object.isBone) bones++
@@ -156,4 +155,19 @@ test('all nine loaded Moru models have no facial morph controls', async () => {
     assert.equal(bones, 23)
     assert.ok(asset.animations.every(c => c.tracks.every(t => !t.name.includes('morphTargetInfluences'))))
   }
+})
+
+test('new one-shot actions complete, reject idle interruption and cancel on movement/jump', async () => {
+ const asset = await load('clips/moru-pod-baby-groove')
+ const clip = asset.animations[0]
+ const scene = clone(assets.WALK.scene), p = createPlayer()
+ const c = createLocomotion(scene, clips, { extras: { PodGroove: {clip, loop:false} } })
+ const tick = seconds => { for(let i=0;i<Math.ceil(seconds*60);i++){movePlayer(p,1/60);c.update(p,1/60)} }
+ assert.equal(c.playExtra('PodGroove'),true);tick(13)
+ assert.equal(c.activeClip,'PodGroove'); assert.equal(p.state,'BUBBLE_DANCE')
+ tick(4);assert.equal(c.activeClip,'IDLE')
+ c.playExtra('PodGroove');p.keys.add('KeyW');tick(.2);assert.equal(c.activeClip,'WALK')
+ p.keys.clear();tick(.2);c.playExtra('PodGroove');p.jumpRequested=true;tick(.1)
+ assert.equal(c.activeClip,'JUMP');tick(1);assert.equal(p.state,'IDLE')
+ c.dispose()
 })

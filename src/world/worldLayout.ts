@@ -11,8 +11,12 @@ export const RIDGES = [
 ] as const
 export const FLOWERS = [[-7, -7, 1], [-13, -19, 1.3], [-20, -35, .9], [17, 13, 1.15], [34, -44, 1.6]] as const
 export const CRYSTALS = [[14, -12, 1.3], [17, -15, .8], [12, -16, .65], [-18, 15, 1.2], [-21, 17, .75], [27, -39, 1.6]] as const
-export const RING = { x: 12, y: 8.8, z: -57, radius: 7, tube: .6, yaw: -.18, tilt: .13 }
+export const RING = { x: 12, y: 8.8, z: -57, radius: 7, tube: .055, yaw: -.18, tilt: .13 }
+
+export const HALO_ARCS = [[-.1,2.65],[3.13,2.35]] as const
 
 // Garden silhouettes stay west; the eastern stream keeps a clear approach.
 export const TREES = [[-16, -12, 1.2, 0], [-25, -23, 1.5, 1], [-31, -6, 1.1, 2], [-22, 9, 1.3, 0], [29, 22, 1, 1]] as const
 export const MUSHROOMS = [[-10, -19, 1.2], [-19, -6, .8], [-29, 4, 1.6]] as const
+
+export const HOME = { x: 10, z: -24, yaw: -.12, width: 8, depth: 7 }

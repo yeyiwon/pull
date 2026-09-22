@@ -1,7 +1,9 @@
+import { conversationActive } from '../conversation/session.ts'
 import { useEffect, useRef } from 'react'
 import type { RefObject } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { MathUtils, Vector3 } from 'three'
+import { homeState } from './homeSpace.ts'
 import type { Player } from './locomotion.ts'
 
 // Shared mutable simulation data stays outside React render state.
@@ -17,11 +19,13 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
     const canvas = gl.domElement
     const state = orbit.current
     function down(event: PointerEvent) {
+      if(conversationActive())return
       if (event.button !== 0 || state.pointer !== -1) return
       state.pointer = event.pointerId; state.x = event.clientX; state.y = event.clientY
       canvas.setPointerCapture(event.pointerId)
     }
     function move(event: PointerEvent) {
+      if(conversationActive()){stop();return}
       if (event.pointerId !== state.pointer) return
       state.desiredYaw -= (event.clientX - state.x) * 0.005
       state.desiredPitch = MathUtils.clamp(state.desiredPitch + (event.clientY - state.y) * 0.004, 0.08, 1.1)
@@ -62,12 +66,15 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
     desiredFocus.current.set(p.position.x, p.groundY + (p.position.y - p.groundY) * 0.3 + 1.3, p.position.z)
     focus.current.lerp(desiredFocus.current, 1 - Math.exp(-5 * Math.min(delta, 0.05)))
     const { yaw, pitch } = orbit.current
+    const followDistance = MathUtils.lerp(distance, 7, homeState.cutaway)
+    const viewPitch = MathUtils.lerp(pitch, Math.max(.55, pitch), homeState.cutaway)
     camera.position.set(
-      focus.current.x + Math.sin(yaw) * Math.cos(pitch) * distance,
-      focus.current.y + Math.sin(pitch) * distance,
-      focus.current.z + Math.cos(yaw) * Math.cos(pitch) * distance,
+      focus.current.x + Math.sin(yaw) * Math.cos(viewPitch) * followDistance,
+      focus.current.y + Math.sin(viewPitch) * followDistance,
+      focus.current.z + Math.cos(yaw) * Math.cos(viewPitch) * followDistance,
     )
-    camera.lookAt(focus.current)
+    desiredFocus.current.copy(focus.current).y += 1.65 * (1 - homeState.cutaway)
+    camera.lookAt(desiredFocus.current)
   })
   return null
 }

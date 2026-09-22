@@ -1,0 +1,3595 @@
+{
+  "version": "0.5-development-baseline",
+  "mode": "master-mix",
+  "assets": [
+    {
+      "gain": 0.65,
+      "loop": true,
+      "load": "current-core/next-near-future",
+      "stateMapping": {
+        "season": null,
+        "time": "day",
+        "location": "home"
+      },
+      "id": "home_day",
+      "sourceMaster": "bgm_home_day.wav",
+      "category": "music",
+      "url": "/audio/v02/home_day.m4a",
+      "duration": 80.0,
+      "channels": 2,
+      "frames": 3528000,
+      "sampleRate": 44100,
+      "sourceSha256": "9f22fb4fcdbf1f483757b77276ac480b8952b5c307be85eb56a0be18405fce28",
+      "bytes": 1062897
+    },
+    {
+      "gain": 0.65,
+      "loop": true,
+      "load": "current-core/next-near-future",
+      "stateMapping": {
+        "season": null,
+        "time": "night",
+        "location": "home"
+      },
+      "id": "home_night",
+      "sourceMaster": "bgm_home_night.wav",
+      "category": "music",
+      "url": "/audio/v02/home_night.m4a",
+      "duration": 96.0,
+      "channels": 2,
+      "frames": 4233600,
+      "sampleRate": 44100,
+      "sourceSha256": "d67a0a730dfd51591170bdd37749771bf4ae7cecfcaf19898c9db444de468f7d",
+      "bytes": 1287769
+    },
+    {
+      "gain": 0.18,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_spring_soft_birds",
+      "sourceMaster": "amb_spring_soft_birds_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_spring_soft_birds.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "4a42409b4c2541cf95c483be96b6ba9e2eec7cea5b6f7b73201b8faf7fbaf5ba",
+      "bytes": 196869
+    },
+    {
+      "gain": 0.17,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_spring_breeze",
+      "sourceMaster": "amb_spring_breeze_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_spring_breeze.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "9c7f5882fc284219e26b22a732188a941749d7d8ad6c2acf0162ba5498f35770",
+      "bytes": 197339
+    },
+    {
+      "gain": 0.16,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_spring_subtle_nature",
+      "sourceMaster": "amb_spring_subtle_nature_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_spring_subtle_nature.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "422abdc9746263e74749a73765f5a8de13caba0f5d3c52e4bf8ffb6d80b20b5a",
+      "bytes": 196339
+    },
+    {
+      "gain": 0.13,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_spring_dawn_birds",
+      "sourceMaster": "amb_spring_dawn_birds_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_spring_dawn_birds.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "b9db1a81756f5f6cfab1405d774420c2d2b7a4523a17fb1ee35615967b2955d4",
+      "bytes": 197715
+    },
+    {
+      "gain": 0.12,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_summer_soft_insects",
+      "sourceMaster": "amb_summer_soft_insects_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_summer_soft_insects.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "0b90c12d2213d4ea3f14e3aeb80c3bfd78f4b1a548b8dba8db3a10e1475f98d7",
+      "bytes": 196753
+    },
+    {
+      "gain": 0.13,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_summer_night_insects",
+      "sourceMaster": "amb_summer_night_insects_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_summer_night_insects.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "34f766c30d5b7a2eb1095b8abbf7a28802a4ac98fddbef1e6e8706c833d72c3c",
+      "bytes": 196508
+    },
+    {
+      "gain": 0.16,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_summer_soft_breeze",
+      "sourceMaster": "amb_summer_soft_breeze_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_summer_soft_breeze.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "dd3980cca109c20a90d26c0c78a66ffe817a75de5e9b7da8725ad4203d0077e9",
+      "bytes": 197400
+    },
+    {
+      "gain": 0.18,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_autumn_leaf_movement",
+      "sourceMaster": "amb_autumn_leaf_movement_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_autumn_leaf_movement.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "93228cc656c256c33294fd0c2ab9837a9667c32ffdc97f4d5f65202beac05fde",
+      "bytes": 197128
+    },
+    {
+      "gain": 0.19,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_autumn_cooler_wind",
+      "sourceMaster": "amb_autumn_cooler_wind_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_autumn_cooler_wind.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "04d89f1599e2bc42bd8ee07d0a45c94a754e58527a7993e12ce05483301e17d0",
+      "bytes": 196021
+    },
+    {
+      "gain": 0.16,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_winter_quiet_air",
+      "sourceMaster": "amb_winter_quiet_air_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_winter_quiet_air.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "e5e76cbda74931a1e834e3476148625a06ff49c507897d934aea925363ebd94a",
+      "bytes": 170157
+    },
+    {
+      "gain": 0.17,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_winter_subtle_wind",
+      "sourceMaster": "amb_winter_subtle_wind_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_winter_subtle_wind.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "516a3822e1cfd823809365504cf19087d7ffa77bcf799360837a1445e832b117",
+      "bytes": 197508
+    },
+    {
+      "gain": 0.13,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_winter_crystalline",
+      "sourceMaster": "amb_winter_crystalline_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_winter_crystalline.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "7e5e85bcc3b21972ee316155114afa20219948394e98af452fdf01ef271778f4",
+      "bytes": 198279
+    },
+    {
+      "gain": 0.23,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_rain_normal",
+      "sourceMaster": "amb_rain_normal_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_rain_normal.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "dc6ea20a6968538ba41567245a378abb94e1e036fa653241909539a175204efa",
+      "bytes": 198923
+    },
+    {
+      "gain": 0.25,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_rain_heavy",
+      "sourceMaster": "amb_rain_heavy_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_rain_heavy.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "5edb4e1a408010a809808a844bff2a29264871f5ad561849286aa956e9c95f10",
+      "bytes": 197932
+    },
+    {
+      "gain": 0.22,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_wind_normal",
+      "sourceMaster": "amb_wind_normal_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_wind_normal.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "b4d1dad653183b8d5a9667a429a0b9bc6f433a1ee9002855682b4c3892a87ea9",
+      "bytes": 196244
+    },
+    {
+      "gain": 0.25,
+      "loop": true,
+      "location": "outdoor",
+      "load": "current-environment-core",
+      "id": "amb_water_pond_close",
+      "sourceMaster": "amb_water_pond_close_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_water_pond_close.m4a",
+      "duration": 24.0,
+      "channels": 1,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "5fc349e21fbf6571a55804ba5afdb6d1d92292113a44049b8f6a27434754ca7c",
+      "bytes": 195739
+    },
+    {
+      "gain": 0.18,
+      "loop": true,
+      "location": "indoor",
+      "load": "current-environment-core",
+      "id": "amb_indoor_room_tone",
+      "sourceMaster": "amb_indoor_room_tone_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_indoor_room_tone.m4a",
+      "duration": 24.0,
+      "channels": 2,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "6ec2153c6df9e77cb0514312b53bfb65bd7c1b6d028f3b3c13366afb27808873",
+      "bytes": 165868
+    },
+    {
+      "gain": 0.22,
+      "loop": true,
+      "location": "indoor",
+      "load": "current-environment-core",
+      "id": "amb_indoor_window_rain",
+      "sourceMaster": "amb_indoor_window_rain_loop.wav",
+      "category": "ambience",
+      "url": "/audio/v02/amb_indoor_window_rain.m4a",
+      "duration": 24.0,
+      "channels": 1,
+      "frames": 1058400,
+      "sampleRate": 44100,
+      "sourceSha256": "ae3abd6e0f70dce6d83b52eb21a6ce87e2c2581e5805490f31295cb65273e7a3",
+      "bytes": 199613
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_jump",
+      "variants": 5,
+      "load": "core-after-unlock",
+      "id": "moru_jump_01",
+      "sourceMaster": "sfx_moru_jump_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_jump_01.wav",
+      "duration": 0.224036,
+      "channels": 1,
+      "frames": 9880,
+      "sampleRate": 44100,
+      "sourceSha256": "3a982cbfb82f4a36e579baf76741a5730ea79f58bbdca8c6988199433eec321f",
+      "bytes": 19804
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_jump",
+      "variants": 5,
+      "load": "core-after-unlock",
+      "id": "moru_jump_02",
+      "sourceMaster": "sfx_moru_jump_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_jump_02.wav",
+      "duration": 0.240113,
+      "channels": 1,
+      "frames": 10589,
+      "sampleRate": 44100,
+      "sourceSha256": "4f4fe4f8377581700d204c5cc300b5c9c4d1285ccae8f01c4b8f2a1ed3c1d00c",
+      "bytes": 21222
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_jump",
+      "variants": 5,
+      "load": "core-after-unlock",
+      "id": "moru_jump_03",
+      "sourceMaster": "sfx_moru_jump_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_jump_03.wav",
+      "duration": 0.227166,
+      "channels": 1,
+      "frames": 10018,
+      "sampleRate": 44100,
+      "sourceSha256": "a40980fa9c008cf3748da44487e8f381fcec7d1930595bc9274d1b78b5ab3e77",
+      "bytes": 20080
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_jump",
+      "variants": 5,
+      "load": "core-after-unlock",
+      "id": "moru_jump_04",
+      "sourceMaster": "sfx_moru_jump_04.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_jump_04.wav",
+      "duration": 0.237188,
+      "channels": 1,
+      "frames": 10460,
+      "sampleRate": 44100,
+      "sourceSha256": "faf3dd8b4d6bfdce7fb03d5a5be64ac5af44494a55f96d923a36e9203e06f049",
+      "bytes": 20964
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_jump",
+      "variants": 5,
+      "load": "core-after-unlock",
+      "id": "moru_jump_05",
+      "sourceMaster": "sfx_moru_jump_05.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_jump_05.wav",
+      "duration": 0.222971,
+      "channels": 1,
+      "frames": 9833,
+      "sampleRate": 44100,
+      "sourceSha256": "0bff6d2aba850c38d9b1780c30fada2653c303329ba38710c59d3e3c31184cb9",
+      "bytes": 19710
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_land",
+      "variants": 5,
+      "load": "core-after-unlock",
+      "id": "moru_land_01",
+      "sourceMaster": "sfx_moru_land_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_land_01.wav",
+      "duration": 0.192245,
+      "channels": 1,
+      "frames": 8478,
+      "sampleRate": 44100,
+      "sourceSha256": "1063abaa83e560ca15c33e8c6813582c7e96225ff95b7f7298abb93646ce1324",
+      "bytes": 17000
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_land",
+      "variants": 5,
+      "load": "core-after-unlock",
+      "id": "moru_land_02",
+      "sourceMaster": "sfx_moru_land_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_land_02.wav",
+      "duration": 0.197755,
+      "channels": 1,
+      "frames": 8721,
+      "sampleRate": 44100,
+      "sourceSha256": "a9ac84b652beb2c8434b4f35b4eb41b90fcb062d580ddf0cc75a92a890cc0d02",
+      "bytes": 17486
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_land",
+      "variants": 5,
+      "load": "core-after-unlock",
+      "id": "moru_land_03",
+      "sourceMaster": "sfx_moru_land_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_land_03.wav",
+      "duration": 0.176463,
+      "channels": 1,
+      "frames": 7782,
+      "sampleRate": 44100,
+      "sourceSha256": "2dff09888ce1c724f73d2294a86fe08208acfa8ee238f5bea9afd2aad67c8ab2",
+      "bytes": 15608
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_land",
+      "variants": 5,
+      "load": "core-after-unlock",
+      "id": "moru_land_04",
+      "sourceMaster": "sfx_moru_land_04.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_land_04.wav",
+      "duration": 0.179546,
+      "channels": 1,
+      "frames": 7918,
+      "sampleRate": 44100,
+      "sourceSha256": "3dd4acf80c4851f2fb4a195c5fca842d27ed58c75da5611a9bfe5e49fca20f38",
+      "bytes": 15880
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_land",
+      "variants": 5,
+      "load": "core-after-unlock",
+      "id": "moru_land_05",
+      "sourceMaster": "sfx_moru_land_05.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_land_05.wav",
+      "duration": 0.190726,
+      "channels": 1,
+      "frames": 8411,
+      "sampleRate": 44100,
+      "sourceSha256": "eb50e82d2c9c1c094c20048e8c6288a288b84bb6ba0f186abfd37b0a46dbcd70",
+      "bytes": 16866
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_happy",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_happy_01",
+      "sourceMaster": "sfx_moru_happy_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_happy_01.wav",
+      "duration": 0.449229,
+      "channels": 1,
+      "frames": 19811,
+      "sampleRate": 44100,
+      "sourceSha256": "4fb92198d2887cee1a99579fcc81b9dcbf998754ff0ae14bd87a0b99eb624d0c",
+      "bytes": 39666
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_happy",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_happy_02",
+      "sourceMaster": "sfx_moru_happy_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_happy_02.wav",
+      "duration": 0.48356,
+      "channels": 1,
+      "frames": 21325,
+      "sampleRate": 44100,
+      "sourceSha256": "8de0f068bc8f05f533e4e55c02b795af3510923e757eb1fe0bb2393eed6de921",
+      "bytes": 42694
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_happy",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_happy_03",
+      "sourceMaster": "sfx_moru_happy_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_happy_03.wav",
+      "duration": 0.477098,
+      "channels": 1,
+      "frames": 21040,
+      "sampleRate": 44100,
+      "sourceSha256": "f4acf74145d740053217b1a4942ced4755f2b1661d34606015655388d98d9537",
+      "bytes": 42124
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_curious",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_curious_01",
+      "sourceMaster": "sfx_moru_curious_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_curious_01.wav",
+      "duration": 0.377143,
+      "channels": 1,
+      "frames": 16632,
+      "sampleRate": 44100,
+      "sourceSha256": "557a5bafab94e5e69c15d92f0b30e5dda04858253597a8aab4996f2efa3c9222",
+      "bytes": 33308
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_curious",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_curious_02",
+      "sourceMaster": "sfx_moru_curious_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_curious_02.wav",
+      "duration": 0.39288,
+      "channels": 1,
+      "frames": 17326,
+      "sampleRate": 44100,
+      "sourceSha256": "2599bffe6a588ca5d98252955952a7af67d1ab8f0e37e216001509b204241cce",
+      "bytes": 34696
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_curious",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_curious_03",
+      "sourceMaster": "sfx_moru_curious_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_curious_03.wav",
+      "duration": 0.352562,
+      "channels": 1,
+      "frames": 15548,
+      "sampleRate": 44100,
+      "sourceSha256": "dbeabcacd1d020b5fdf59580c7c19d9b8e0465dda7fc9e05ce54d139914dc618",
+      "bytes": 31140
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_surprise",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_surprise_01",
+      "sourceMaster": "sfx_moru_surprise_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_surprise_01.wav",
+      "duration": 0.271678,
+      "channels": 1,
+      "frames": 11981,
+      "sampleRate": 44100,
+      "sourceSha256": "c47196d3f2cc0aea4e2b66b0f8026964779f96d37cf4db476a4557f842a00131",
+      "bytes": 24006
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_surprise",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_surprise_02",
+      "sourceMaster": "sfx_moru_surprise_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_surprise_02.wav",
+      "duration": 0.254422,
+      "channels": 1,
+      "frames": 11220,
+      "sampleRate": 44100,
+      "sourceSha256": "217d4f9ef9a92d916f728e7d6ca471faa364230f82e4be43fd401e4a6ce85481",
+      "bytes": 22484
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_surprise",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_surprise_03",
+      "sourceMaster": "sfx_moru_surprise_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_surprise_03.wav",
+      "duration": 0.276304,
+      "channels": 1,
+      "frames": 12185,
+      "sampleRate": 44100,
+      "sourceSha256": "f6432af16943a0f78c08ce62128e3fc4220adfe93d8624930d2a4d47b838afe4",
+      "bytes": 24414
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_sleepy",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_sleepy_01",
+      "sourceMaster": "sfx_moru_sleepy_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_sleepy_01.wav",
+      "duration": 0.666848,
+      "channels": 1,
+      "frames": 29408,
+      "sampleRate": 44100,
+      "sourceSha256": "1201110f5640062691f0ca4f0a8c91d4506bee61d5601e0a81d4eefa4eecdfa2",
+      "bytes": 58860
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_sleepy",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_sleepy_02",
+      "sourceMaster": "sfx_moru_sleepy_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_sleepy_02.wav",
+      "duration": 0.6661,
+      "channels": 1,
+      "frames": 29375,
+      "sampleRate": 44100,
+      "sourceSha256": "d877a4af9f76bdcfbda1fb3feedbcf2c8931a87f994733258a199cbf4b891dc4",
+      "bytes": 58794
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_sleepy",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_sleepy_03",
+      "sourceMaster": "sfx_moru_sleepy_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_sleepy_03.wav",
+      "duration": 0.643741,
+      "channels": 1,
+      "frames": 28389,
+      "sampleRate": 44100,
+      "sourceSha256": "e19b60b96c607188096e527aa0ad61877cb893be2e30154e84fbf649a9dacbed",
+      "bytes": 56822
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_affection",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_affection_01",
+      "sourceMaster": "sfx_moru_affection_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_affection_01.wav",
+      "duration": 0.560204,
+      "channels": 1,
+      "frames": 24705,
+      "sampleRate": 44100,
+      "sourceSha256": "efdba2d3f8d78280903b0438848d241e6affddada60309f527fcfe547248011f",
+      "bytes": 49454
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_affection",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_affection_02",
+      "sourceMaster": "sfx_moru_affection_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_affection_02.wav",
+      "duration": 0.559728,
+      "channels": 1,
+      "frames": 24684,
+      "sampleRate": 44100,
+      "sourceSha256": "3122935cca0e72b9c431aa587c3f7e10ffb82ff4b51f28a75864bdae134f1f40",
+      "bytes": 49412
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_affection",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_affection_03",
+      "sourceMaster": "sfx_moru_affection_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_affection_03.wav",
+      "duration": 0.553243,
+      "channels": 1,
+      "frames": 24398,
+      "sampleRate": 44100,
+      "sourceSha256": "df1f7599dfe9415c86928844f6ff545c49b5edacc2d8ebce4cda1d557d9b6554",
+      "bytes": 48840
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_stretch",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_stretch_01",
+      "sourceMaster": "sfx_moru_stretch_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_stretch_01.wav",
+      "duration": 0.595737,
+      "channels": 1,
+      "frames": 26272,
+      "sampleRate": 44100,
+      "sourceSha256": "a46907bc2695aa3af108f7eb4d0f9edef6959cb4272b462588a8eae5bf3c9a40",
+      "bytes": 52588
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_stretch",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_stretch_02",
+      "sourceMaster": "sfx_moru_stretch_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_stretch_02.wav",
+      "duration": 0.616259,
+      "channels": 1,
+      "frames": 27177,
+      "sampleRate": 44100,
+      "sourceSha256": "1afbd3cb42fb032cf920eff7f8d8929c4f3c1593aaec22802c6e080ba2b7cd8d",
+      "bytes": 54398
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_stretch",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_stretch_03",
+      "sourceMaster": "sfx_moru_stretch_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_stretch_03.wav",
+      "duration": 0.582268,
+      "channels": 1,
+      "frames": 25678,
+      "sampleRate": 44100,
+      "sourceSha256": "87ed2c572c01b146ec49535a5b44fb3c7a31f99ecf557cf221b092810042fdee",
+      "bytes": 51400
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_greeting",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_greeting_01",
+      "sourceMaster": "sfx_moru_greeting_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_greeting_01.wav",
+      "duration": 0.413651,
+      "channels": 1,
+      "frames": 18242,
+      "sampleRate": 44100,
+      "sourceSha256": "fa7d92f6a2a21e2a4e36cfc8ea89e6d81f31b07ffbd9cc89f7213dfd4b3a35c1",
+      "bytes": 36528
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_greeting",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_greeting_02",
+      "sourceMaster": "sfx_moru_greeting_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_greeting_02.wav",
+      "duration": 0.395941,
+      "channels": 1,
+      "frames": 17461,
+      "sampleRate": 44100,
+      "sourceSha256": "0194601296cdeb65cbeaaf0eab60df66467ad7c586a28edb789447644ffb4bbd",
+      "bytes": 34966
+    },
+    {
+      "gain": 0.35,
+      "loop": false,
+      "family": "moru_greeting",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "moru_greeting_03",
+      "sourceMaster": "sfx_moru_greeting_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/moru_greeting_03.wav",
+      "duration": 0.415828,
+      "channels": 1,
+      "frames": 18338,
+      "sampleRate": 44100,
+      "sourceSha256": "e62fec8b4e972f237879935db70f3f4750b338477da2c926b61554651772a387",
+      "bytes": 36720
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_grass",
+      "variants": 4,
+      "load": "core-after-unlock",
+      "id": "step_grass_01",
+      "sourceMaster": "step_grass_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_grass_01.wav",
+      "duration": 0.194286,
+      "channels": 1,
+      "frames": 8568,
+      "sampleRate": 44100,
+      "sourceSha256": "db2f049edb040405cc5bf107080f1b6458450742298c82180c9c4d23cf776897",
+      "bytes": 17180
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_grass",
+      "variants": 4,
+      "load": "core-after-unlock",
+      "id": "step_grass_02",
+      "sourceMaster": "step_grass_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_grass_02.wav",
+      "duration": 0.196576,
+      "channels": 1,
+      "frames": 8669,
+      "sampleRate": 44100,
+      "sourceSha256": "8be5bf3d44a57345e9e2b93162d1a42ab2470fd1014621f7513ee657fbb13135",
+      "bytes": 17382
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_grass",
+      "variants": 4,
+      "load": "core-after-unlock",
+      "id": "step_grass_03",
+      "sourceMaster": "step_grass_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_grass_03.wav",
+      "duration": 0.209184,
+      "channels": 1,
+      "frames": 9225,
+      "sampleRate": 44100,
+      "sourceSha256": "73122e692ed0af51493e6996503bbc6e6041041e0e2bb61c604ffba6852dcd45",
+      "bytes": 18494
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_grass",
+      "variants": 4,
+      "load": "core-after-unlock",
+      "id": "step_grass_04",
+      "sourceMaster": "step_grass_04.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_grass_04.wav",
+      "duration": 0.199909,
+      "channels": 1,
+      "frames": 8816,
+      "sampleRate": 44100,
+      "sourceSha256": "052e2440c050c2b4db6f179e66477b4986da6fa8ffa71cf4254e6fba34e1f55a",
+      "bytes": 17676
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_wood",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "step_wood_01",
+      "sourceMaster": "step_wood_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_wood_01.wav",
+      "duration": 0.158957,
+      "channels": 1,
+      "frames": 7010,
+      "sampleRate": 44100,
+      "sourceSha256": "923a43b37e4a9bf9769c6f968172f334555c38a6fd3cda9e882390c8726bc2cf",
+      "bytes": 14064
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_wood",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "step_wood_02",
+      "sourceMaster": "step_wood_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_wood_02.wav",
+      "duration": 0.159546,
+      "channels": 1,
+      "frames": 7036,
+      "sampleRate": 44100,
+      "sourceSha256": "191f8a62952861ac0f0ee2ec14605c256791d57d3aad907afacdd807a3b7c0ac",
+      "bytes": 14116
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_wood",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "step_wood_03",
+      "sourceMaster": "step_wood_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_wood_03.wav",
+      "duration": 0.156893,
+      "channels": 1,
+      "frames": 6919,
+      "sampleRate": 44100,
+      "sourceSha256": "73ef64551986f48a6dbc45ef5165614edb763fe240828f7a847bbfcde66f6891",
+      "bytes": 13882
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_wood",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "step_wood_04",
+      "sourceMaster": "step_wood_04.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_wood_04.wav",
+      "duration": 0.152789,
+      "channels": 1,
+      "frames": 6738,
+      "sampleRate": 44100,
+      "sourceSha256": "630868e172095ea22176080b34fc9f9a97ae748270f64e77dd5c45214120a0b1",
+      "bytes": 13520
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_snow",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "step_snow_01",
+      "sourceMaster": "step_snow_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_snow_01.wav",
+      "duration": 0.335102,
+      "channels": 1,
+      "frames": 14778,
+      "sampleRate": 44100,
+      "sourceSha256": "aa6d52d27f24f95b24f57d7d479a1013fdda418a44da2e0d4e533f141c21ebeb",
+      "bytes": 29600
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_snow",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "step_snow_02",
+      "sourceMaster": "step_snow_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_snow_02.wav",
+      "duration": 0.325896,
+      "channels": 1,
+      "frames": 14372,
+      "sampleRate": 44100,
+      "sourceSha256": "9dff9b5de568e03764ee9c7b4bd4fdeed2f1305170c516374b1da2dfdb68abca",
+      "bytes": 28788
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_snow",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "step_snow_03",
+      "sourceMaster": "step_snow_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_snow_03.wav",
+      "duration": 0.308027,
+      "channels": 1,
+      "frames": 13584,
+      "sampleRate": 44100,
+      "sourceSha256": "ddcd06b4c7c09737370f1e204bbbcd8514f79be3b19c41c207ac168ce33f57c6",
+      "bytes": 27212
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_snow",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "step_snow_04",
+      "sourceMaster": "step_snow_04.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_snow_04.wav",
+      "duration": 0.307664,
+      "channels": 1,
+      "frames": 13568,
+      "sampleRate": 44100,
+      "sourceSha256": "4aca0a425b8963b41cb8cb89da752c7c09c408fd92d22fd222ac328d24d59a6b",
+      "bytes": 27180
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_water",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "step_water_01",
+      "sourceMaster": "step_water_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_water_01.wav",
+      "duration": 0.38576,
+      "channels": 1,
+      "frames": 17012,
+      "sampleRate": 44100,
+      "sourceSha256": "42cdc0693c577c54c402cc5dff6616615864564a050e5cd6ac0fdc7d7595cc98",
+      "bytes": 34068
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_water",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "step_water_02",
+      "sourceMaster": "step_water_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_water_02.wav",
+      "duration": 0.404467,
+      "channels": 1,
+      "frames": 17837,
+      "sampleRate": 44100,
+      "sourceSha256": "e18afe8de594236b100b89004e6f94a20fc9c187e6a5b11e4ac078ca44c0cb64",
+      "bytes": 35718
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_water",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "step_water_03",
+      "sourceMaster": "step_water_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_water_03.wav",
+      "duration": 0.403107,
+      "channels": 1,
+      "frames": 17777,
+      "sampleRate": 44100,
+      "sourceSha256": "15d04dadace6c4622d7e56a45d31daf011cee435a23b28cd5a64bed4afde0ce5",
+      "bytes": 35598
+    },
+    {
+      "gain": 0.29,
+      "loop": false,
+      "family": "step_water",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "step_water_04",
+      "sourceMaster": "step_water_04.wav",
+      "category": "sfx",
+      "url": "/audio/v02/step_water_04.wav",
+      "duration": 0.406871,
+      "channels": 1,
+      "frames": 17943,
+      "sampleRate": 44100,
+      "sourceSha256": "ed281d557125129eddd2de976448ce458a8942b603aaa92f18cef29f3597fbf5",
+      "bytes": 35930
+    },
+    {
+      "gain": 0.3,
+      "loop": false,
+      "family": "water_enter_water",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "water_enter_water_01",
+      "sourceMaster": "sfx_water_enter_water_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/water_enter_water_01.wav",
+      "duration": 0.7,
+      "channels": 1,
+      "frames": 30870,
+      "sampleRate": 44100,
+      "sourceSha256": "cb4997ee1014f107cb524c4fd1df65cd94917c9be32478373068704203e3e13e",
+      "bytes": 61784
+    },
+    {
+      "gain": 0.3,
+      "loop": false,
+      "family": "water_enter_water",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "water_enter_water_02",
+      "sourceMaster": "sfx_water_enter_water_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/water_enter_water_02.wav",
+      "duration": 0.7,
+      "channels": 1,
+      "frames": 30870,
+      "sampleRate": 44100,
+      "sourceSha256": "510ccbb967e1e75fcc088a0564e161f2fcd8d6ae76cc25fc80a8d4dff8c406bd",
+      "bytes": 61784
+    },
+    {
+      "gain": 0.3,
+      "loop": false,
+      "family": "water_enter_water",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "water_enter_water_03",
+      "sourceMaster": "sfx_water_enter_water_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/water_enter_water_03.wav",
+      "duration": 0.7,
+      "channels": 1,
+      "frames": 30870,
+      "sampleRate": 44100,
+      "sourceSha256": "6890819ea32abf97888966a13a9adc191d1daf0c0938442ad9d618d837c95394",
+      "bytes": 61784
+    },
+    {
+      "gain": 0.3,
+      "loop": false,
+      "family": "water_exit_water",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "water_exit_water_01",
+      "sourceMaster": "sfx_water_exit_water_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/water_exit_water_01.wav",
+      "duration": 0.56,
+      "channels": 1,
+      "frames": 24696,
+      "sampleRate": 44100,
+      "sourceSha256": "3349fdc7c24a287e477ad93a9de160e957999a48f9a9696224063c9a10a7b5eb",
+      "bytes": 49436
+    },
+    {
+      "gain": 0.3,
+      "loop": false,
+      "family": "water_exit_water",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "water_exit_water_02",
+      "sourceMaster": "sfx_water_exit_water_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/water_exit_water_02.wav",
+      "duration": 0.56,
+      "channels": 1,
+      "frames": 24696,
+      "sampleRate": 44100,
+      "sourceSha256": "a9bfdd194a47e488abdfda6bce21e51666a7d8f8e9ce5ed242bdfb8c7dc01e41",
+      "bytes": 49436
+    },
+    {
+      "gain": 0.3,
+      "loop": false,
+      "family": "water_exit_water",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "water_exit_water_03",
+      "sourceMaster": "sfx_water_exit_water_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/water_exit_water_03.wav",
+      "duration": 0.56,
+      "channels": 1,
+      "frames": 24696,
+      "sampleRate": 44100,
+      "sourceSha256": "a1f0dee3e53e79179141aca6d220551e0e4efd049a5c2036e8903cbc3fe88fa5",
+      "bytes": 49436
+    },
+    {
+      "gain": 0.3,
+      "loop": false,
+      "family": "water_tiny_splash",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "water_tiny_splash_01",
+      "sourceMaster": "sfx_water_tiny_splash_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/water_tiny_splash_01.wav",
+      "duration": 0.48,
+      "channels": 1,
+      "frames": 21168,
+      "sampleRate": 44100,
+      "sourceSha256": "7b7204426bde12d1a322ee3fb6859d2ccb15ea901efe92a61be0c645d4fdf254",
+      "bytes": 42380
+    },
+    {
+      "gain": 0.3,
+      "loop": false,
+      "family": "water_tiny_splash",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "water_tiny_splash_02",
+      "sourceMaster": "sfx_water_tiny_splash_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/water_tiny_splash_02.wav",
+      "duration": 0.48,
+      "channels": 1,
+      "frames": 21168,
+      "sampleRate": 44100,
+      "sourceSha256": "cb1d4d8ef0551809937bd025bf24eb655b460dd6135d045e594735b5cbc4bc34",
+      "bytes": 42380
+    },
+    {
+      "gain": 0.3,
+      "loop": false,
+      "family": "water_tiny_splash",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "water_tiny_splash_03",
+      "sourceMaster": "sfx_water_tiny_splash_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/water_tiny_splash_03.wav",
+      "duration": 0.48,
+      "channels": 1,
+      "frames": 21168,
+      "sampleRate": 44100,
+      "sourceSha256": "4d926941c6fe172a32ad957527612808c2984167a19c65c8fe7079f6345b898f",
+      "bytes": 42380
+    },
+    {
+      "gain": 0.3,
+      "loop": false,
+      "family": "water_tiny_splash",
+      "variants": 4,
+      "load": "on-demand",
+      "id": "water_tiny_splash_04",
+      "sourceMaster": "sfx_water_tiny_splash_04.wav",
+      "category": "sfx",
+      "url": "/audio/v02/water_tiny_splash_04.wav",
+      "duration": 0.48,
+      "channels": 1,
+      "frames": 21168,
+      "sampleRate": 44100,
+      "sourceSha256": "5a9971cd28ec2403843c51b6ab65a0b200415a836ec31a2a3ff09a4321739593",
+      "bytes": 42380
+    },
+    {
+      "gain": 0.34,
+      "loop": false,
+      "family": "house_door_open",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "house_door_open_01",
+      "sourceMaster": "sfx_house_door_open_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/house_door_open_01.wav",
+      "duration": 0.85,
+      "channels": 1,
+      "frames": 37485,
+      "sampleRate": 44100,
+      "sourceSha256": "c484490815a4ba05ea8f3960eeab0d378b652b744ca88d3d6d49059fbed0edb5",
+      "bytes": 75014
+    },
+    {
+      "gain": 0.34,
+      "loop": false,
+      "family": "house_door_open",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "house_door_open_02",
+      "sourceMaster": "sfx_house_door_open_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/house_door_open_02.wav",
+      "duration": 0.85,
+      "channels": 1,
+      "frames": 37485,
+      "sampleRate": 44100,
+      "sourceSha256": "fbaf161cc242d0259b7a61d003f233af462813cc110fa51a9012863a20bcdcae",
+      "bytes": 75014
+    },
+    {
+      "gain": 0.34,
+      "loop": false,
+      "family": "house_door_open",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "house_door_open_03",
+      "sourceMaster": "sfx_house_door_open_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/house_door_open_03.wav",
+      "duration": 0.85,
+      "channels": 1,
+      "frames": 37485,
+      "sampleRate": 44100,
+      "sourceSha256": "364e0b821607415ced5ecf750ff90480f02da06cb104dfaf837c4cef20630e9b",
+      "bytes": 75014
+    },
+    {
+      "gain": 0.34,
+      "loop": false,
+      "family": "house_door_close",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "house_door_close_01",
+      "sourceMaster": "sfx_house_door_close_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/house_door_close_01.wav",
+      "duration": 0.55,
+      "channels": 1,
+      "frames": 24255,
+      "sampleRate": 44100,
+      "sourceSha256": "ed1019cc826409333ff65fcd419bfface11b7a094b6f340420932b1269965b44",
+      "bytes": 48554
+    },
+    {
+      "gain": 0.34,
+      "loop": false,
+      "family": "house_door_close",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "house_door_close_02",
+      "sourceMaster": "sfx_house_door_close_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/house_door_close_02.wav",
+      "duration": 0.55,
+      "channels": 1,
+      "frames": 24255,
+      "sampleRate": 44100,
+      "sourceSha256": "fd8900d2ab6a8bcb52a174db2e03e95c5df3ef92a644bf2d4e29efb313859857",
+      "bytes": 48554
+    },
+    {
+      "gain": 0.34,
+      "loop": false,
+      "family": "house_door_close",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "house_door_close_03",
+      "sourceMaster": "sfx_house_door_close_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/house_door_close_03.wav",
+      "duration": 0.55,
+      "channels": 1,
+      "frames": 24255,
+      "sampleRate": 44100,
+      "sourceSha256": "91ca90be98e9ff196ebdbc51d8435e06f0ca641d5c64028cf1a4648f12f6e7e7",
+      "bytes": 48554
+    },
+    {
+      "gain": 0.34,
+      "loop": false,
+      "family": "house_enter_home",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "house_enter_home_01",
+      "sourceMaster": "sfx_house_enter_home_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/house_enter_home_01.wav",
+      "duration": 1.7,
+      "channels": 1,
+      "frames": 74970,
+      "sampleRate": 44100,
+      "sourceSha256": "80427aef3de9dedacc49077efb58833915fc83f41f142f9fbff2436002ee8ec1",
+      "bytes": 149984
+    },
+    {
+      "gain": 0.34,
+      "loop": false,
+      "family": "house_enter_home",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "house_enter_home_02",
+      "sourceMaster": "sfx_house_enter_home_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/house_enter_home_02.wav",
+      "duration": 1.7,
+      "channels": 1,
+      "frames": 74970,
+      "sampleRate": 44100,
+      "sourceSha256": "6c4762d09f52e290d478240b534ec1296dbf728c620786aa5583f91605f4b984",
+      "bytes": 149984
+    },
+    {
+      "gain": 0.34,
+      "loop": false,
+      "family": "house_enter_home",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "house_enter_home_03",
+      "sourceMaster": "sfx_house_enter_home_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/house_enter_home_03.wav",
+      "duration": 1.7,
+      "channels": 1,
+      "frames": 74970,
+      "sampleRate": 44100,
+      "sourceSha256": "70324a83aa673fd976df2b24814818acb3704549bde6461005649197e1cc1f28",
+      "bytes": 149984
+    },
+    {
+      "gain": 0.25,
+      "loop": false,
+      "family": "world_illumination",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "world_illumination_01",
+      "sourceMaster": "world_illumination_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/world_illumination_01.wav",
+      "duration": 2.6,
+      "channels": 2,
+      "frames": 114660,
+      "sampleRate": 44100,
+      "sourceSha256": "ca17e9b4418bfb716f7a01ce1311f091c0a84a8690d8b83b5ab0b928e86056b1",
+      "bytes": 458684
+    },
+    {
+      "gain": 0.25,
+      "loop": false,
+      "family": "world_illumination",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "world_illumination_02",
+      "sourceMaster": "world_illumination_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/world_illumination_02.wav",
+      "duration": 2.6,
+      "channels": 2,
+      "frames": 114660,
+      "sampleRate": 44100,
+      "sourceSha256": "13f788843401e889740029165333d090077db1ce47eb8ed8348286550edfeaf7",
+      "bytes": 458684
+    },
+    {
+      "gain": 0.25,
+      "loop": false,
+      "family": "world_illumination",
+      "variants": 3,
+      "load": "on-demand",
+      "id": "world_illumination_03",
+      "sourceMaster": "world_illumination_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/world_illumination_03.wav",
+      "duration": 2.6,
+      "channels": 2,
+      "frames": 114660,
+      "sampleRate": 44100,
+      "sourceSha256": "8f84e9e74256ba885692241816a516d1c2448f0c39a0d82337db4d4e205cd27b",
+      "bytes": 458684
+    },
+    {
+      "gain": 0.23,
+      "loop": false,
+      "family": "ui_tap",
+      "variants": 3,
+      "load": "core-after-unlock",
+      "id": "ui_tap_01",
+      "sourceMaster": "ui_tap_01.wav",
+      "category": "sfx",
+      "url": "/audio/v02/ui_tap_01.wav",
+      "duration": 0.17,
+      "channels": 1,
+      "frames": 7497,
+      "sampleRate": 44100,
+      "sourceSha256": "c194993e32bb6f0060dd34fd1fd438a3308895fa27285d37e1929663374a4486",
+      "bytes": 15038
+    },
+    {
+      "gain": 0.23,
+      "loop": false,
+      "family": "ui_tap",
+      "variants": 3,
+      "load": "core-after-unlock",
+      "id": "ui_tap_02",
+      "sourceMaster": "ui_tap_02.wav",
+      "category": "sfx",
+      "url": "/audio/v02/ui_tap_02.wav",
+      "duration": 0.17,
+      "channels": 1,
+      "frames": 7497,
+      "sampleRate": 44100,
+      "sourceSha256": "336f09948eb3d808a8cb5fefcacea7c3b4e51745dd787acdc092e129df3f756e",
+      "bytes": 15038
+    },
+    {
+      "gain": 0.23,
+      "loop": false,
+      "family": "ui_tap",
+      "variants": 3,
+      "load": "core-after-unlock",
+      "id": "ui_tap_03",
+      "sourceMaster": "ui_tap_03.wav",
+      "category": "sfx",
+      "url": "/audio/v02/ui_tap_03.wav",
+      "duration": 0.17,
+      "channels": 1,
+      "frames": 7497,
+      "sampleRate": 44100,
+      "sourceSha256": "4153d7c456ab78d51f50fbb747d489146561397af8dea0b755f230f8b358ce69",
+      "bytes": 15038
+    },
+    {
+      "gain": 0.25,
+      "loop": false,
+      "id": "event_first_snow",
+      "sourceMaster": "event_first_snow.wav",
+      "category": "event",
+      "url": "/audio/v02/event_first_snow.m4a",
+      "duration": 6.0,
+      "channels": 2,
+      "frames": 264600,
+      "sampleRate": 44100,
+      "load": "on-demand",
+      "sourceSha256": "40dfa142ad233fcbc13ac599b8475b8feb336de4a1b389b924c0efd9e19b813d",
+      "bytes": 30732
+    },
+    {
+      "gain": 0.25,
+      "loop": false,
+      "id": "event_cherry_blossom_shower",
+      "sourceMaster": "event_cherry_blossom_shower.wav",
+      "category": "event",
+      "url": "/audio/v02/event_cherry_blossom_shower.m4a",
+      "duration": 6.0,
+      "channels": 2,
+      "frames": 264600,
+      "sampleRate": 44100,
+      "load": "on-demand",
+      "sourceSha256": "e39954898d1c80229b45e29a25b307a361ee583f42de45952729cfca7842d5af",
+      "bytes": 41654
+    },
+    {
+      "gain": 0.25,
+      "loop": false,
+      "id": "event_golden_wind",
+      "sourceMaster": "event_golden_wind.wav",
+      "category": "event",
+      "url": "/audio/v02/event_golden_wind.m4a",
+      "duration": 6.0,
+      "channels": 2,
+      "frames": 264600,
+      "sampleRate": 44100,
+      "load": "on-demand",
+      "sourceSha256": "b8b5507f69814739118332f2b063639280fcd400fefaf08aaf961b3235bb8def",
+      "bytes": 35423
+    },
+    {
+      "gain": 0.25,
+      "loop": false,
+      "id": "event_firefly_night",
+      "sourceMaster": "event_firefly_night.wav",
+      "category": "event",
+      "url": "/audio/v02/event_firefly_night.m4a",
+      "duration": 6.0,
+      "channels": 2,
+      "frames": 264600,
+      "sampleRate": 44100,
+      "load": "on-demand",
+      "sourceSha256": "b47151db4a5f7c591cfdaa07d784a0488da20bbdfc7af7dff526f6ebec74963e",
+      "bytes": 42741
+    },
+    {
+      "gain": 0.25,
+      "loop": false,
+      "id": "event_shooting_star",
+      "sourceMaster": "event_shooting_star.wav",
+      "category": "event",
+      "url": "/audio/v02/event_shooting_star.m4a",
+      "duration": 6.0,
+      "channels": 2,
+      "frames": 264600,
+      "sampleRate": 44100,
+      "load": "on-demand",
+      "sourceSha256": "13bf850ae289ea4b5cb32d642ddad10db0cfc31eac4bedf555a8c582a80621ae",
+      "bytes": 28553
+    },
+    {
+      "gain": 0.25,
+      "loop": false,
+      "id": "event_meteor_shower",
+      "sourceMaster": "event_meteor_shower.wav",
+      "category": "event",
+      "url": "/audio/v02/event_meteor_shower.m4a",
+      "duration": 8.0,
+      "channels": 2,
+      "frames": 352800,
+      "sampleRate": 44100,
+      "load": "on-demand",
+      "sourceSha256": "c520b0cad890c953e78303b6cd11dc0bc0043f5484c4ec414cfe013bc56fc5f6",
+      "bytes": 56749
+    },
+    {
+      "gain": 0.25,
+      "loop": false,
+      "id": "event_aurora",
+      "sourceMaster": "event_aurora.wav",
+      "category": "event",
+      "url": "/audio/v02/event_aurora.m4a",
+      "duration": 8.0,
+      "channels": 2,
+      "frames": 352800,
+      "sampleRate": 44100,
+      "load": "on-demand",
+      "sourceSha256": "ea76e4f2ba63bc3a87fbb675e8745b85b8cd2dab952b8aaa4440695fd54144a8",
+      "bytes": 43810
+    },
+    {
+      "gain": 0.25,
+      "loop": false,
+      "id": "event_rainbow",
+      "sourceMaster": "event_rainbow.wav",
+      "category": "event",
+      "url": "/audio/v02/event_rainbow.m4a",
+      "duration": 6.0,
+      "channels": 2,
+      "frames": 264600,
+      "sampleRate": 44100,
+      "load": "on-demand",
+      "sourceSha256": "35332d903957554c1392578f2e596669b77db5c644e2d33654100c7ad0c56b67",
+      "bytes": 41649
+    },
+    {
+      "url": "/audio/v05/pull_daily_001.m4a",
+      "gain": 0.65,
+      "duration": 72.0,
+      "channels": 2,
+      "frames": 3175200,
+      "sampleRate": 44100,
+      "bytes": 1093830,
+      "category": "music",
+      "id": "spring_dawn",
+      "assetId": "pull_daily_001",
+      "sourceMaster": "music/pull_daily_001.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "4438ea398f5ecb58fa1a96de7e311f13d78309b541addbf069af5f0d31d7aab7",
+      "stateMapping": {
+        "season": "spring",
+        "time": "dawn"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_002.m4a",
+      "gain": 0.65,
+      "duration": 83.07691609977324,
+      "channels": 2,
+      "frames": 3663692,
+      "sampleRate": 44100,
+      "bytes": 1310423,
+      "category": "music",
+      "id": "spring_morning",
+      "assetId": "pull_daily_002",
+      "sourceMaster": "music/pull_daily_002.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "b77d628b66aa825693888a63e09436f78a29bf3d2e1857148b29f52fcdbf6cbc",
+      "stateMapping": {
+        "season": "spring",
+        "time": "morning"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_003.m4a",
+      "gain": 0.65,
+      "duration": 71.11111111111111,
+      "channels": 2,
+      "frames": 3136000,
+      "sampleRate": 44100,
+      "bytes": 1114963,
+      "category": "music",
+      "id": "spring_day",
+      "assetId": "pull_daily_003",
+      "sourceMaster": "music/pull_daily_003.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "d4dbdd99c8455a5a9c1ec72dbd048195710b6881f872021de00c10f69792f435",
+      "stateMapping": {
+        "season": "spring",
+        "time": "day"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_004.m4a",
+      "gain": 0.65,
+      "duration": 83.47825396825397,
+      "channels": 2,
+      "frames": 3681391,
+      "sampleRate": 44100,
+      "bytes": 1326983,
+      "category": "music",
+      "id": "spring_sunset",
+      "assetId": "pull_daily_004",
+      "sourceMaster": "music/pull_daily_004.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "97fdeb964c251bf165862e2452742f39f09da69da5e702fc565cc6a34497d9dd",
+      "stateMapping": {
+        "season": "spring",
+        "time": "sunset"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_005.m4a",
+      "gain": 0.65,
+      "duration": 70.24390022675738,
+      "channels": 2,
+      "frames": 3097756,
+      "sampleRate": 44100,
+      "bytes": 1056504,
+      "category": "music",
+      "id": "spring_evening",
+      "assetId": "pull_daily_005",
+      "sourceMaster": "music/pull_daily_005.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "1987a19855ba79685e09a67b9f6d32c98489b1de1c32d8dfc2a8545fa9301e50",
+      "stateMapping": {
+        "season": "spring",
+        "time": "evening"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_006.m4a",
+      "gain": 0.65,
+      "duration": 73.84614512471656,
+      "channels": 2,
+      "frames": 3256615,
+      "sampleRate": 44100,
+      "bytes": 1146795,
+      "category": "music",
+      "id": "spring_night",
+      "assetId": "pull_daily_006",
+      "sourceMaster": "music/pull_daily_006.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "f34713f6f32c3aa1659e98aec27e49cf496e93a95b60b64be6e00c6db940b367",
+      "stateMapping": {
+        "season": "spring",
+        "time": "night"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_007.m4a",
+      "gain": 0.65,
+      "duration": 73.84614512471656,
+      "channels": 2,
+      "frames": 3256615,
+      "sampleRate": 44100,
+      "bytes": 1164705,
+      "category": "music",
+      "id": "summer_dawn",
+      "assetId": "pull_daily_007",
+      "sourceMaster": "music/pull_daily_007.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "e2790112934fe808bdbd77b5ad72f661e33b74edc675aac622725b0aced83544",
+      "stateMapping": {
+        "season": "summer",
+        "time": "dawn"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_008.m4a",
+      "gain": 0.65,
+      "duration": 75.29412698412699,
+      "channels": 2,
+      "frames": 3320471,
+      "sampleRate": 44100,
+      "bytes": 1097049,
+      "category": "music",
+      "id": "summer_morning",
+      "assetId": "pull_daily_008",
+      "sourceMaster": "music/pull_daily_008.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "50f9babb217877733af1a11aeca680221f51cda71bcf4df1192f005ccd7ce3f6",
+      "stateMapping": {
+        "season": "summer",
+        "time": "morning"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_009.m4a",
+      "gain": 0.65,
+      "duration": 72.45283446712018,
+      "channels": 2,
+      "frames": 3195170,
+      "sampleRate": 44100,
+      "bytes": 1076860,
+      "category": "music",
+      "id": "summer_day",
+      "assetId": "pull_daily_009",
+      "sourceMaster": "music/pull_daily_009.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "6c382eee7068cfdca41ddbb86642fbe50a79cd5f14ffd0f692a7e29522893475",
+      "stateMapping": {
+        "season": "summer",
+        "time": "day"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_010.m4a",
+      "gain": 0.65,
+      "duration": 87.27272108843538,
+      "channels": 2,
+      "frames": 3848727,
+      "sampleRate": 44100,
+      "bytes": 1330504,
+      "category": "music",
+      "id": "summer_sunset",
+      "assetId": "pull_daily_010",
+      "sourceMaster": "music/pull_daily_010.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "9c147cb7c63fa138a2e62a04dd698e2c6ebba0864ed21999ac527b824cd6d341",
+      "stateMapping": {
+        "season": "summer",
+        "time": "sunset"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_011.m4a",
+      "gain": 0.65,
+      "duration": 72.0,
+      "channels": 2,
+      "frames": 3175200,
+      "sampleRate": 44100,
+      "bytes": 1040591,
+      "category": "music",
+      "id": "summer_evening",
+      "assetId": "pull_daily_011",
+      "sourceMaster": "music/pull_daily_011.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "493fd2ec3019fbc14d60481d07029c6b27a737562d592fb3557c1bc102c9c97a",
+      "stateMapping": {
+        "season": "summer",
+        "time": "evening"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_012.m4a",
+      "gain": 0.65,
+      "duration": 75.78947845804989,
+      "channels": 2,
+      "frames": 3342316,
+      "sampleRate": 44100,
+      "bytes": 1167162,
+      "category": "music",
+      "id": "summer_night",
+      "assetId": "pull_daily_012",
+      "sourceMaster": "music/pull_daily_012.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "233818d8e915d9a762554be3ff973f34b2a0dd8a546753e71979a84a8895f40d",
+      "stateMapping": {
+        "season": "summer",
+        "time": "night"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_013.m4a",
+      "gain": 0.65,
+      "duration": 75.78947845804989,
+      "channels": 2,
+      "frames": 3342316,
+      "sampleRate": 44100,
+      "bytes": 1135916,
+      "category": "music",
+      "id": "autumn_dawn",
+      "assetId": "pull_daily_013",
+      "sourceMaster": "music/pull_daily_013.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "e47d02abbe9143884f2e6f974cb5ae50b6d13c623047af5e456e148fe3fcafcb",
+      "stateMapping": {
+        "season": "autumn",
+        "time": "dawn"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_014.m4a",
+      "gain": 0.65,
+      "duration": 76.8,
+      "channels": 2,
+      "frames": 3386880,
+      "sampleRate": 44100,
+      "bytes": 1168710,
+      "category": "music",
+      "id": "autumn_morning",
+      "assetId": "pull_daily_014",
+      "sourceMaster": "music/pull_daily_014.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "bb21f5670035de832a5f50c3922dff3e49b994e6740b2312ec8085aa65d13caf",
+      "stateMapping": {
+        "season": "autumn",
+        "time": "morning"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_015.m4a",
+      "gain": 0.65,
+      "duration": 80.0,
+      "channels": 2,
+      "frames": 3528000,
+      "sampleRate": 44100,
+      "bytes": 1185035,
+      "category": "music",
+      "id": "autumn_day",
+      "assetId": "pull_daily_015",
+      "sourceMaster": "music/pull_daily_015.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "95ab063b6b949f2f666f45b661d4b99139e9786765b3e615d2aa2d06dde035dd",
+      "stateMapping": {
+        "season": "autumn",
+        "time": "day"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_016.m4a",
+      "gain": 0.65,
+      "duration": 66.97673469387755,
+      "channels": 2,
+      "frames": 2953674,
+      "sampleRate": 44100,
+      "bytes": 1021344,
+      "category": "music",
+      "id": "autumn_sunset",
+      "assetId": "pull_daily_016",
+      "sourceMaster": "music/pull_daily_016.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "c147b7d18a9d3dab355eaeb081cb3004fd23a75a42c426f469864d7b2876f2f0",
+      "stateMapping": {
+        "season": "autumn",
+        "time": "sunset"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_017.m4a",
+      "gain": 0.65,
+      "duration": 73.84614512471656,
+      "channels": 2,
+      "frames": 3256615,
+      "sampleRate": 44100,
+      "bytes": 1123470,
+      "category": "music",
+      "id": "autumn_evening",
+      "assetId": "pull_daily_017",
+      "sourceMaster": "music/pull_daily_017.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "6d10bd17cac6064e7eb7a854e0f8d72b26b2134ec22ad0d79cfb918d71af991c",
+      "stateMapping": {
+        "season": "autumn",
+        "time": "evening"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_018.m4a",
+      "gain": 0.65,
+      "duration": 77.83784580498866,
+      "channels": 2,
+      "frames": 3432649,
+      "sampleRate": 44100,
+      "bytes": 1170614,
+      "category": "music",
+      "id": "autumn_night",
+      "assetId": "pull_daily_018",
+      "sourceMaster": "music/pull_daily_018.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "8a8e507ed5b2ce1536179877d3bf08925abc50f28ede17e815b7f6a14970286a",
+      "stateMapping": {
+        "season": "autumn",
+        "time": "night"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_019.m4a",
+      "gain": 0.65,
+      "duration": 77.83784580498866,
+      "channels": 2,
+      "frames": 3432649,
+      "sampleRate": 44100,
+      "bytes": 1003524,
+      "category": "music",
+      "id": "winter_dawn",
+      "assetId": "pull_daily_019",
+      "sourceMaster": "music/pull_daily_019.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "a41934a2399e160551c933c3dacb30a95b759ee57b40bc4aab746426d8ec6cac",
+      "stateMapping": {
+        "season": "winter",
+        "time": "dawn"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_020.m4a",
+      "gain": 0.65,
+      "duration": 78.36734693877551,
+      "channels": 2,
+      "frames": 3456000,
+      "sampleRate": 44100,
+      "bytes": 1131078,
+      "category": "music",
+      "id": "winter_morning",
+      "assetId": "pull_daily_020",
+      "sourceMaster": "music/pull_daily_020.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "e454a39ee082c21e4228f1e41588e576a81691295908bca99e4a2e9c700b2914",
+      "stateMapping": {
+        "season": "winter",
+        "time": "morning"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_021.m4a",
+      "gain": 0.65,
+      "duration": 76.8,
+      "channels": 2,
+      "frames": 3386880,
+      "sampleRate": 44100,
+      "bytes": 1124063,
+      "category": "music",
+      "id": "winter_day",
+      "assetId": "pull_daily_021",
+      "sourceMaster": "music/pull_daily_021.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "3e09a84ef3e9a7ac4dd26d2a0ea8d8cf7716c806e454faa954e3946b3af293a6",
+      "stateMapping": {
+        "season": "winter",
+        "time": "day"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_022.m4a",
+      "gain": 0.65,
+      "duration": 68.57142857142857,
+      "channels": 2,
+      "frames": 3024000,
+      "sampleRate": 44100,
+      "bytes": 963065,
+      "category": "music",
+      "id": "winter_sunset",
+      "assetId": "pull_daily_022",
+      "sourceMaster": "music/pull_daily_022.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "aae116c87d9588796808f4d0496237f38e3460c28289c7f691e91dc90dfcd89d",
+      "stateMapping": {
+        "season": "winter",
+        "time": "sunset"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_023.m4a",
+      "gain": 0.65,
+      "duration": 73.84614512471656,
+      "channels": 2,
+      "frames": 3256615,
+      "sampleRate": 44100,
+      "bytes": 940236,
+      "category": "music",
+      "id": "winter_evening",
+      "assetId": "pull_daily_023",
+      "sourceMaster": "music/pull_daily_023.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "7a504eb976ff34b318bab0a26155fbdaf7b4ba1cb9407976e9b12f3c6ed41531",
+      "stateMapping": {
+        "season": "winter",
+        "time": "evening"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    },
+    {
+      "url": "/audio/v05/pull_daily_024.m4a",
+      "gain": 0.65,
+      "duration": 80.0,
+      "channels": 2,
+      "frames": 3528000,
+      "sampleRate": 44100,
+      "bytes": 1002052,
+      "category": "music",
+      "id": "winter_night",
+      "assetId": "pull_daily_024",
+      "sourceMaster": "music/pull_daily_024.wav",
+      "sourceRevision": "v0.5-v1-baseline",
+      "sourceSha256": "eff75f7bc801085a7cba360494b7f03dbdd4adbb0e3ed5d4433053f045a2f498",
+      "stateMapping": {
+        "season": "winter",
+        "time": "night"
+      },
+      "loop": true,
+      "load": "current-core/next-near-future"
+    }
+  ],
+  "families": [
+    {
+      "id": "moru_jump",
+      "files": [
+        "sfx/moru/sfx_moru_jump_01.wav",
+        "sfx/moru/sfx_moru_jump_02.wav",
+        "sfx/moru/sfx_moru_jump_03.wav",
+        "sfx/moru/sfx_moru_jump_04.wav",
+        "sfx/moru/sfx_moru_jump_05.wav"
+      ],
+      "variations": 5,
+      "volume": 0.35,
+      "pitchRandom": 0.025,
+      "volumeRandom": 0.04,
+      "cooldownMs": 180,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "moru: jump; optional expressive cue, not mandatory for every movement",
+      "assets": [
+        "moru_jump_01",
+        "moru_jump_02",
+        "moru_jump_03",
+        "moru_jump_04",
+        "moru_jump_05"
+      ]
+    },
+    {
+      "id": "moru_land",
+      "files": [
+        "sfx/moru/sfx_moru_land_01.wav",
+        "sfx/moru/sfx_moru_land_02.wav",
+        "sfx/moru/sfx_moru_land_03.wav",
+        "sfx/moru/sfx_moru_land_04.wav",
+        "sfx/moru/sfx_moru_land_05.wav"
+      ],
+      "variations": 5,
+      "volume": 0.35,
+      "pitchRandom": 0.025,
+      "volumeRandom": 0.04,
+      "cooldownMs": 180,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "moru: land; optional expressive cue, not mandatory for every movement",
+      "assets": [
+        "moru_land_01",
+        "moru_land_02",
+        "moru_land_03",
+        "moru_land_04",
+        "moru_land_05"
+      ]
+    },
+    {
+      "id": "moru_happy",
+      "files": [
+        "sfx/moru/sfx_moru_happy_01.wav",
+        "sfx/moru/sfx_moru_happy_02.wav",
+        "sfx/moru/sfx_moru_happy_03.wav"
+      ],
+      "variations": 3,
+      "volume": 0.35,
+      "pitchRandom": 0.025,
+      "volumeRandom": 0.04,
+      "cooldownMs": 1800,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "moru: happy; optional expressive cue, not mandatory for every movement",
+      "assets": [
+        "moru_happy_01",
+        "moru_happy_02",
+        "moru_happy_03"
+      ]
+    },
+    {
+      "id": "moru_curious",
+      "files": [
+        "sfx/moru/sfx_moru_curious_01.wav",
+        "sfx/moru/sfx_moru_curious_02.wav",
+        "sfx/moru/sfx_moru_curious_03.wav"
+      ],
+      "variations": 3,
+      "volume": 0.35,
+      "pitchRandom": 0.025,
+      "volumeRandom": 0.04,
+      "cooldownMs": 1800,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "moru: curious; optional expressive cue, not mandatory for every movement",
+      "assets": [
+        "moru_curious_01",
+        "moru_curious_02",
+        "moru_curious_03"
+      ]
+    },
+    {
+      "id": "moru_surprise",
+      "files": [
+        "sfx/moru/sfx_moru_surprise_01.wav",
+        "sfx/moru/sfx_moru_surprise_02.wav",
+        "sfx/moru/sfx_moru_surprise_03.wav"
+      ],
+      "variations": 3,
+      "volume": 0.35,
+      "pitchRandom": 0.025,
+      "volumeRandom": 0.04,
+      "cooldownMs": 1800,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "moru: surprise; optional expressive cue, not mandatory for every movement",
+      "assets": [
+        "moru_surprise_01",
+        "moru_surprise_02",
+        "moru_surprise_03"
+      ]
+    },
+    {
+      "id": "moru_sleepy",
+      "files": [
+        "sfx/moru/sfx_moru_sleepy_01.wav",
+        "sfx/moru/sfx_moru_sleepy_02.wav",
+        "sfx/moru/sfx_moru_sleepy_03.wav"
+      ],
+      "variations": 3,
+      "volume": 0.35,
+      "pitchRandom": 0.025,
+      "volumeRandom": 0.04,
+      "cooldownMs": 1800,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "moru: sleepy; optional expressive cue, not mandatory for every movement",
+      "assets": [
+        "moru_sleepy_01",
+        "moru_sleepy_02",
+        "moru_sleepy_03"
+      ]
+    },
+    {
+      "id": "moru_affection",
+      "files": [
+        "sfx/moru/sfx_moru_affection_01.wav",
+        "sfx/moru/sfx_moru_affection_02.wav",
+        "sfx/moru/sfx_moru_affection_03.wav"
+      ],
+      "variations": 3,
+      "volume": 0.35,
+      "pitchRandom": 0.025,
+      "volumeRandom": 0.04,
+      "cooldownMs": 1800,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "moru: affection; optional expressive cue, not mandatory for every movement",
+      "assets": [
+        "moru_affection_01",
+        "moru_affection_02",
+        "moru_affection_03"
+      ]
+    },
+    {
+      "id": "moru_stretch",
+      "files": [
+        "sfx/moru/sfx_moru_stretch_01.wav",
+        "sfx/moru/sfx_moru_stretch_02.wav",
+        "sfx/moru/sfx_moru_stretch_03.wav"
+      ],
+      "variations": 3,
+      "volume": 0.35,
+      "pitchRandom": 0.025,
+      "volumeRandom": 0.04,
+      "cooldownMs": 1800,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "moru: stretch; optional expressive cue, not mandatory for every movement",
+      "assets": [
+        "moru_stretch_01",
+        "moru_stretch_02",
+        "moru_stretch_03"
+      ]
+    },
+    {
+      "id": "moru_greeting",
+      "files": [
+        "sfx/moru/sfx_moru_greeting_01.wav",
+        "sfx/moru/sfx_moru_greeting_02.wav",
+        "sfx/moru/sfx_moru_greeting_03.wav"
+      ],
+      "variations": 3,
+      "volume": 0.35,
+      "pitchRandom": 0.025,
+      "volumeRandom": 0.04,
+      "cooldownMs": 1800,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "moru: greeting; optional expressive cue, not mandatory for every movement",
+      "assets": [
+        "moru_greeting_01",
+        "moru_greeting_02",
+        "moru_greeting_03"
+      ]
+    },
+    {
+      "id": "step_grass",
+      "files": [
+        "sfx/footsteps/step_grass_01.wav",
+        "sfx/footsteps/step_grass_02.wav",
+        "sfx/footsteps/step_grass_03.wav",
+        "sfx/footsteps/step_grass_04.wav"
+      ],
+      "variations": 4,
+      "volume": 0.29,
+      "pitchRandom": 0.03,
+      "volumeRandom": 0.04,
+      "cooldownMs": 130,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "Small creature foot contact; shares a surface library across characters",
+      "surface": "grass",
+      "assets": [
+        "step_grass_01",
+        "step_grass_02",
+        "step_grass_03",
+        "step_grass_04"
+      ]
+    },
+    {
+      "id": "step_wood",
+      "files": [
+        "sfx/footsteps/step_wood_01.wav",
+        "sfx/footsteps/step_wood_02.wav",
+        "sfx/footsteps/step_wood_03.wav",
+        "sfx/footsteps/step_wood_04.wav"
+      ],
+      "variations": 4,
+      "volume": 0.29,
+      "pitchRandom": 0.03,
+      "volumeRandom": 0.04,
+      "cooldownMs": 130,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "Small creature foot contact; shares a surface library across characters",
+      "surface": "wood",
+      "assets": [
+        "step_wood_01",
+        "step_wood_02",
+        "step_wood_03",
+        "step_wood_04"
+      ]
+    },
+    {
+      "id": "step_snow",
+      "files": [
+        "sfx/footsteps/step_snow_01.wav",
+        "sfx/footsteps/step_snow_02.wav",
+        "sfx/footsteps/step_snow_03.wav",
+        "sfx/footsteps/step_snow_04.wav"
+      ],
+      "variations": 4,
+      "volume": 0.29,
+      "pitchRandom": 0.03,
+      "volumeRandom": 0.04,
+      "cooldownMs": 130,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "Small creature foot contact; shares a surface library across characters",
+      "surface": "snow",
+      "assets": [
+        "step_snow_01",
+        "step_snow_02",
+        "step_snow_03",
+        "step_snow_04"
+      ]
+    },
+    {
+      "id": "step_water",
+      "files": [
+        "sfx/footsteps/step_water_01.wav",
+        "sfx/footsteps/step_water_02.wav",
+        "sfx/footsteps/step_water_03.wav",
+        "sfx/footsteps/step_water_04.wav"
+      ],
+      "variations": 4,
+      "volume": 0.29,
+      "pitchRandom": 0.03,
+      "volumeRandom": 0.04,
+      "cooldownMs": 130,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "Small creature foot contact; shares a surface library across characters",
+      "surface": "water",
+      "assets": [
+        "step_water_01",
+        "step_water_02",
+        "step_water_03",
+        "step_water_04"
+      ]
+    },
+    {
+      "id": "water_enter_water",
+      "files": [
+        "sfx/water/sfx_water_enter_water_01.wav",
+        "sfx/water/sfx_water_enter_water_02.wav",
+        "sfx/water/sfx_water_enter_water_03.wav"
+      ],
+      "variations": 3,
+      "volume": 0.3,
+      "pitchRandom": 0.03,
+      "volumeRandom": 0.04,
+      "cooldownMs": 160,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "",
+      "assets": [
+        "water_enter_water_01",
+        "water_enter_water_02",
+        "water_enter_water_03"
+      ]
+    },
+    {
+      "id": "water_exit_water",
+      "files": [
+        "sfx/water/sfx_water_exit_water_01.wav",
+        "sfx/water/sfx_water_exit_water_02.wav",
+        "sfx/water/sfx_water_exit_water_03.wav"
+      ],
+      "variations": 3,
+      "volume": 0.3,
+      "pitchRandom": 0.03,
+      "volumeRandom": 0.04,
+      "cooldownMs": 160,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "",
+      "assets": [
+        "water_exit_water_01",
+        "water_exit_water_02",
+        "water_exit_water_03"
+      ]
+    },
+    {
+      "id": "water_tiny_splash",
+      "files": [
+        "sfx/water/sfx_water_tiny_splash_01.wav",
+        "sfx/water/sfx_water_tiny_splash_02.wav",
+        "sfx/water/sfx_water_tiny_splash_03.wav",
+        "sfx/water/sfx_water_tiny_splash_04.wav"
+      ],
+      "variations": 4,
+      "volume": 0.3,
+      "pitchRandom": 0.03,
+      "volumeRandom": 0.04,
+      "cooldownMs": 160,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "",
+      "assets": [
+        "water_tiny_splash_01",
+        "water_tiny_splash_02",
+        "water_tiny_splash_03",
+        "water_tiny_splash_04"
+      ]
+    },
+    {
+      "id": "house_door_open",
+      "files": [
+        "sfx/house/sfx_house_door_open_01.wav",
+        "sfx/house/sfx_house_door_open_02.wav",
+        "sfx/house/sfx_house_door_open_03.wav"
+      ],
+      "variations": 3,
+      "volume": 0.34,
+      "pitchRandom": 0.02,
+      "volumeRandom": 0.04,
+      "cooldownMs": 250,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "",
+      "assets": [
+        "house_door_open_01",
+        "house_door_open_02",
+        "house_door_open_03"
+      ]
+    },
+    {
+      "id": "house_door_close",
+      "files": [
+        "sfx/house/sfx_house_door_close_01.wav",
+        "sfx/house/sfx_house_door_close_02.wav",
+        "sfx/house/sfx_house_door_close_03.wav"
+      ],
+      "variations": 3,
+      "volume": 0.34,
+      "pitchRandom": 0.02,
+      "volumeRandom": 0.04,
+      "cooldownMs": 250,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "",
+      "assets": [
+        "house_door_close_01",
+        "house_door_close_02",
+        "house_door_close_03"
+      ]
+    },
+    {
+      "id": "house_enter_home",
+      "files": [
+        "sfx/house/sfx_house_enter_home_01.wav",
+        "sfx/house/sfx_house_enter_home_02.wav",
+        "sfx/house/sfx_house_enter_home_03.wav"
+      ],
+      "variations": 3,
+      "volume": 0.34,
+      "pitchRandom": 0.02,
+      "volumeRandom": 0.04,
+      "cooldownMs": 250,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "",
+      "assets": [
+        "house_enter_home_01",
+        "house_enter_home_02",
+        "house_enter_home_03"
+      ]
+    },
+    {
+      "id": "world_illumination",
+      "files": [
+        "sfx/world/world_illumination_01.wav",
+        "sfx/world/world_illumination_02.wav",
+        "sfx/world/world_illumination_03.wav"
+      ],
+      "variations": 3,
+      "volume": 0.25,
+      "pitchRandom": 0,
+      "volumeRandom": 0.04,
+      "cooldownMs": 3500,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "Fantasy interpretation; not a literal recording of the phenomenon",
+      "compatibleKey": "D major / B minor",
+      "assets": [
+        "world_illumination_01",
+        "world_illumination_02",
+        "world_illumination_03"
+      ]
+    },
+    {
+      "id": "ui_tap",
+      "files": [
+        "sfx/ui/ui_tap_01.wav",
+        "sfx/ui/ui_tap_02.wav",
+        "sfx/ui/ui_tap_03.wav"
+      ],
+      "variations": 3,
+      "volume": 0.23,
+      "pitchRandom": 0,
+      "volumeRandom": 0.04,
+      "cooldownMs": 160,
+      "maxConcurrent": 2,
+      "selection": "shuffle_no_immediate_repeat",
+      "description": "Meaningful interaction only; do not bind to every click",
+      "assets": [
+        "ui_tap_01",
+        "ui_tap_02",
+        "ui_tap_03"
+      ]
+    }
+  ],
+  "tracks": [
+    {
+      "id": "home_day",
+      "season": null,
+      "time": "day",
+      "location": "home",
+      "bpm": 72,
+      "meter": "4/4",
+      "bars": 24,
+      "key": "D major / B minor colours",
+      "durationSeconds": 80.0,
+      "mood": [
+        "intimate",
+        "warm"
+      ],
+      "file": "music/home/bgm_home_day.wav",
+      "loop": true,
+      "loopStartFrame": 0,
+      "loopEndFrame": 3528000,
+      "sampleRate": 44100,
+      "stems": [
+        {
+          "role": "melody",
+          "file": "stems/home_day/stem_home_day_melody.wav",
+          "gain": 1.0
+        },
+        {
+          "role": "harmony",
+          "file": "stems/home_day/stem_home_day_harmony.wav",
+          "gain": 1.0
+        },
+        {
+          "role": "texture",
+          "file": "stems/home_day/stem_home_day_texture.wav",
+          "gain": 1.0
+        },
+        {
+          "role": "rhythm",
+          "file": "stems/home_day/stem_home_day_rhythm.wav",
+          "gain": 1.0
+        }
+      ],
+      "phraseBars": 8,
+      "phraseBoundarySeconds": [
+        0.0,
+        26.666667,
+        53.333333
+      ],
+      "crossfadeSeconds": 6.6667,
+      "intensity": 0.65,
+      "weatherCompatible": true,
+      "baseGain": 0.65,
+      "silenceAfterLoops": {
+        "minLoops": 2,
+        "maxLoops": 4,
+        "ambienceOnlySeconds": [
+          5,
+          14
+        ]
+      }
+    },
+    {
+      "id": "home_night",
+      "season": null,
+      "time": "night",
+      "location": "home",
+      "bpm": 60,
+      "meter": "4/4",
+      "bars": 24,
+      "key": "D major / B minor colours",
+      "durationSeconds": 96.0,
+      "mood": [
+        "intimate",
+        "warm"
+      ],
+      "file": "music/home/bgm_home_night.wav",
+      "loop": true,
+      "loopStartFrame": 0,
+      "loopEndFrame": 4233600,
+      "sampleRate": 44100,
+      "stems": [
+        {
+          "role": "melody",
+          "file": "stems/home_night/stem_home_night_melody.wav",
+          "gain": 1.0
+        },
+        {
+          "role": "harmony",
+          "file": "stems/home_night/stem_home_night_harmony.wav",
+          "gain": 1.0
+        },
+        {
+          "role": "texture",
+          "file": "stems/home_night/stem_home_night_texture.wav",
+          "gain": 1.0
+        },
+        {
+          "role": "rhythm",
+          "file": "stems/home_night/stem_home_night_rhythm.wav",
+          "gain": 1.0
+        }
+      ],
+      "phraseBars": 8,
+      "phraseBoundarySeconds": [
+        0.0,
+        32.0,
+        64.0
+      ],
+      "crossfadeSeconds": 8.0,
+      "intensity": 0.35,
+      "weatherCompatible": true,
+      "baseGain": 0.65,
+      "silenceAfterLoops": {
+        "minLoops": 2,
+        "maxLoops": 4,
+        "ambienceOnlySeconds": [
+          12,
+          35
+        ]
+      }
+    },
+    {
+      "id": "spring_dawn",
+      "bpm": 80,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 72.0
+    },
+    {
+      "id": "spring_morning",
+      "bpm": 104,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 83.07691609977324
+    },
+    {
+      "id": "spring_day",
+      "bpm": 108,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 71.11111111111111
+    },
+    {
+      "id": "spring_sunset",
+      "bpm": 92,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 83.47825396825397
+    },
+    {
+      "id": "spring_evening",
+      "bpm": 82,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 70.24390022675738
+    },
+    {
+      "id": "spring_night",
+      "bpm": 78,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 73.84614512471656
+    },
+    {
+      "id": "summer_dawn",
+      "bpm": 78,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 73.84614512471656
+    },
+    {
+      "id": "summer_morning",
+      "bpm": 102,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 75.29412698412699
+    },
+    {
+      "id": "summer_day",
+      "bpm": 106,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 72.45283446712018
+    },
+    {
+      "id": "summer_sunset",
+      "bpm": 88,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 87.27272108843538
+    },
+    {
+      "id": "summer_evening",
+      "bpm": 80,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 72.0
+    },
+    {
+      "id": "summer_night",
+      "bpm": 76,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 75.78947845804989
+    },
+    {
+      "id": "autumn_dawn",
+      "bpm": 76,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 75.78947845804989
+    },
+    {
+      "id": "autumn_morning",
+      "bpm": 100,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 76.8
+    },
+    {
+      "id": "autumn_day",
+      "bpm": 96,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 80.0
+    },
+    {
+      "id": "autumn_sunset",
+      "bpm": 86,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 66.97673469387755
+    },
+    {
+      "id": "autumn_evening",
+      "bpm": 78,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 73.84614512471656
+    },
+    {
+      "id": "autumn_night",
+      "bpm": 74,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 77.83784580498866
+    },
+    {
+      "id": "winter_dawn",
+      "bpm": 74,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 77.83784580498866
+    },
+    {
+      "id": "winter_morning",
+      "bpm": 98,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 78.36734693877551
+    },
+    {
+      "id": "winter_day",
+      "bpm": 100,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 76.8
+    },
+    {
+      "id": "winter_sunset",
+      "bpm": 84,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 68.57142857142857
+    },
+    {
+      "id": "winter_evening",
+      "bpm": 78,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 73.84614512471656
+    },
+    {
+      "id": "winter_night",
+      "bpm": 72,
+      "phraseBars": 1,
+      "crossfadeSeconds": 3,
+      "durationSeconds": 80.0
+    }
+  ],
+  "ambience": [
+    {
+      "id": "amb_spring_soft_birds",
+      "file": "ambience/spring/amb_spring_soft_birds_loop.wav",
+      "loop": true,
+      "volume": 0.18,
+      "location": "outdoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_spring_breeze",
+      "file": "ambience/spring/amb_spring_breeze_loop.wav",
+      "loop": true,
+      "volume": 0.17,
+      "location": "outdoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_spring_subtle_nature",
+      "file": "ambience/spring/amb_spring_subtle_nature_loop.wav",
+      "loop": true,
+      "volume": 0.16,
+      "location": "outdoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_spring_dawn_birds",
+      "file": "ambience/spring/amb_spring_dawn_birds_loop.wav",
+      "loop": true,
+      "volume": 0.13,
+      "location": "outdoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_summer_soft_insects",
+      "file": "ambience/summer/amb_summer_soft_insects_loop.wav",
+      "loop": true,
+      "volume": 0.12,
+      "location": "outdoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_summer_night_insects",
+      "file": "ambience/summer/amb_summer_night_insects_loop.wav",
+      "loop": true,
+      "volume": 0.13,
+      "location": "outdoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_summer_soft_breeze",
+      "file": "ambience/summer/amb_summer_soft_breeze_loop.wav",
+      "loop": true,
+      "volume": 0.16,
+      "location": "outdoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_autumn_leaf_movement",
+      "file": "ambience/autumn/amb_autumn_leaf_movement_loop.wav",
+      "loop": true,
+      "volume": 0.18,
+      "location": "outdoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_autumn_cooler_wind",
+      "file": "ambience/autumn/amb_autumn_cooler_wind_loop.wav",
+      "loop": true,
+      "volume": 0.19,
+      "location": "outdoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_winter_quiet_air",
+      "file": "ambience/winter/amb_winter_quiet_air_loop.wav",
+      "loop": true,
+      "volume": 0.16,
+      "location": "outdoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_winter_subtle_wind",
+      "file": "ambience/winter/amb_winter_subtle_wind_loop.wav",
+      "loop": true,
+      "volume": 0.17,
+      "location": "outdoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_winter_crystalline",
+      "file": "ambience/winter/amb_winter_crystalline_loop.wav",
+      "loop": true,
+      "volume": 0.13,
+      "location": "outdoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_rain_normal",
+      "file": "ambience/rain/amb_rain_normal_loop.wav",
+      "loop": true,
+      "volume": 0.23,
+      "location": "outdoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_rain_heavy",
+      "file": "ambience/rain/amb_rain_heavy_loop.wav",
+      "loop": true,
+      "volume": 0.25,
+      "location": "outdoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_wind_normal",
+      "file": "ambience/wind/amb_wind_normal_loop.wav",
+      "loop": true,
+      "volume": 0.22,
+      "location": "outdoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_water_pond_close",
+      "file": "ambience/water/amb_water_pond_close_loop.wav",
+      "loop": true,
+      "volume": 0.25,
+      "location": "outdoor",
+      "spatial": true,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_indoor_room_tone",
+      "file": "ambience/indoor/amb_indoor_room_tone_loop.wav",
+      "loop": true,
+      "volume": 0.18,
+      "location": "indoor",
+      "spatial": false,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    },
+    {
+      "id": "amb_indoor_window_rain",
+      "file": "ambience/indoor/amb_indoor_window_rain_loop.wav",
+      "loop": true,
+      "volume": 0.22,
+      "location": "indoor",
+      "spatial": true,
+      "fadeSeconds": 5,
+      "pitchRandom": 0
+    }
+  ],
+  "events": [
+    {
+      "id": "first_snow",
+      "file": "music/events/event_first_snow.wav",
+      "durationSeconds": 6,
+      "volume": 0.25,
+      "key": "D major pentatonic / compatible diatonic colours",
+      "cooldownSeconds": 30,
+      "maxConcurrent": 1,
+      "musicDuckDb": 0
+    },
+    {
+      "id": "cherry_blossom_shower",
+      "file": "music/events/event_cherry_blossom_shower.wav",
+      "durationSeconds": 6,
+      "volume": 0.25,
+      "key": "D major pentatonic / compatible diatonic colours",
+      "cooldownSeconds": 30,
+      "maxConcurrent": 1,
+      "musicDuckDb": 0
+    },
+    {
+      "id": "golden_wind",
+      "file": "music/events/event_golden_wind.wav",
+      "durationSeconds": 6,
+      "volume": 0.25,
+      "key": "D major pentatonic / compatible diatonic colours",
+      "cooldownSeconds": 30,
+      "maxConcurrent": 1,
+      "musicDuckDb": 0
+    },
+    {
+      "id": "firefly_night",
+      "file": "music/events/event_firefly_night.wav",
+      "durationSeconds": 6,
+      "volume": 0.25,
+      "key": "D major pentatonic / compatible diatonic colours",
+      "cooldownSeconds": 30,
+      "maxConcurrent": 1,
+      "musicDuckDb": 0
+    },
+    {
+      "id": "shooting_star",
+      "file": "music/events/event_shooting_star.wav",
+      "durationSeconds": 6,
+      "volume": 0.25,
+      "key": "D major pentatonic / compatible diatonic colours",
+      "cooldownSeconds": 30,
+      "maxConcurrent": 1,
+      "musicDuckDb": 0
+    },
+    {
+      "id": "meteor_shower",
+      "file": "music/events/event_meteor_shower.wav",
+      "durationSeconds": 8,
+      "volume": 0.25,
+      "key": "D major pentatonic / compatible diatonic colours",
+      "cooldownSeconds": 30,
+      "maxConcurrent": 1,
+      "musicDuckDb": 0
+    },
+    {
+      "id": "aurora",
+      "file": "music/events/event_aurora.wav",
+      "durationSeconds": 8,
+      "volume": 0.25,
+      "key": "D major pentatonic / compatible diatonic colours",
+      "cooldownSeconds": 30,
+      "maxConcurrent": 1,
+      "musicDuckDb": 0
+    },
+    {
+      "id": "rainbow",
+      "file": "music/events/event_rainbow.wav",
+      "durationSeconds": 6,
+      "volume": 0.25,
+      "key": "D major pentatonic / compatible diatonic colours",
+      "cooldownSeconds": 30,
+      "maxConcurrent": 1,
+      "musicDuckDb": 0
+    }
+  ],
+  "adaptive": {
+    "timeSlots": [
+      {
+        "id": "dawn",
+        "startHour": 5,
+        "endHour": 7
+      },
+      {
+        "id": "morning",
+        "startHour": 7,
+        "endHour": 11
+      },
+      {
+        "id": "day",
+        "startHour": 11,
+        "endHour": 17
+      },
+      {
+        "id": "sunset",
+        "startHour": 17,
+        "endHour": 19
+      },
+      {
+        "id": "evening",
+        "startHour": 19,
+        "endHour": 22
+      },
+      {
+        "id": "night",
+        "startHour": 22,
+        "endHour": 5
+      }
+    ],
+    "timeZone": "user local; runtime supplies authoritative time",
+    "nightWrapsMidnight": true,
+    "buses": {
+      "master": 0.8,
+      "music": 1,
+      "ambience": 1,
+      "character": 1,
+      "world": 1,
+      "ui": 1
+    },
+    "weatherMixes": {
+      "clear": {
+        "melody": 1,
+        "harmony": 1,
+        "texture": 1,
+        "rhythm": 1,
+        "musicGain": 0.65,
+        "lowpassHz": 18000
+      },
+      "rain": {
+        "melody": 0.8,
+        "harmony": 0.83,
+        "texture": 1.12,
+        "rhythm": 0.3,
+        "musicGain": 0.55,
+        "lowpassHz": 7000
+      },
+      "snow": {
+        "melody": 0.86,
+        "harmony": 0.8,
+        "texture": 1.08,
+        "rhythm": 0.15,
+        "musicGain": 0.57,
+        "lowpassHz": 14000
+      },
+      "fog": {
+        "melody": 0.62,
+        "harmony": 0.83,
+        "texture": 1.18,
+        "rhythm": 0.35,
+        "musicGain": 0.56,
+        "lowpassHz": 9000
+      },
+      "wind": {
+        "melody": 1,
+        "harmony": 1,
+        "texture": 1,
+        "rhythm": 0.95,
+        "musicGain": 0.63,
+        "lowpassHz": 16000
+      },
+      "storm": {
+        "melody": 0.68,
+        "harmony": 0.75,
+        "texture": 1.05,
+        "rhythm": 0.12,
+        "musicGain": 0.4,
+        "lowpassHz": 5500
+      }
+    },
+    "weatherFadeSeconds": 6,
+    "weatherLayers": {
+      "rain": [
+        "amb_rain_normal",
+        "amb_rain_on_water"
+      ],
+      "snow": [
+        "amb_winter_quiet_air"
+      ],
+      "fog": [],
+      "wind": [
+        "amb_wind_normal"
+      ],
+      "storm": [
+        "amb_rain_heavy",
+        "amb_wind_normal"
+      ]
+    },
+    "seasonTimeAmbience": {
+      "spring": {
+        "dawn": {
+          "assets": [
+            "amb_spring_breeze",
+            "amb_spring_dawn_birds"
+          ],
+          "gainMultiplier": 0.55
+        },
+        "morning": {
+          "assets": [
+            "amb_spring_breeze",
+            "amb_spring_soft_birds",
+            "amb_spring_subtle_nature"
+          ],
+          "gainMultiplier": 0.9
+        },
+        "day": {
+          "assets": [
+            "amb_spring_breeze",
+            "amb_spring_soft_birds",
+            "amb_spring_subtle_nature"
+          ],
+          "gainMultiplier": 1
+        },
+        "sunset": {
+          "assets": [
+            "amb_spring_breeze"
+          ],
+          "gainMultiplier": 0.7
+        },
+        "evening": {
+          "assets": [
+            "amb_spring_breeze"
+          ],
+          "gainMultiplier": 0.55
+        },
+        "night": {
+          "assets": [
+            "amb_spring_breeze"
+          ],
+          "gainMultiplier": 0.42
+        }
+      },
+      "summer": {
+        "dawn": {
+          "assets": [
+            "amb_summer_soft_breeze"
+          ],
+          "gainMultiplier": 0.55
+        },
+        "morning": {
+          "assets": [
+            "amb_summer_soft_breeze"
+          ],
+          "gainMultiplier": 0.9
+        },
+        "day": {
+          "assets": [
+            "amb_summer_soft_breeze",
+            "amb_summer_soft_insects"
+          ],
+          "gainMultiplier": 1
+        },
+        "sunset": {
+          "assets": [
+            "amb_summer_soft_breeze"
+          ],
+          "gainMultiplier": 0.7
+        },
+        "evening": {
+          "assets": [
+            "amb_summer_soft_breeze",
+            "amb_summer_night_insects"
+          ],
+          "gainMultiplier": 0.55
+        },
+        "night": {
+          "assets": [
+            "amb_summer_soft_breeze",
+            "amb_summer_night_insects"
+          ],
+          "gainMultiplier": 0.42
+        }
+      },
+      "autumn": {
+        "dawn": {
+          "assets": [
+            "amb_autumn_cooler_wind"
+          ],
+          "gainMultiplier": 0.55
+        },
+        "morning": {
+          "assets": [
+            "amb_autumn_cooler_wind",
+            "amb_autumn_leaf_movement"
+          ],
+          "gainMultiplier": 0.9
+        },
+        "day": {
+          "assets": [
+            "amb_autumn_cooler_wind",
+            "amb_autumn_leaf_movement"
+          ],
+          "gainMultiplier": 1
+        },
+        "sunset": {
+          "assets": [
+            "amb_autumn_cooler_wind",
+            "amb_autumn_leaf_movement"
+          ],
+          "gainMultiplier": 0.7
+        },
+        "evening": {
+          "assets": [
+            "amb_autumn_cooler_wind"
+          ],
+          "gainMultiplier": 0.55
+        },
+        "night": {
+          "assets": [
+            "amb_autumn_cooler_wind"
+          ],
+          "gainMultiplier": 0.42
+        }
+      },
+      "winter": {
+        "dawn": {
+          "assets": [
+            "amb_winter_quiet_air",
+            "amb_winter_subtle_wind"
+          ],
+          "gainMultiplier": 0.55
+        },
+        "morning": {
+          "assets": [
+            "amb_winter_quiet_air",
+            "amb_winter_subtle_wind"
+          ],
+          "gainMultiplier": 0.9
+        },
+        "day": {
+          "assets": [
+            "amb_winter_quiet_air",
+            "amb_winter_subtle_wind"
+          ],
+          "gainMultiplier": 1
+        },
+        "sunset": {
+          "assets": [
+            "amb_winter_quiet_air",
+            "amb_winter_subtle_wind"
+          ],
+          "gainMultiplier": 0.7
+        },
+        "evening": {
+          "assets": [
+            "amb_winter_quiet_air",
+            "amb_winter_subtle_wind",
+            "amb_winter_crystalline"
+          ],
+          "gainMultiplier": 0.55
+        },
+        "night": {
+          "assets": [
+            "amb_winter_quiet_air",
+            "amb_winter_subtle_wind",
+            "amb_winter_crystalline"
+          ],
+          "gainMultiplier": 0.42
+        }
+      }
+    },
+    "weatherNotes": "Rain-on-water only near water. Thunder only explicit distant-thunder event. Fog reduces melody gain, not note count. Snow suppresses rhythm, not a new score.",
+    "location": {
+      "outdoor": {
+        "ambienceGain": 1,
+        "lowpassHz": 18000
+      },
+      "indoor": {
+        "outdoorGain": 0.18,
+        "outdoorLowpassHz": 1100,
+        "roomTone": "amb_indoor_room_tone",
+        "windowRain": "amb_indoor_window_rain",
+        "fadeSeconds": 5
+      }
+    },
+    "spatial": {
+      "waterNear": "amb_water_pond_close",
+      "waterFar": "amb_water_pond_far",
+      "distanceUnit": "world units; tune to scene scale",
+      "nearDistance": 2,
+      "farDistance": 16,
+      "nearGain": "0.25 * (1 - smoothstep(2,16,distance))",
+      "farGain": "0.10 * (1 - smoothstep(12,35,distance))",
+      "fireplace": "amb_indoor_fireplace",
+      "rainRoof": "amb_rain_on_roof",
+      "useMonoPositionalSources": true
+    },
+    "transitions": {
+      "strategy": "start destination on an 8-bar boundary of source; destination starts at sample 0; overlap for source crossfadeSeconds",
+      "gainCurve": "cos/sin equal-power; preserve >=6dB bus headroom",
+      "sameTrackIndoor": "keep playhead; change environment bus only unless explicitly selecting home arrangement",
+      "stemSync": "one shared AudioContext start time and identical loop frame range",
+      "seasonProbabilityExamples": [
+        {
+          "fromSeason": "summer",
+          "toSeason": "autumn",
+          "progress": 0,
+          "weights": {
+            "summer": 0.6,
+            "autumn": 0.4
+          }
+        },
+        {
+          "fromSeason": "summer",
+          "toSeason": "autumn",
+          "progress": 1,
+          "weights": {
+            "summer": 0.2,
+            "autumn": 0.8
+          }
+        }
+      ],
+      "seasonProbabilityPolicy": "choose next track at a musical boundary; do not toggle tracks each frame"
+    },
+    "silence": {
+      "enabled": true,
+      "at": "after full loop/phrase; fade out over 2 bars",
+      "nightSeconds": [
+        12,
+        35
+      ],
+      "daySeconds": [
+        5,
+        14
+      ],
+      "ambienceContinues": true
+    },
+    "performance": {
+      "decodeCache": "Promise<AudioBuffer> keyed by asset id; bounded LRU",
+      "preload": "current main OR current four stems; active ambience; character hot-set",
+      "globalSfxLimit": 8,
+      "footstepLimit": 2,
+      "eventLimit": 1,
+      "stopAndDisconnectOnEnded": true,
+      "doNotDecodeEntirePack": true,
+      "mobileNote": "Decoded float32 stereo uses frames * 2 * 4 bytes; four 96-second stems use about 129 MiB, before ambience. Prefer main mix on memory-limited devices."
+    },
+    "runtimeIntegrationIncluded": false
+  },
+  "excluded": "104 stems, legacy masters, previews, unused interactions",
+  "totalBytes": 37253132,
+  "musicRevision": "v0.5-v1-baseline",
+  "musicSlots": {
+    "spring_dawn": "pull_daily_001",
+    "spring_morning": "pull_daily_002",
+    "spring_day": "pull_daily_003",
+    "spring_sunset": "pull_daily_004",
+    "spring_evening": "pull_daily_005",
+    "spring_night": "pull_daily_006",
+    "summer_dawn": "pull_daily_007",
+    "summer_morning": "pull_daily_008",
+    "summer_day": "pull_daily_009",
+    "summer_sunset": "pull_daily_010",
+    "summer_evening": "pull_daily_011",
+    "summer_night": "pull_daily_012",
+    "autumn_dawn": "pull_daily_013",
+    "autumn_morning": "pull_daily_014",
+    "autumn_day": "pull_daily_015",
+    "autumn_sunset": "pull_daily_016",
+    "autumn_evening": "pull_daily_017",
+    "autumn_night": "pull_daily_018",
+    "winter_dawn": "pull_daily_019",
+    "winter_morning": "pull_daily_020",
+    "winter_day": "pull_daily_021",
+    "winter_sunset": "pull_daily_022",
+    "winter_evening": "pull_daily_023",
+    "winter_night": "pull_daily_024"
+  },
+  "musicStatus": "PROVISIONAL_NOT_FINAL_OST",
+  "retained": "v0.2 Home, ambience, Moru/world/UI SFX; no Nuu"
+}

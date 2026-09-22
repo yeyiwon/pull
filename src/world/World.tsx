@@ -1,10 +1,15 @@
+import { conversationActive } from '../conversation/session.ts'
 import { Component, Suspense, useEffect } from 'react'
 import type { ReactNode, RefObject } from 'react'
-import { MOVE_KEYS, requestAction } from './locomotion.ts'
+import { MOVE_KEYS } from './locomotion.ts'
+import { moru } from '../characters/expression.ts'
 import type { Player } from './locomotion.ts'
 import SpeechBubble from './SpeechBubble.tsx'
 import Character from './Character.tsx'
 import Environment from './Environment.tsx'
+import LivingWorldBridge from './LivingWorldBridge.tsx'
+import DreamRenderer from '../graphics/DreamRenderer.tsx'
+import WorldAudio from '../audio/WorldAudio.tsx'
 import CameraRig from './CameraRig.tsx'
 
 
@@ -25,6 +30,7 @@ function World({ onReady, onError, player, bubble }: { onReady: () => void; onEr
   useEffect(() => {
     const input = player.current
     function down(event: KeyboardEvent) {
+      if(conversationActive())return
       if (event.target instanceof HTMLElement && (event.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName))) return
       if (!MOVE_KEYS.has(event.code) || event.metaKey || event.ctrlKey || event.altKey) return
       event.preventDefault()
@@ -32,8 +38,8 @@ function World({ onReady, onError, player, bubble }: { onReady: () => void; onEr
       if (!event.repeat && !input.keys.has(event.code)) {
         if (event.code === 'Space') input.jumpRequested = true
         if (event.code === 'KeyE') input.listenRequested = true
-        if (event.code === 'Digit1') requestAction(input, 'WAVE')
-        if (event.code === 'Digit2') requestAction(input, 'BUBBLE_DANCE')
+        if (event.code === 'Digit1') moru.perform('wave')
+        if (event.code === 'Digit2') moru.perform('bubbleDance')
       }
       input.keys.add(event.code)
     }
@@ -56,6 +62,7 @@ function World({ onReady, onError, player, bubble }: { onReady: () => void; onEr
   return (
     <>
       <color attach="background" args={['#858093']} />
+      <LivingWorldBridge />
       <Environment player={player} />
       <CharacterBoundary onError={onError}>
         <Suspense fallback={null}>
@@ -63,6 +70,8 @@ function World({ onReady, onError, player, bubble }: { onReady: () => void; onEr
           <SpeechBubble player={player} element={bubble} />
         </Suspense>
       </CharacterBoundary>
+      <WorldAudio player={player} />
+      <DreamRenderer />
       <CameraRig player={player} />
     </>
   )
