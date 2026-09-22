@@ -19,6 +19,11 @@ export default function BrainInspector(){
   </form>
   <label>Conversation provider <select aria-label="Conversation provider" defaultValue="AUTO" onChange={e=>{conversationProvider.mode=e.target.value as 'AUTO'|'MOCK'|'REAL'}}><option>AUTO</option><option>MOCK</option><option>REAL</option></select></label>
   <div>Last provider: {conversationProvider.lastProvider} · REAL requires server configuration</div>
+  {import.meta.env.DEV&&<details><summary>Request routing (no provider)</summary>
+   <button onClick={()=>void conversationProvider.probe()}>Probe adapter route</button>
+   <button onClick={()=>void conversationProvider.probe(true)}>Probe direct route</button>
+   <pre style={{whiteSpace:'pre-wrap'}}>{JSON.stringify(conversationProvider.routingTrace,null,2)}</pre>
+  </details>}
   <details><summary>Conversation debug</summary><pre style={{whiteSpace:"pre-wrap",overflowWrap:"anywhere"}}>{JSON.stringify({phase:conversationSession.getSnapshot().phase,...conversationSession.debug},null,2)}</pre></details>
   <details><summary>Decision log</summary>{snapshot.log.map((line,i)=><div key={i}>{line}</div>)}</details>
  </details>

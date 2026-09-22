@@ -47,3 +47,86 @@ test('model configuration changes only the model field, preserving schema and co
  const {model:one,...a}=bodies[0],{model:two,...b}=bodies[1]
  assert.notEqual(one,two);assert.deepEqual(a,b)
 })
+
+test('reasoning effort is explicit server configuration and optional for other models',async()=>{
+ for(const [value,expected] of [[undefined,undefined],['',undefined],[' none ',{effort:'none'}],['low',{effort:'low'}]]){
+  let body
+  const h=createConversationHandler({...real,MORU_OPENAI_REASONING_EFFORT:value},async(_url,options)=>{body=JSON.parse(options.body);return envelope(valid)})
+  assert.equal((await(await h(req())).json()).provider,'REAL')
+  assert.deepEqual(body.reasoning,expected)
+  assert.equal(body.model,real.MORU_OPENAI_MODEL)
+  assert.equal(body.max_output_tokens,350)
+ }
+ assert.throws(()=>createConversationHandler({...real,MORU_OPENAI_REASONING_EFFORT:'unknown'}),/Invalid MORU_OPENAI_REASONING_EFFORT/)
+})
+
+
+test('development HTTP diagnostics preserve status/stage but never provider message or secrets',async()=>{
+ for(const status of [400,401,403,404,429,500,503]){
+  const records=[]
+  const secret='test-secret-do-not-print'
+  const h=createConversationHandler({...real,OPENAI_API_KEY:secret},async()=>Response.json({error:{type:'invalid_request_error',code:'model_not_found',message:`Authorization: Bearer ${secret}; private conversation`}}, {status}),9000,d=>records.push(d))
+  const body=await(await h(req())).json()
+  assert.equal(body.provider,'FALLBACK');assert.equal('diagnostic' in body,false)
+  assert.equal(records.length,1)
+  const d=records[0];assert.equal(d.status,status);assert.equal(d.localStatus,200);assert.equal(d.stage,'provider_http');assert.equal(d.reachedProvider,true);assert.equal(d.responseReceived,true);assert.equal(d.fallback,true);assert.equal(d.configured,true)
+  assert.equal(d.errorType,'invalid_request_error');assert.equal(d.errorCode,'model_not_found');assert.equal(d.model,'test-model-a')
+  assert.ok(d.startedAt&&d.endedAt&&d.providerStartedAt&&d.providerEndedAt);assert.ok(d.latencyMs>=0&&d.providerLatencyMs>=0)
+  for(const value of [secret,'Authorization','private conversation',context.userMessage])assert.equal(JSON.stringify(records).includes(value),false)
+ }
+})
+test('diagnostics distinguish transport, timeout, decode, parsing and validation failures',async()=>{
+ const cases=[
+  [async()=>{throw Error('secret transport details')},'provider_request','transport_error'],
+  [async()=>new Response('not json'),'response_decode','provider_response_error'],
+  [async()=>envelope('{'),'response_parse','invalid_json'],
+  [async()=>envelope({speech:'x'.repeat(121)}),'response_validation','invalid_structured_response'],
+  [async()=>Response.json({status:'incomplete'}),'response_decode','incomplete_response'],
+ ]
+ for(const [fetcher,stage,type]of cases){const records=[];const body=await(await createConversationHandler(real,fetcher,9000,d=>records.push(d))(req())).json();assert.equal(body.provider,'FALLBACK');assert.equal(records[0].stage,stage);assert.equal(records[0].errorType,type);assert.equal(JSON.stringify(records).includes('secret transport details'),false)}
+ const records=[]
+ await createConversationHandler(real,(_u,{signal})=>new Promise((_ok,fail)=>signal.addEventListener('abort',()=>fail(Error('hidden')))),5,d=>records.push(d))(req())
+ assert.equal(records[0].timedOut,true);assert.equal(records[0].errorType,'timeout');assert.equal(records[0].status,null)
+})
+test('development diagnostics cover successful output and local rejection without outbound calls',async()=>{
+ const records=[];let calls=0
+ const handler=createConversationHandler(real,async()=>{calls++;return envelope(valid)},9000,d=>records.push(d))
+ assert.equal((await handler(req({}))).status,400);assert.equal(calls,0);assert.equal(records[0].reachedProvider,false);assert.equal(records[0].stage,'request_validation')
+ assert.equal((await(await handler(req())).json()).provider,'REAL');assert.equal(calls,1);assert.equal(records[1].stage,'complete');assert.equal(records[1].fallback,false);assert.deepEqual(records[1].rejectedFields,[])
+})
+test('production never emits diagnostics even with a sink, and sink errors do not affect replies',async()=>{
+ const previous=process.env.NODE_ENV
+ try{
+  process.env.NODE_ENV='production';let calls=0
+  const handler=createConversationHandler(real,async()=>Response.json({error:{type:'invalid_request_error',message:'private'}},{status:401}),9000,()=>calls++)
+  const body=await(await handler(req())).json();assert.equal(body.provider,'FALLBACK');assert.equal(calls,0);assert.equal(JSON.stringify(body).includes('private'),false)
+ }finally{if(previous===undefined)delete process.env.NODE_ENV;else process.env.NODE_ENV=previous}
+ assert.equal((await(await createConversationHandler(real,async()=>envelope(valid),9000,()=>{throw Error('sink')})(req())).json()).provider,'REAL')
+})
+
+test('development routing probe reaches handler without provider even with REAL settings',async()=>{
+ let calls=0;const records=[]
+ const h=createConversationHandler(real,async()=>{calls++;throw Error('Provider must not be called')},9000,d=>records.push(d))
+ const r=await h(new Request('http://localhost/api/moru-conversation',{method:'POST',headers:{'Content-Type':'application/json','X-Moru-Routing-Probe':'1'},body:'{}'}))
+ assert.equal(r.status,200);assert.deepEqual(await r.json(),{probe:'moru-local-route',reachedHandler:true});assert.equal(calls,0);assert.equal(records[0].reachedProvider,false)
+ // Production/default handler does not enable the probe.
+ const prod=createConversationHandler(real,async()=>{calls++;throw Error('Provider must not be called')})
+ assert.equal((await prod(new Request('http://localhost/api/moru-conversation',{method:'POST',headers:{'Content-Type':'application/json','X-Moru-Routing-Probe':'1'},body:'{}'}))).status,400)
+ assert.equal(calls,0)
+})
+
+
+test('default browser fetch wrapper preserves receiver and keeps custom fetch injection',async()=>{
+ const original=globalThis.fetch;let calls=0
+ // Native browser fetch rejects an arbitrary class instance as its receiver.
+ globalThis.fetch=async function(){assert.ok(this===undefined||this===globalThis);calls++;return Response.json({provider:'REAL',response:valid})}
+ try{
+  const provider=new ServerConversationProvider()
+  await provider.respond(context,new AbortController().signal)
+  assert.equal(provider.lastProvider,'REAL');assert.equal(calls,1)
+  let customCalls=0
+  const injected=new ServerConversationProvider(async()=>{customCalls++;return Response.json({provider:'REAL',response:valid})})
+  await injected.respond(context,new AbortController().signal)
+  assert.equal(customCalls,1);assert.equal(calls,1);assert.equal(injected.lastProvider,'REAL')
+ }finally{globalThis.fetch=original}
+})

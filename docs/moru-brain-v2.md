@@ -4,7 +4,7 @@ Local Brain v1 still owns ambient decisions. Only ConversationInput/debug direct
 
 ## Enable when ready
 
-No real key was set or real request made during implementation. Defaults stay MOCK.
+Production defaults stay MOCK. Local REAL activation was subsequently verified; see the checkpoint below.
 
 Local: add these names to `/Users/yeiwon/Developer/pull/.env.local` (preserve existing entries), then restart `npm run dev`:
 
@@ -68,3 +68,83 @@ The API `rootDir` explicitly includes the project root because its graph spans
 the config directory during emit. The regression test must not override this
 source-layout option: it uses the deployable config itself, changing only the
 output location and enabling emit.
+
+## Initial REAL activation (2026-09-22)
+
+Recommended initial configuration: `MORU_OPENAI_MODEL=gpt-5.6-luna` and
+`MORU_OPENAI_REASONING_EFFORT=none`. Luna supports this setting; its documented
+default is medium. Explicit none avoids spending the short response budget on
+reasoning. Effort is optional and server-only; remove it when switching to a
+model without this capability. Model support is still verified on the first
+real request, not inferred from a name. No temperature parameter is sent.
+
+Set the three existing variables plus optional effort in local `.env.local`
+first, preserving existing entries. Use `MORU_PROVIDER=REAL` only for the local
+conversation trial. Never paste a key into conversation or commit it. Restart
+Vite after editing. Production remains MOCK until local validation succeeds.
+
+Initial readiness inspection found no API key. The user subsequently configured
+the local environment and the first REAL request succeeded (see checkpoint).
+Production activation remains separate. Token usage is not currently exposed
+by the provider; no broad Korean quality evaluation has been completed.
+
+Trial order: greeting, current activity, world impression, leaving for home;
+repeat current activity three times total, then vary actual debug world states.
+Only explicit conversation submits may call OpenAI. Confirm REAL (not FALLBACK),
+allowlisted response, gesture/text timing, and 9s server / 11s client timeout.
+On authentication, model/schema, rate-limit, latency or grounding failure,
+inspect the cause before expanding the implementation.
+
+Before enabling production, add access protection or an effective distributed
+rate limit: the current instance-local 12/minute, 2-in-flight limit and Origin
+check are not user authentication or a global cost cap.
+
+Sources: [Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna),
+[nano](https://developers.openai.com/api/docs/models/gpt-5.4-nano),
+[4.1 mini](https://developers.openai.com/api/docs/models/gpt-4.1-mini).
+
+## Development failure diagnostics
+
+Vite's development API logs one sanitized `[moru-conversation]` record per
+handled request; API responses and the production Function contain no diagnostics.
+The production handler has no sink, and NODE_ENV=production also disables one.
+Each record contains key presence only, model/effort, timestamps, total/provider
+latency, attempted provider invocation, HTTP-response receipt, provider status,
+local status, error type/code, timeout/cancellation, failed stage and rejected
+field names. `reachedProvider` means fetch was invoked, not proof that OpenAI
+received the request; `responseReceived` and `status` record an HTTP response.
+
+Stages distinguish local adapter, request validation, configuration, local rate
+limit, provider transport/HTTP, response decoding, JSON parsing and structured
+validation. A local 503 therefore cannot silently masquerade as an OpenAI error.
+Error messages are fixed local descriptions: upstream messages, exception
+messages/stacks, headers, keys, prompts and response text are never forwarded to
+the diagnostic sink. Invalid optional semantic fields still use existing
+allowlist behavior, with only their field names reported. Fallback behavior and
+9s/11s deadlines are unchanged. Diagnostic sink failures cannot break replies.
+
+Tests use injected responses only, including HTTP 400/401/403/404/429/5xx,
+transport failures, timeout, malformed output, validation rejection, malicious
+error strings and local adapter construction failure. Automated tests never call OpenAI.
+
+## First successful local REAL checkpoint
+
+2026-09-22: default browser fetch is wrapped as `(input, init) => fetch(input, init)`.
+Saving native fetch on the provider and invoking it as an instance method caused
+`TypeError: Illegal invocation` before any HTTP request. Custom fetch injection
+is preserved. A browser adapter probe reproduced the failure; a direct,
+non-provider probe reached the same Vite middleware with HTTP 200.
+
+After the fix, one explicitly authorized local conversation request completed:
+client → Vite middleware → shared handler → OpenAI Responses, HTTP 200 at both
+boundaries, model `gpt-5.6-luna`, reasoning `none`. Provider latency was 4,289ms;
+client response validation completed at 4,310ms. Provider was REAL, not FALLBACK;
+no rejected fields, timeout or cancellation. Output was consistent with the
+current DAY / clear / field context. This is one successful sample, not a
+completed personality/quality evaluation. No conversation text or key is stored
+in this checkpoint. Production secrets and activation were not changed.
+
+Development-only routing trace and non-provider probe remain available in the
+Moru Brain inspector. The normal conversation button is used for personality
+review on the local development server. Production has no diagnostic sink,
+client trace collection or probe UI. No automatic OpenAI requests are added.

@@ -1,3 +1,5 @@
+import { startDiagnostic, diagnosticErrorCode } from './conversationDiagnostics.ts'
+import type { DiagnosticSink } from './conversationDiagnostics.ts'
 import { MORU_ACTIONS } from '../src/characters/actions.ts'
 import { MockConversationAdapter, parseResponse } from '../src/conversation/model.ts'
 import type { Context } from '../src/conversation/model.ts'
@@ -28,12 +30,22 @@ export function promptContext(c:Context){
  const payload=conversationPayload(c),level=(n:number)=>n<.34?'low':n>.66?'high':'medium'
  return {...payload,moru:Object.fromEntries(Object.entries(payload.moru).map(([k,v])=>[k,level(v)]))}
 }
-export type Settings={MORU_PROVIDER?:string;OPENAI_API_KEY?:string;MORU_OPENAI_MODEL?:string}
-export function createConversationHandler(settings:Settings,requestFetch:typeof fetch=fetch,timeoutMs=9000){
+export type Settings={MORU_PROVIDER?:string;OPENAI_API_KEY?:string;MORU_OPENAI_MODEL?:string;MORU_OPENAI_REASONING_EFFORT?:string}
+export function createConversationHandler(settings:Settings,requestFetch:typeof fetch=fetch,timeoutMs=9000,diagnosticSink?:DiagnosticSink){
+ // Optional: omit for models without reasoning controls; never infer from a model name.
+ const effort=settings.MORU_OPENAI_REASONING_EFFORT?.trim()
+ if(effort&&!['none','minimal','low','medium','high','xhigh','max'].includes(effort))throw Error('Invalid MORU_OPENAI_REASONING_EFFORT')
  let windowStart=0,count=0,inFlight=0
  return async function handle(request:Request):Promise<Response>{
-  const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store'}})
+  const diagnostic=startDiagnostic(settings,diagnosticSink)
+  const d=diagnostic?.data
+  const json=(body:unknown,status=200)=>{if(d&&status>=400&&!d.message){d.errorType='local_request_rejected';d.message='Local request rejected before provider invocation.'}diagnostic?.finish(status);return Response.json(body,{status,headers:{'Cache-Control':'no-store'}})}
   if(request.method!=='POST')return json({error:'method'},405)
+  // Development-only empty-body probe cannot enter provider code or use a key.
+  if(d&&request.headers.get('x-moru-routing-probe')==='1'){
+   d.stage='complete';d.message='Non-provider routing probe reached handler.'
+   return json({probe:'moru-local-route',reachedHandler:true})
+  }
   const origin=request.headers.get('origin');if(origin&&origin!==new URL(request.url).origin)return json({error:'origin'},403)
   if(!request.headers.get('content-type')?.startsWith('application/json'))return json({error:'content type'},415)
   let context:Context
@@ -43,26 +55,48 @@ export function createConversationHandler(settings:Settings,requestFetch:typeof 
    for(;;){const {value,done}=await reader.read();if(done)break;size+=value.byteLength;if(size>12000){await reader.cancel();return json({error:'size'},413)}chunks.push(value)}
    const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length}
    context=validateContext(JSON.parse(new TextDecoder().decode(bytes)))
-  }catch{return json({error:'context'},400)}
+  }catch{if(d){d.errorType='invalid_context';d.message='Local request context validation failed.'}return json({error:'context'},400)}
   const mock=async(provider='MOCK')=>json({response:parseResponse(await new MockConversationAdapter().respond(context,request.signal),context).response,provider})
   const model=settings.MORU_OPENAI_MODEL?.trim()
-  if(settings.MORU_PROVIDER!=='REAL'||!settings.OPENAI_API_KEY||!model)return mock()
+  if(settings.MORU_PROVIDER!=='REAL'||!settings.OPENAI_API_KEY||!model){if(d){d.stage='configuration';d.message='REAL provider configuration is incomplete or MOCK is selected.'}return mock()}
   // Per-instance safeguard. Use deployment protection/distributed limits before public access.
   const now=Date.now();if(now-windowStart>60000){windowStart=now;count=0}
-  if(count>=12||inFlight>=2)return json({error:'busy'},429)
+  if(count>=12||inFlight>=2){if(d){d.stage='rate_limit';d.errorType='local_rate_limit';d.message='Local per-instance request limit reached.'}return json({error:'busy'},429)}
   count++;inFlight++
-  const controller=new AbortController(),abort=()=>controller.abort()
+  const controller=new AbortController(),abort=()=>{if(d)d.cancelled=true;controller.abort()}
   request.signal.addEventListener('abort',abort,{once:true});if(request.signal.aborted)abort()
-  const timer=setTimeout(abort,timeoutMs)
+  const timer=setTimeout(()=>{if(d)d.timedOut=true;controller.abort()},timeoutMs)
   try{
-   const response=await requestFetch('https://api.openai.com/v1/responses',{method:'POST',signal:controller.signal,headers:{Authorization:`Bearer ${settings.OPENAI_API_KEY}`,'Content-Type':'application/json'},body:JSON.stringify({model,store:false,max_output_tokens:350,instructions:identity,input:JSON.stringify(promptContext(context)),text:{format:{type:'json_schema',name:'moru_response',strict:true,schema:responseSchema}}})})
-   if(!response.ok)throw Error('provider')
+   if(d)d.stage='provider_request'
+   diagnostic?.providerStart()
+   const response=await requestFetch('https://api.openai.com/v1/responses',{method:'POST',signal:controller.signal,headers:{Authorization:`Bearer ${settings.OPENAI_API_KEY}`,'Content-Type':'application/json'},body:JSON.stringify({model,...(effort?{reasoning:{effort}}:{}),store:false,max_output_tokens:350,instructions:identity,input:JSON.stringify(promptContext(context)),text:{format:{type:'json_schema',name:'moru_response',strict:true,schema:responseSchema}}})})
+   if(d){d.status=response.status;d.responseReceived=true;d.stage='provider_http'}
+   if(!response.ok){
+    if(diagnostic){const error=await response.json().catch(()=>null);diagnostic.httpError(error&&typeof error==='object'&&'error' in error?error.error:null,response.status)}
+    throw Error('provider')
+   }
+   if(d)d.stage='response_decode'
    const data=await response.json() as {status?:string;output?:{type:string;content?:{type:string;text?:string}[]}[]}
-   if(data.status!=='completed')throw Error('incomplete')
+   if(data.status!=='completed'){if(d){d.errorType='incomplete_response';d.message='Provider response was not completed.'}throw Error('incomplete')}
    const content=data.output?.filter(o=>o.type==='message').flatMap(o=>o.content??[]).filter(c=>c.type==='output_text').map(c=>c.text??'').join('')
-   const parsed=parseResponse(JSON.parse(content??''),context);if(!parsed.response.speech)throw Error('speech')
+   if(d)d.stage='response_parse'
+   const raw=JSON.parse(content??'')
+   if(d)d.stage='response_validation'
+   const parsed=parseResponse(raw,context)
+   if(d)d.rejectedFields=parsed.rejected
+   if(!parsed.response.speech)throw Error('speech')
+   diagnostic?.providerEnd()
+   if(d)d.stage='complete'
    return json({response:parsed.response,provider:'REAL'})
-  }catch{return mock('FALLBACK')}
+  }catch(error){
+   diagnostic?.providerEnd()
+   if(d){d.fallback=true
+    if(!d.errorCode)d.errorCode=diagnosticErrorCode(error,settings.OPENAI_API_KEY)
+    if(!d.errorType)d.errorType=d.timedOut?'timeout':d.cancelled?'cancelled':d.stage==='provider_request'?'transport_error':d.stage==='response_parse'?'invalid_json':d.stage==='response_validation'?'invalid_structured_response':'provider_response_error'
+    if(!d.message)d.message=d.timedOut?'Provider deadline exceeded.':d.cancelled?'Request cancelled.':d.stage==='provider_request'?'Provider fetch failed before an HTTP response.':d.stage==='response_parse'?'Structured output was not valid JSON.':d.stage==='response_validation'?'Structured response validation failed.':'Provider response decoding failed.'
+   }
+   return mock('FALLBACK')
+  }
   finally{clearTimeout(timer);request.signal.removeEventListener('abort',abort);inFlight--}
  }
 }
