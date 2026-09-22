@@ -27,13 +27,16 @@ export class MockConversationAdapter implements MoruConversationProvider{
  async respond(c:Context,_signal:AbortSignal):Promise<unknown>{
   const text=c.userMessage.toLowerCase(),sleepy=c.moru.sleepiness>.6,w=c.world
   let speech:string,action:MoruActionId|null=null,attention:AttentionTarget='USER',emotion:Response['emotion']='calm',emote:BrainEmote|null=null
-  if(/안녕|반가|hello|\bhi\b/.test(text)){speech=sleepy?'왔네. 조금 졸고 있었어.':'안녕. 옆에 있어도 좋아.';action='wave';emotion='warm'}
+  if(/안녕|반가|hello|\bhi\b/.test(text)){speech=sleepy?'왔네. 조금 졸고 있었어.':'왔네.';action='wave';emotion='warm'}
   else if(/피곤|지쳤|tired/.test(text)){speech=c.moru.comfort>.7?'잠깐 같이 쉬자. 여긴 조용해.':'오늘은 천천히 가도 돼.';emotion='warm';action='listen'}
-  else if(/날씨|비|눈|weather/.test(text)){speech=w.weather==='snow'?'눈이 내려. 발자국이 금방 옅어지겠네.':w.weather==='rain'||w.weather==='storm'?'비 온다. 잠깐 처마 밑에 있을까?':w.timeOfDay==='NIGHT'?'밤이 조용해. 하늘 보고 있었어.':'지금은 비가 안 와. 조금 걸을까?';attention=w.indoor?'HOME':'SKY'}
-  else if(/뭐.*하|what.*doing/.test(text)){speech=w.nearWater?(w.timeOfDay==='NIGHT'?'물 보고 있었어. 밤에는 색이 좀 달라 보여.':'물이 지나가는 걸 보고 있었어.'):w.indoor?'집에서 잠깐 쉬고 있었어.':sleepy?'조금 졸고 있었어. 바람 소리 들으면서.':'주변을 보고 있었어. 오늘은 어디가 눈에 들어와?';attention=w.indoor?'HOME':w.nearWater?'WATER':'WORLD';action='listen'}
+  else if(/날씨|비|눈|weather/.test(text)){speech=w.weather==='snow'?'눈이 오네. 조금 보고 싶어.':w.weather==='rain'||w.weather==='storm'?'비 온다. 잠깐 보고 있어.':w.timeOfDay==='NIGHT'?'밤이네.':'지금은 비가 안 와.';attention=w.indoor?'HOME':'SKY'}
+  else if(/뭐.*하|뭐해|what.*doing/.test(text)){speech=w.nearWater?(w.timeOfDay==='NIGHT'?'물 보고 있었어. 밤에는 색이 좀 달라 보여.':'물이 지나가는 걸 보고 있었어.'):w.indoor?'집에서 잠깐 쉬고 있었어.':sleepy?'조금 졸고 있었어.':'주변 보고 있었어. 그냥 조금 더 보고 싶어서.';attention=w.indoor?'HOME':w.nearWater?'WATER':'WORLD';action='listen'}
+  else if(/심심/.test(text)){speech=sleepy?'나는 좀 졸려. 잠깐 이러고 있을래.':'음. 나는 조금 더 여기 보고 싶어.';attention='WORLD'}
+  else if(/예쁘|예뻐|아름다/.test(text)){speech='응. 조금 더 보고 싶네.';attention=w.indoor?'HOME':w.nearWater?'WATER':'WORLD';emotion='warm'}
+  else if(/내.*(생각|마음|기분)|왜.*(했|하는)|알아[?？]?/.test(text)){speech='아직 모르겠어. 짐작만으로 말하긴 좀 그래.'}
   else if(/어디|어디로|where/.test(text)){speech=sleepy?'집 쪽으로 천천히 가자.':w.nearWater?'다리 건너편은 어때?':c.moru.energy>.65?'물가까지 걸어볼래? 뭐가 보일지 궁금해.':'가까운 곳부터 천천히 둘러보자.';emotion='curious';emote='question'}
-  else {speech=sleepy?'응, 듣고 있어. 조금 느긋해졌네.':c.moru.curiosity>.7?'그건 어떤 느낌이야?':c.recentConversation.length%3===1?'조금 더 듣고 싶어.':'응. 여기서 같이 듣고 있어.';action='listen'}
-  if(c.recentConversation.at(-1)?.moru===speech)speech='응, 기억하고 있어. 조금 쉬었다 갈까?'
+  else {speech=sleepy?'응, 듣고 있어. 조금 느긋해졌네.':c.moru.curiosity>.7?'음. 조금 더 생각해볼래.':'응. 듣고 있어.';action='listen'}
+  if(c.recentConversation.at(-1)?.moru===speech)speech='음. 잠깐 생각 중이야.'
   return {speech,emotion,attention,action,emote}
  }
 }
