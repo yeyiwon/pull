@@ -1,3 +1,8 @@
+import { continuitySummary } from './evolution/offline.ts'
+import { conversationActive } from '../conversation/session.ts'
+import { evolve } from './evolution/runtime.ts'
+import { ServerResearchProvider } from '../research/provider.ts'
+import { researchSessionBudget } from '../research/controller.ts'
 import { speechEnvelope } from '../characters/presentation.ts'
 import { conversationSession } from '../conversation/session.ts'
 import { useEffect, useRef } from 'react'
@@ -46,7 +51,7 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
   useEffect(() => {
     const memory=getMemorySession()
     moru.setAutonomy(false)
-    const controller = createMoruMind({visits:memory.memory.visitCount,debug:import.meta.env.DEV,execute:intent=>{
+    const controller = createMoruMind({research:{provider:new ServerResearchProvider(),budget:memory.memory.researchBudget,session:researchSessionBudget},interests:memory.memory.interests,interestsChanged:memory.interestsChanged,visits:memory.memory.visitCount,debug:import.meta.env.DEV,execute:intent=>{
       const p=player.current
       if(userControlsMoru(p)||p.state!=='IDLE'||p.actionRequested||p.listenRequested)return {action:null,speech:null,emote:false}
       const fx={heart:'HEARTS',sparkle:'SPARKLES',question:'QUESTION',surprise:'SURPRISE',music:'JOY'} as const
@@ -55,7 +60,7 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
       if(acted&&p.actionRequested)markBrainAction(p)
       return {action:acted?intent.action:null,speech:offered?intent.speech:null,emote:offered&&!!intent.emote}
     }})
-    const detach=conversationSession.attach({snapshot:controller.snapshot,hold:controller.holdConversation,
+    const detach=conversationSession.attach({snapshot:()=>{const snapshot=controller.snapshot();return snapshot?{...snapshot,continuity:continuitySummary(memory.memory.offline,memory.memory.evolution)}:null},hold:controller.holdConversation,
       listen(){moru.cancelSpeech();active.current.duration=0;moru.perform('listen','user',false)},
       speak(response){
         const p=player.current;if(userControlsMoru(p))return false
@@ -107,6 +112,8 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
       let interacted=moru.userVersion!==clock.userVersion
       for(const event of pState.events){memory.event(event);interacted=true}
       clearEvents(pState);clock.userVersion=moru.userVersion
+      // Preserve completed ideas on return before research can start its next cycle.
+      if(brain.current)evolve(brain.current.interests.data,worldTime.realWorld.season,available&&!conversationActive())
       brain.current?.tick(observeWorld(pState,{idle:clock.idle,interacted,returned:clock.returned,actions:moru.recentActions,speech:moru.recentSpeech}),elapsed)
       clock.returned=false
     }

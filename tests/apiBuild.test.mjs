@@ -35,6 +35,14 @@ test('API entrypoint discovers an emit-safe Node config and emitted handler runs
       }));
       assert.equal(result.status, 200);
       assert.equal((await result.json()).provider, 'MOCK');
+      const { POST: research } = await import('./api/moru-research.js');
+      const researchResult = await research(new Request('http://localhost/api/moru-research', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({
+          topic:'snow',question:'눈은 왜 이런 모양으로 내릴까?',observations:['2026-09-22: weather=snow, outdoors'],previous:{inferences:[],unknowns:[]}
+        })
+      }));
+      assert.equal(researchResult.status,200);
+      assert.equal((await researchResult.json()).provider,'MOCK');
     `], { cwd: output, env: { MORU_PROVIDER: 'MOCK' }, stdio: 'pipe' })
   } finally {
     await rm(output, { recursive: true, force: true })

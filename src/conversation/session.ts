@@ -1,9 +1,11 @@
+import type { Continuity } from '../world/evolution/offline.ts'
+import type { ResearchSummary } from '../research/model.ts'
 import { conversationProvider } from './provider.ts'
 import { buildContext, MockConversationAdapter, parseResponse } from './model.ts'
 import type { Context, MoruConversationProvider, Response, Turn } from './model.ts'
 import type { AttentionTarget, InternalState, MeaningfulMemory, Observation } from '../world/brain/types.ts'
 export type ConversationPhase='closed'|'composing'|'thinking'|'speaking'
-type Port={snapshot:()=>{observation:Observation;state:InternalState;attention:AttentionTarget;events:MeaningfulMemory[]}|null;hold:(value:boolean)=>void;listen:()=>void;speak:(response:Response)=>boolean;cancel:()=>void}
+type Port={snapshot:()=>{continuity?:Continuity;research?:ResearchSummary;observation:Observation;state:InternalState;attention:AttentionTarget;events:MeaningfulMemory[]}|null;hold:(value:boolean)=>void;listen:()=>void;speak:(response:Response)=>boolean;cancel:()=>void}
 export function createConversationSession(provider:MoruConversationProvider=new MockConversationAdapter(),timing={thinking:650,timeout:11000}){
  let port:Port|null=null,token=0,abort:AbortController|null=null,release:ReturnType<typeof setTimeout>|undefined
  let state={phase:'closed' as ConversationPhase,ready:false,notice:'',reply:'',revision:0}
@@ -17,7 +19,7 @@ export function createConversationSession(provider:MoruConversationProvider=new 
   const snap=port.snapshot();if(!snap||!snap.observation.grounded){update({notice:'땅에 내려오면 말 걸어줘.'});return false}
   if(state.phase==='closed')open()
   const id=++token,controller=new AbortController();abort=controller
-  const context=buildContext(clean,snap.observation,snap.state,snap.attention,turns,snap.events)
+  const context=buildContext(clean,snap.observation,snap.state,snap.attention,turns,snap.events,snap.research,snap.continuity)
   debug.context=context;debug.outcome='thinking';port.listen();update({phase:'thinking',notice:'듣고 있어…'})
   let raw:unknown
   let timeoutTimer:ReturnType<typeof setTimeout>|undefined

@@ -1,13 +1,17 @@
+import type { Continuity } from '../world/evolution/offline.ts'
+import { parseContinuity, continuityQuestion } from '../world/evolution/offline.ts'
+import { parseResearchSummary } from '../research/model.ts'
+import type { ResearchSummary } from '../research/model.ts'
 import { MORU_ACTIONS } from '../characters/actions.ts'
 import type { MoruActionId } from '../characters/actions.ts'
 import type { AttentionTarget, BrainEmote, InternalState, MeaningfulMemory, Observation } from '../world/brain/types.ts'
 export type Turn={user:string;moru:string}
-export type Context={userMessage:string;world:Pick<Observation,'season'|'timeOfDay'|'weather'|'location'|'indoor'|'nearWater'|'skyEvent'>;moru:InternalState&{target:AttentionTarget};recentConversation:Turn[];recentEvents:MeaningfulMemory[]}
+export type Context={continuity?:Continuity;research?:ResearchSummary;userMessage:string;world:Pick<Observation,'season'|'timeOfDay'|'weather'|'location'|'indoor'|'nearWater'|'skyEvent'>;moru:InternalState&{target:AttentionTarget};recentConversation:Turn[];recentEvents:MeaningfulMemory[]}
 export interface MoruConversationProvider{respond(context:Context,signal:AbortSignal):Promise<unknown>}
 export type Response={speech:string;emotion:'calm'|'happy'|'curious'|'sleepy'|'warm'|null;attention:AttentionTarget;action:MoruActionId|null;emote:BrainEmote|null}
-export function buildContext(userMessage:string,o:Observation,state:InternalState,target:AttentionTarget,turns:Turn[],events:MeaningfulMemory[]):Context{
+export function buildContext(userMessage:string,o:Observation,state:InternalState,target:AttentionTarget,turns:Turn[],events:MeaningfulMemory[],research?:ResearchSummary,continuity?:Continuity):Context{
  const {season,timeOfDay,weather,location,indoor,nearWater,skyEvent}=o
- return structuredClone({userMessage,world:{season,timeOfDay,weather,location,indoor,nearWater,skyEvent},moru:{...state,target},recentConversation:turns.slice(-8),recentEvents:events.slice(-8)})
+ return structuredClone({...(continuity&&continuityQuestion(userMessage)?{continuity:parseContinuity(continuity)}:{}),...(research&&/궁금|관심|연구|탐구|발견|뭐.*생각|뭐.*하|뭐해|없을 때|없는 동안|뭐했|뭐 했/.test(userMessage)?{research:parseResearchSummary(research)}:{}),userMessage,world:{season,timeOfDay,weather,location,indoor,nearWater,skyEvent},moru:{...state,target},recentConversation:turns.slice(-8),recentEvents:events.slice(-8)})
 }
 export function parseResponse(raw:unknown,context:Context){
  const rejected:string[]=[]
@@ -27,7 +31,9 @@ export class MockConversationAdapter implements MoruConversationProvider{
  async respond(c:Context,_signal:AbortSignal):Promise<unknown>{
   const text=c.userMessage.toLowerCase(),sleepy=c.moru.sleepiness>.6,w=c.world
   let speech:string,action:MoruActionId|null=null,attention:AttentionTarget='USER',emotion:Response['emotion']='calm',emote:BrainEmote|null=null
-  if(/안녕|반가|hello|\bhi\b/.test(text)){speech=sleepy?'왔네. 조금 졸고 있었어.':'왔네.';action='wave';emotion='warm'}
+  if(continuityQuestion(text)){const event=c.continuity?.meaningfulOfflineEvents[0],h=c.continuity?.worldHistory.at(-1);speech=h?.status==='APPLIED'?'작은 장식을 놓았어. 기록이 남아 있어.':h?.status==='WAITING_FOR_ASSET'?'작게 꾸밀 생각은 있어. 아직 놓은 건 없어.':event?'전에 궁금했던 걸 다시 생각해봤어. 새로 알아낸 건 없어.':'특별히 남아 있는 기록은 없어.'}
+  else if(c.research?.currentFascination&&/궁금|관심|연구|탐구/.test(text)){const labels:Record<string,string>={snow:'눈의 모양',reflection:'밤의 물',leaves:'가을의 잎'};speech=`요즘 ${labels[c.research.currentFascination]??'그 주제'}이 궁금해. 아직 모르는 게 있어.`;attention='WORLD';emotion='curious'}
+  else if(/안녕|반가|hello|\bhi\b/.test(text)){speech=sleepy?'왔네. 조금 졸고 있었어.':'왔네.';action='wave';emotion='warm'}
   else if(/피곤|지쳤|tired/.test(text)){speech=c.moru.comfort>.7?'잠깐 같이 쉬자. 여긴 조용해.':'오늘은 천천히 가도 돼.';emotion='warm';action='listen'}
   else if(/날씨|비|눈|weather/.test(text)){speech=w.weather==='snow'?'눈이 오네. 조금 보고 싶어.':w.weather==='rain'||w.weather==='storm'?'비 온다. 잠깐 보고 있어.':w.timeOfDay==='NIGHT'?'밤이네.':'지금은 비가 안 와.';attention=w.indoor?'HOME':'SKY'}
   else if(/뭐.*하|뭐해|what.*doing/.test(text)){speech=w.nearWater?(w.timeOfDay==='NIGHT'?'물 보고 있었어. 밤에는 색이 좀 달라 보여.':'물이 지나가는 걸 보고 있었어.'):w.indoor?'집에서 잠깐 쉬고 있었어.':sleepy?'조금 졸고 있었어.':'주변 보고 있었어. 그냥 조금 더 보고 싶어서.';attention=w.indoor?'HOME':w.nearWater?'WATER':'WORLD';action='listen'}

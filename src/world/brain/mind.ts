@@ -1,3 +1,8 @@
+import { createResearchController, researchSummary } from '../../research/controller.ts'
+import type { ResearchBudget, SessionBudget } from '../../research/controller.ts'
+import type { MoruResearchProvider } from '../../research/model.ts'
+import { createInterestModel, emptyInterests } from './interests.ts'
+import type { Interests } from './interests.ts'
 import { AMBIENT_LINES } from '../../characters/ambientLines.ts'
 import type { LineCategory } from '../../characters/ambientLines.ts'
 import { validateIntent } from './conversation.ts'
@@ -6,10 +11,12 @@ import type { Observation, InternalState, Intent, Execution, ConversationAdapter
 
 type Event = {key:string;category:LineCategory;attention:AttentionTarget;importance:number;at:number}
 export const brainDebug = {state:{energy:.7,curiosity:.6,comfort:.6,attention:.3,affection:.3,sleepiness:.1} as InternalState,attention:'NONE' as AttentionTarget,
- intent:'WAIT',observation:'waiting',decision:'not observed',cooldown:0,recentSpeech:[] as string[],recentActions:[] as string[],events:[] as MeaningfulMemory[],log:[] as string[],ticks:0}
+ intent:'WAIT',observation:'waiting',decision:'not observed',cooldown:0,recentSpeech:[] as string[],recentActions:[] as string[],events:[] as MeaningfulMemory[],log:[] as string[],ticks:0,interests:emptyInterests()}
 export const brainCommands:{trigger:(()=>void)|null;converse:((text:string)=>Promise<Intent>)|null}={trigger:null,converse:null}
 const bounded=(v:number)=>Math.max(0,Math.min(1,v))
-export function createMoruMind(options:{execute:(intent:Intent)=>Execution;random?:()=>number;visits?:number;longMemory?:LongMemoryPort;conversation?:ConversationAdapter;debug?:boolean}){
+export function createMoruMind(options:{execute:(intent:Intent)=>Execution;random?:()=>number;visits?:number;longMemory?:LongMemoryPort;conversation?:ConversationAdapter;debug?:boolean;interests?:Interests;interestsChanged?:()=>void;clock?:()=>number;research?:{provider:MoruResearchProvider;budget:ResearchBudget;session:SessionBudget}}){
+ const interests=createInterestModel(options.interests??emptyInterests(),options.interestsChanged,options.clock)
+ const research=options.research?createResearchController(interests.data,options.research.budget,options.research.provider,options.interestsChanged??(()=>{}),{now:options.clock,session:options.research.session}):null
  const random=options.random??Math.random
  const state:InternalState={energy:.7,curiosity:.6,comfort:.6,attention:.3,affection:Math.min(.6,.25+(options.visits??1)*.015),sleepiness:.1}
  const working={actions:[] as {id:string;at:number}[],lines:[] as {text:string;at:number}[],observations:[] as string[]}
@@ -32,7 +39,7 @@ export function createMoruMind(options:{execute:(intent:Intent)=>Execution;rando
  }
  function publish(reason:string){
   if(!options.debug)return
-  Object.assign(brainDebug,{state:{...state},attention,intent:lastIntent.kind,observation:current?`${current.timeOfDay} · ${current.season} · ${current.weather} · ${current.location}`:'none',decision:reason,cooldown:Math.ceil(Math.max(0,nextReaction-now)),recentSpeech:working.lines.map(x=>x.text),recentActions:working.actions.map(x=>x.id),events:[...short],ticks})
+  Object.assign(brainDebug,{state:{...state},attention,intent:lastIntent.kind,observation:current?`${current.timeOfDay} · ${current.season} · ${current.weather} · ${current.location}`:'none',decision:reason,cooldown:Math.ceil(Math.max(0,nextReaction-now)),recentSpeech:working.lines.map(x=>x.text),recentActions:working.actions.map(x=>x.id),events:[...short],ticks,interests:structuredClone(interests.data)})
  }
  function available(o:Observation){return !o.userMoving&&!o.actionBusy&&o.grounded}
  function dispatch(intent:Intent){
@@ -69,6 +76,8 @@ export function createMoruMind(options:{execute:(intent:Intent)=>Execution;rando
  function tick(o:Observation,delta:number){
   if(!alive)return
   const dt=Math.min(2,Math.max(0,delta));now+=dt;age+=dt;ticks++;current=o
+  interests.observe(o)
+  void research?.observe(o,conversationLock||conversationPending)
   working.lines=working.lines.filter(x=>now-x.at<300);working.actions=working.actions.filter(x=>now-x.at<180)
   for(const text of o.recentSpeech)if(!working.lines.some(x=>x.text===text))working.lines.push({text,at:now})
   const latest=o.recentMoruActions.at(-1)
@@ -121,12 +130,12 @@ export function createMoruMind(options:{execute:(intent:Intent)=>Execution;rando
    return dispatch(intent)
   }finally{if(timer)clearTimeout(timer);if(token===generation){conversationPending=false;abort=null}publish(lastIntent.reason)}
  }
- return {state,working,short,tick,converse,
-  snapshot(){return current?{observation:structuredClone(current),state:{...state},attention,events:[...short]}:null},
-  holdConversation(value:boolean){conversationLock=value;if(value){attention='USER';age=0}else nextReaction=Math.max(nextReaction,now+8)},
+ return {state,working,short,tick,converse,interests,
+  snapshot(){return current?{observation:structuredClone(current),state:{...state},attention,events:[...short],research:research?researchSummary(interests.data):undefined}:null},
+  holdConversation(value:boolean){conversationLock=value;if(value)research?.interrupt();if(value){attention='USER';age=0}else nextReaction=Math.max(nextReaction,now+8)},
   trigger(){if(current){enqueue('curious',current.indoor?'HOME':'WORLD',1,`debug:${ticks}`);nextReaction=now}},
-  suspend(){generation++;abort?.abort();abort=null;conversationPending=false;pending=null},
-  dispose(){alive=false;generation++;abort?.abort()},
+  suspend(){research?.interrupt();generation++;abort?.abort();abort=null;conversationPending=false;pending=null},
+  dispose(){research?.dispose();alive=false;generation++;abort?.abort()},
   get intent(){return lastIntent},get attention(){return attention},get time(){return now},
  }
 }
