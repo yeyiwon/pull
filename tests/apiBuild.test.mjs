@@ -14,7 +14,7 @@ test('API entrypoint discovers an emit-safe Node config and emitted handler runs
   const output = await mkdtemp(join(tmpdir(), 'pull-api-build-'))
   try {
     execFileSync(process.execPath, [resolve(root, 'node_modules/typescript/bin/tsc'),
-      '-p', config, '--noEmit', 'false', '--rootDir', root, '--outDir', output,
+      '-p', config, '--noEmit', 'false', '--outDir', output,
     ], { cwd: root, stdio: 'pipe' })
     await writeFile(join(output, 'package.json'), '{"type":"module"}')
     const emitted = await readFile(join(output, 'api/moru-conversation.js'), 'utf8')

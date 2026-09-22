@@ -62,3 +62,9 @@ The server targets ES2022, including `Array.at`, without changing the browser
 target. `tests/apiBuild.test.mjs` checks entrypoint config discovery, emits the
 API graph to a temporary directory and executes the emitted handler with MOCK
 forced and network access rejected. No secret or real API call is needed.
+
+The API `rootDir` explicitly includes the project root because its graph spans
+`api`, `server`, and shared `src` modules. TypeScript 6 otherwise defaults to
+the config directory during emit. The regression test must not override this
+source-layout option: it uses the deployable config itself, changing only the
+output location and enabling emit.
