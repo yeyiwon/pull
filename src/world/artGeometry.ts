@@ -14,9 +14,9 @@ export function weatheredStone(seed = 0, foliage = false, segments = 28) {
   g.computeVertexNormals(); g.computeBoundingSphere(); return g
 }
 
-export function branch(points: number[][], radius: number, end = .025) {
+export function branch(points: number[][], radius: number, end = .025, steps = 18, sides = 9) {
   const curve = new CatmullRomCurve3(points.map(p => new Vector3(...p as [number, number, number])))
-  const steps = 18, sides = 9, frames = curve.computeFrenetFrames(steps, false)
+  const frames = curve.computeFrenetFrames(steps, false)
   const vertices: number[] = [], indices: number[] = []
   for (let i = 0; i <= steps; i++) {
     const t = i / steps, p = curve.getPointAt(t), r = end + (radius - end) * Math.pow(1 - t, 1.25)

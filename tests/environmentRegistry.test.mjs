@@ -20,3 +20,10 @@ test('LOD hysteresis keeps boundary camera movement stable',()=>{
 test('vegetation has ordered depth tiers and bounded seasonal density',()=>{
  for(const v of Object.values(VEGETATION)){assert.ok(v.near<v.mid&&v.mid<v.far);for(const d of Object.values(v.season))assert.ok(d>=0&&d<=1)}
 })
+
+test('candidate registry entries cannot acquire runtime placement or autonomous approval',()=>{
+ const review={status:'CANDIDATE',semanticCategory:'VEGETATION_CLUSTER',scaleClass:'MICRO',densityCost:1,groundOffset:-.56,triangles:51717,vertices:113662,bytes:34656840}
+ const candidate={...entry(),category:'vegetation',placementType:'catalog',placements:[],review}
+ assert.equal(parseEnvironmentRegistry({version:1,assets:[candidate]})[0].review.status,'CANDIDATE')
+ for(const patch of [{placements:entry().placements},{placementType:'manual'},{autonomy:{approved:true}}])assert.throws(()=>parseEnvironmentRegistry({version:1,assets:[{...candidate,...patch}]}))
+})

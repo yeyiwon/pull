@@ -1,22 +1,27 @@
-import { useCallback, useRef, useState, useSyncExternalStore } from 'react'
+import WorldInterface from './ui/WorldInterface.tsx'
+import { worldInterface } from './ui/interface.ts'
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { PCFShadowMap } from 'three'
+import { PCFSoftShadowMap } from 'three'
 import { createPlayer } from './world/locomotion.ts'
 import World from './world/World.tsx'
-import BrainInspector from './world/brain/BrainInspector.tsx'
-import WorldClock from './world/WorldClock.tsx'
 import TouchControls from './world/TouchControls.tsx'
-import CharacterInspector from './characters/CharacterInspector.tsx'
-import GraphicsControls from './graphics/GraphicsControls.tsx'
-import AudioControls from './audio/AudioControls.tsx'
-import ActionControls from './characters/ActionControls.tsx'
 import ConversationInput from './conversation/ConversationInput.tsx'
 import { conversationSession } from './conversation/session.ts'
 import './App.css'
+import './ui/renaissance.css'
 
 
+type Theme = 'dark' | 'light'
+function initialTheme():Theme {
+  try { const saved=localStorage.getItem('pull.ui.theme');if(saved==='dark'||saved==='light')return saved } catch { /* Storage may be unavailable in private browsing. */ }
+  return window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'
+}
 function App() {
+  const [theme,setTheme]=useState<Theme>(initialTheme)
+  useEffect(()=>{try{localStorage.setItem('pull.ui.theme',theme)}catch{/* Keep the theme usable without persistence. */}},[theme])
   const conversation=useSyncExternalStore(conversationSession.subscribe,conversationSession.getSnapshot)
+  const panel=useSyncExternalStore(worldInterface.subscribe,worldInterface.getSnapshot)
   const player = useRef(createPlayer())
   const bubble = useRef<HTMLDivElement>(null)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
@@ -24,10 +29,10 @@ function App() {
   const error = useCallback(() => setStatus('error'), [])
 
   return (
-    <main className="experiment" aria-label="PULL — Character World">
+    <main data-theme={theme} className="experiment" aria-label="PULL — A living world">
       <Canvas
         camera={{ position: [1.6, 3.28, 10.5], fov: 48, near: 0.1, far: 600 }}
-        shadows={{ type: PCFShadowMap }}
+        shadows={{ type: PCFSoftShadowMap }}
         dpr={[1, 1.5]}
         gl={{ alpha: false, antialias: true }}
         fallback={<p className="fallback">PULL requires a browser with WebGL support.</p>}
@@ -38,21 +43,13 @@ function App() {
         <div className="moru-speech" />
         <div className="moru-fx" />
       </div>
-      <WorldClock player={player} />
-      <AudioControls />
-      <GraphicsControls />
-      {import.meta.env.DEV && <><BrainInspector /><CharacterInspector /></>}
-      <TouchControls player={player} disabled={status !== 'ready'||conversation.phase!=='closed'} />
-      <ActionControls player={player} disabled={status !== 'ready'||conversation.phase!=='closed'} />
+      <WorldInterface player={player} ready={status==='ready'} theme={theme} onThemeChange={setTheme}/>
+      <TouchControls player={player} disabled={status !== 'ready'||conversation.phase!=='closed'||panel!==null} />
       <ConversationInput player={player} disabled={status!=='ready'}/>
-      <div className="world-caption">
-        <span>PULL</span>
-        <span>MORU / DREAM BLOOM</span>
-      </div>
       <p className="world-status" role="status">
         {status === 'loading' ? '세계에 들어가는 중…' : status === 'error'
           ? '캐릭터를 불러오지 못했습니다. 페이지를 새로고침해 주세요.'
-          : <><span className="desktop-hint">WASD / Arrows — Move · Shift — Run · Space — Jump · E — React · Drag — Look · 1 — Wave · 2 — Dance</span><span className="mobile-hint">Stick — Move / Run · Drag — Look · ↑ — Jump</span></>}
+          : null}
       </p>
     </main>
   )

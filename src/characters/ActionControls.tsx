@@ -1,30 +1,32 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { RefObject } from 'react'
 import type { Player } from '../world/locomotion.ts'
+import { worldInterface } from '../ui/interface.ts'
+import { conversationSession } from '../conversation/session.ts'
 import { MORU_ACTIONS } from './actions.ts'
+import type { MoruActionId } from './actions.ts'
 import { moru } from './expression.ts'
 
-function requestJump(player:Player){player.jumpRequested=true}
-
-type Panel = 'gesture' | 'dance' | 'react'
-export default function ActionControls({player,disabled}:{player:RefObject<Player>;disabled:boolean}) {
-  const [panel,setPanel]=useState<Panel|null>(null),root=useRef<HTMLDivElement>(null)
+const dances = [
+  ['bubbleDance', '둥실둥실'], ['funnyDance', '장난스럽게'],
+  ['loveDance', '살랑살랑'], ['superloveDance', '마음껏'],
+  ['podGroove', '작은 리듬'], ['youGroove', '함께 리듬'],
+] as const
+export default function ActionControls({disabled}:{player:RefObject<Player>;disabled:boolean}) {
+  const [panel,setPanel]=useState<'special'|'dance'|null>(null)
   useEffect(()=>{
-    if(!panel)return
-    const outside=(e:PointerEvent)=>{if(e.target instanceof Node&&!root.current?.contains(e.target))setPanel(null)}
-    const escape=(e:KeyboardEvent)=>{if(e.key==='Escape')setPanel(null)}
-    document.addEventListener('pointerdown',outside);document.addEventListener('keydown',escape)
-    return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',escape)}
+    if(panel)return
+    const timer=window.setTimeout(()=>worldInterface.open(null),panel?20000:10000)
+    return()=>window.clearTimeout(timer)
   },[panel])
-  return <div className="moru-actions" aria-label="Moru actions" ref={root}>
-    {panel&&<div className="moru-action-panel" role="group" aria-label={panel==='dance'?'Dance actions':panel==='gesture'?'Gesture actions':'Moru reactions'}>
-      {panel==='react'?<>
-        <button onClick={()=>{moru.react('love');setPanel(null)}}>♡ 마음 전하기</button>
-        <button onClick={()=>{moru.react('curious');setPanel(null)}}>? 궁금해</button>
-        <button onClick={()=>{moru.react('happy');setPanel(null)}}>✦ 신나</button>
-      </>:MORU_ACTIONS.filter(a=>a.category===panel).map(a=><button key={a.id} onClick={()=>{moru.perform(a.id);setPanel(null)}}>{a.label}</button>)}
-    </div>}
-    <button className="touch-jump" aria-label="Jump" disabled={disabled} onClick={()=>requestJump(player.current)}>↑</button>
-    {([['react','♡','React'],['gesture','☺','Actions'],['dance','♫','Dance']] as const).map(([id,icon,label])=><button key={id} disabled={disabled} aria-label={label} title={label} aria-expanded={panel===id} onClick={()=>setPanel(panel===id?null:id)}>{icon}</button>)}
+  const perform=(id:MoruActionId)=>{if(moru.perform(id)&&!panel)worldInterface.open(null)}
+  return <div className="moru-context" aria-label="모루와 함께">
+    <div className="moru-context-row">
+      <button disabled={disabled} onClick={()=>{worldInterface.open(null);conversationSession.open()}}>말 걸기</button>
+      <button disabled={disabled} aria-label="춤 고르기" aria-expanded={panel==='dance'} onClick={()=>setPanel(panel==='dance'?null:'dance')}>♪</button>
+      <button disabled={disabled} aria-label="특별한 움직임" aria-expanded={panel==='special'} onClick={()=>setPanel(panel==='special'?null:'special')}>···</button>
+    </div>
+    {panel==='dance'&&<div className="moru-dances" role="group" aria-label="춤 고르기">{dances.map(([id,label])=><button key={id} onClick={()=>perform(id)}>{label}</button>)}</div>}
+    {panel==='special'&&<div className="moru-specials" role="group" aria-label="특별한 움직임">{MORU_ACTIONS.filter(a=>a.id==='skip'||a.id==='penguin').map(a=><button key={a.id} onClick={()=>perform(a.id)}>{a.label}</button>)}</div>}
   </div>
 }

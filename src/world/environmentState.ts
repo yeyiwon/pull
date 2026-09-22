@@ -1,4 +1,5 @@
 import { Color, MathUtils, Vector3 } from 'three'
+import { presentedWeather, WEATHER_LOOK } from './weatherPresentation.ts'
 import { worldTime } from './worldTime.ts'
 import { livingWorld, seasonalBlend, skyEventAt, fantasyEventAt } from './livingWorld.ts'
 import type { FantasyEvent } from './livingWorld.ts'
@@ -32,18 +33,19 @@ export function updateEnvironmentState(delta: number) {
   }
   const t = 1 - Math.exp(-Math.min(delta, .1) * 1.4), state = environmentState
   state.grass.lerp(target.temp.copy(target.grass).lerp(target.snowColor,state.weatherSnow), t); state.foliage.lerp(target.foliage, t); state.flower.lerp(target.flower, t); state.skyTint.lerp(target.sky, t)
-  const weather = livingWorld.weather?.type
-  const rain = weather === 'rain' ? .65 : weather === 'storm' ? 1 : 0
-  state.rain = MathUtils.lerp(state.rain,rain,t)
-  state.cloudiness = MathUtils.lerp(state.cloudiness, rain || (weather === "cloudy" ? .7 : weather === "fog" ? .4 : 0), t)
-  state.wind = MathUtils.lerp(state.wind,livingWorld.windOverride ?? (weather === 'storm' ? .8 : .15 + (1-brain.calmness)*.35),t)
-  state.wetness = MathUtils.lerp(state.wetness,rain,1-Math.exp(-delta*(rain>state.wetness?.4:.012)))
+  const weather = presentedWeather(),look=WEATHER_LOOK[weather]
+  const rain = look.rain
+  // Cover leads rainfall; substrate response trails both and dries much more slowly.
+  state.cloudiness = MathUtils.lerp(state.cloudiness,look.cloud,1-Math.exp(-delta*.9))
+  state.rain = MathUtils.lerp(state.rain,rain*MathUtils.smoothstep(state.cloudiness,.2,.7),1-Math.exp(-delta*.65))
+  state.wind = MathUtils.lerp(state.wind,livingWorld.windOverride ?? (look.wind+(1-brain.calmness)*.06),t)
+  state.wetness = MathUtils.lerp(state.wetness,state.rain,1-Math.exp(-delta*(state.rain>state.wetness?.2:.012)))
   state.weatherSnow = MathUtils.clamp(state.weatherSnow + delta * (weather === 'snow' ? .025 : -.002),0,1)
   state.snowAmount = MathUtils.lerp(state.snowAmount,weather === 'snow' ? {light:.3,normal:.6,heavy:1,magical:.65}[livingWorld.snowMode] : snow*.3,t)
   state.snow = MathUtils.lerp(state.snow, Math.max(snow,state.weatherSnow), t); state.bloom = MathUtils.lerp(state.bloom, bloom * (.7 + brain.vitality * .3), t)
   state.density = MathUtils.lerp(state.density, density, t); state.sunlight = MathUtils.lerp(state.sunlight, sun, t)
-  state.haze = MathUtils.lerp(state.haze, haze * (1 + brain.mystery * .08) * (livingWorld.weather?.type === 'fog' ? 2.2 : 1 + state.rain*.5), t)
-  const sunY = worldTime.current.sunY
+  state.haze = MathUtils.lerp(state.haze, haze * (1 + brain.mystery * .08) * look.haze, t)
+  const sunY = worldTime.presentation.sunY
   const night = 1 - MathUtils.smoothstep(sunY, -.18, .12)
   state.night = MathUtils.lerp(state.night, night, t)
   state.warmth = MathUtils.lerp(state.warmth, brain.warmth, t)
@@ -60,7 +62,7 @@ export function updateEnvironmentState(delta: number) {
   state.meteorShower = MathUtils.lerp(state.meteorShower,discovery==='meteorShower'?night:0,t)
   state.moonSize = MathUtils.lerp(state.moonSize,discovery==='giantMoon'?1.7:1,t)
   state.crescent = MathUtils.lerp(state.crescent,discovery==='crescentMoon'?1:0,t)
-  state.rainbow = MathUtils.lerp(state.rainbow,(discovery==='doubleRainbow'?2:discovery==='rainbow'?1:state.wetness>.3&&rain===0?1:0)*(1-night),t)
+  state.rainbow = MathUtils.lerp(state.rainbow,(discovery==='doubleRainbow'?2:discovery==='rainbow'?1:state.wetness>.3&&weather==='clear'?1:0)*(1-night),t)
   state.lightning = MathUtils.lerp(state.lightning,discovery==='lightning'||weather==='storm'?1:0,t)
   state.starRichness = MathUtils.lerp(state.starRichness,discovery==='starryNight'?1.7:1,t)
   state.cloudGlow = MathUtils.lerp(state.cloudGlow,discovery==='glowingClouds'?1:0,t)

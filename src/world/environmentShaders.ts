@@ -7,6 +7,7 @@ void main() {
 
 export const skyFragment = `
 uniform float uTime;
+uniform float uArcAwakening,uDistantLight;
 uniform float uPhase,uQuality,uRays;
 uniform vec3 uTop;
 uniform vec3 uHorizon;
@@ -38,28 +39,40 @@ void main() {
   color+=vec3(.28,.12,.065)*solarForward*exp(-max(d.y,0.)*3.)*(1.-uNight)*(.3+(1.-uDay)*.7);
   color*=1.-uNight*height*.22;
   // Two independent cloud decks, shaded by density gradients rather than a flat overlay.
-  vec2 cloudUV=d.xz/max(.12,d.y+.15)*1.05;
+  vec2 cloudUV=d.xz/max(.12,d.y+.15)*.82;
   vec2 drift=vec2(uTime*.0018,uTime*.00045);
   float coarse=fbm(cloudUV+drift);
   float fine=uQuality>.5?fbm(cloudUV*2.3-drift*.65):coarse;
   float density=coarse*.76+fine*.24;
   float cloud=smoothstep(.50-uRain*.16,.73,density)*smoothstep(.0,.09,d.y);
-  float highCloud=smoothstep(.54,.78,fbm(cloudUV*vec2(.28,.8)+vec2(5.,uTime*.0008)))*smoothstep(.02,.2,d.y);
+  float highCloud=smoothstep(.54,.78,fbm(cloudUV*vec2(.34,1.7)+vec2(5.,-uTime*.0006)))*smoothstep(.02,.2,d.y);
   vec3 celestial=normalize(mix(uSunDirection,uMoonDirection,uNight));
   float gradient=(noise2(cloudUV+drift+celestial.xz*.16)-noise2(cloudUV+drift))*.75;
   float silver=pow(max(0.,dot(d,celestial)),18.);
   float warm=(1.-uNight)*(1.-smoothstep(.08,.65,uSunDirection.y));
   vec3 cloudShade=mix(vec3(.26,.34,.47),vec3(.012,.021,.042),uNight);
   vec3 cloudLit=mix(vec3(.84,.88,.92),vec3(.09,.13,.22),uNight);
-  cloudLit=mix(cloudLit,vec3(.82,.46,.30),warm*.65);
+  cloudLit=mix(cloudLit,vec3(.82,.55,.38),warm*.52);
   vec3 cloudColor=mix(cloudShade,cloudLit,clamp(.48+gradient*3.4,0.,1.));
   cloudColor+=mix(vec3(.3,.23,.16),vec3(.10,.14,.21),uNight)*silver*(1.-cloud)*2.;
   cloudColor*=1.-uRain*.36;
   float cloudOpacity=1.-exp(-cloud*(1.65+uRain*2.));
-  color=mix(color,mix(cloudLit,uHorizon,.5),highCloud*.15*(1.-uRain));
+  color=mix(color,mix(cloudLit,uHorizon,.35),highCloud*.23*(1.-uRain));
   color=mix(color,cloudColor,cloudOpacity);
+  // A partial atmospheric arc, not a portal: broad scale, broken visibility, no independent bloom source.
+  vec3 arcAxis=normalize(vec3(.13,-.24,-1.));
+  vec3 arcEast=normalize(cross(vec3(0.,1.,0.),arcAxis)),arcNorth=cross(arcAxis,arcEast);
+  vec2 arcUV=vec2(dot(d,arcEast),dot(d,arcNorth));
+  float arcRadius=length(arcUV),arcAngle=atan(arcUV.y,arcUV.x);
+  float arcLine=(1.-smoothstep(.0015,.006+fwidth(arcRadius),abs(arcRadius-.64)));
+  float arcBreak=smoothstep(-.2,.15,sin(arcAngle*2.1-1.2))*smoothstep(.05,.2,d.y)*step(.0,dot(d,arcAxis));
+  float arcVeil=fbm(arcUV*8.+vec2(.2,uTime*.0002));
+  float arcPresence=(.045+(1.-uDay)*.06+uNight*.28+uArcAwakening*.16)*(1.-cloudOpacity)*(.25+arcVeil*.65)*(1.-uRain*.8);
+  color=mix(color,mix(uHorizon,vec3(.45,.52,.65),uNight*.6),arcLine*arcBreak*arcPresence);
+  color+=vec3(.08,.13,.12)*uDistantLight*exp(-pow((d.y-.04)*30.,2.))*pow(max(0.,dot(d,normalize(vec3(-.5,.04,-1.)))),24.);
+  color+=vec3(.012,.018,.03)*uArcAwakening*exp(-pow((arcRadius-.64)*24.,2.))*arcBreak*(1.-cloudOpacity);
   vec3 moonDir=uMoonDirection;
-  float angular=length(d-moonDir),moonRadius=.066*uMoonSize;
+  float angular=length(d-moonDir),moonRadius=.043*uMoonSize;
   float moonDisc=1.-smoothstep(moonRadius,moonRadius+max(.0007,fwidth(angular)),angular);
   color+=vec3(.035,.045,.08)*exp(-angular*angular*32.)*uNight*(1.-cloudOpacity*.9);
   if(moonDisc>0.){
@@ -72,15 +85,15 @@ void main() {
       float k=float(i);vec2 center=vec2(hash(vec2(k,7.)),hash(vec2(k,19.)))*1.8-.9;
       float radius=.035+hash(vec2(k,33.))*.14;
       vec2 q=lunar-center;float dist=length(q)/radius;
-      relief+=exp(-square((dist-1.)*8.))*.12-exp(-dist*dist*3.)*.075;
-      normal.xy+=q/max(.02,length(q))*exp(-square((dist-.87)*6.))*.045;
+      relief+=exp(-square((dist-1.)*8.))*.055-exp(-dist*dist*3.)*.04;
+      normal.xy+=q/max(.02,length(q))*exp(-square((dist-.87)*6.))*.025;
     }
     normal.xy+=(vec2(noise2(lunar*78.),noise2(lunar.yx*84.))-.5)*.025;
     normal=normalize(normal);
     float phaseAngle=mix(uPhase,2.4,uCrescent);
     vec3 lunarLight=normalize(vec3(sin(phaseAngle),.07,cos(phaseAngle)));
     float lambert=max(0.,dot(normal,lunarLight));
-    float surface=.48+maria*.25+relief+(noise2(lunar*105.)-.5)*.035;
+    float surface=.51+maria*.15+relief+(noise2(lunar*105.)-.5)*.035;
     vec3 lunarColor=vec3(.78,.82,.87)*surface*(.035+lambert*.95);
     color=mix(color,lunarColor,moonDisc*uNight*(1.-cloudOpacity));
   }
@@ -101,7 +114,7 @@ void main() {
   vec2 starDelta=fract(grid)-offset;
   float star=exp(-dot(starDelta,starDelta)/max(.0003,starRadius*starRadius));
   float twinkle = .88 + .12 * sin(uTime * (.4 + seed) + seed * 80.0);
-  color += mix(vec3(.55,.67,1.),vec3(1.,.83,.65),hash(cell+12.)) * (1.+step(.994,seed)*1.9) * star * step(1.0-.11*uStars, seed) * twinkle * uNight * smoothstep(.03, .25, d.y) * (1.0 - cloudOpacity) * (1.0 - moonDisc);
+  color += mix(vec3(.55,.67,1.),vec3(1.,.83,.65),hash(cell+12.)) * (1.+step(.994,seed)*1.9) * star * step(1.0-(.045+.09*fbm(uv*9.))*uStars, seed) * twinkle * uNight * smoothstep(.03, .25, d.y) * (1.0 - cloudOpacity) * (1.0 - moonDisc);
   float milky=exp(-square((d.y-.45-d.x*.23)*7.));
   color+=vec3(.017,.019,.035)*milky*fbm(uv*25.)*uNight*(1.-cloud)*(1.-moonDisc)*step(.5,uQuality);
   float curtain = exp(-square((d.y - .3 - sin(uv.x * 23.0 + uTime * .015) * .07) * 13.0));

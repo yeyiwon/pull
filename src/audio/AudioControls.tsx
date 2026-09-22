@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
 import { audio, BUSES } from './AudioManager.ts'
 
@@ -13,7 +14,9 @@ function AudioDebug() {
     <small>Rain / snow / wind / visits: World preview</small>
   </details>
 }
-export default function AudioControls() {
+export default function AudioControls({mode='panel',slot=null,onMute}:{mode?:'hidden'|'panel';slot?:HTMLElement|null;onMute?:(muted:boolean)=>void}) {
+  const [volume,setVolume]=useState(.8),[track,setTrack]=useState('')
+  useEffect(()=>{if(mode!=='panel')return;const update=()=>setTrack(audio.diagnostics.music);update();const id=setInterval(update,1000);return()=>clearInterval(id)},[mode])
   const [muted, setMuted] = useState(false)
   useEffect(() => {
     const unlock = () => { if (!document.hidden) void audio.unlock() }
@@ -24,8 +27,10 @@ export default function AudioControls() {
     document.addEventListener('visibilitychange', visibility)
     return () => { window.removeEventListener('pointerdown', unlock); window.removeEventListener('keydown', unlock); window.removeEventListener('click', unlock); document.removeEventListener('visibilitychange', visibility); audio.dispose() }
   }, [])
-  return <aside className="audio-controls">
-    <button aria-label={muted ? 'Enable sound' : 'Mute sound'} aria-pressed={muted} title={muted ? 'Enable sound' : 'Mute sound'} onClick={() => { setMuted(!muted); audio.setMaster(muted ? .8 : 0); if (muted) void audio.unlock() }}>{muted ? '♫ ×' : '♫'}</button>
-    {import.meta.env.DEV && <AudioDebug />}
-  </aside>
+  return slot?createPortal(<section className="music-panel">
+    <p className="section-label">지금 흐르는 곡</p><p className="track-title">{track&&track!=='none'&&track!=='—'?track.replaceAll('_',' ').replaceAll('-',' '):'잠시 고요한 시간'}</p>
+    <button className="text-link" aria-pressed={muted} onClick={()=>{setMuted(!muted);onMute?.(!muted);audio.setMaster(muted?volume:0);if(muted)void audio.unlock()}}>{muted?'소리 켜기':'소리 끄기'} </button>
+    <label className="volume-label">음량 <span>{Math.round(volume*100)}%</span><input aria-label="Master volume" type="range" min="0" max="1" step=".01" value={volume} onChange={e=>{const v=Number(e.target.value);setVolume(v);if(!muted)audio.setMaster(v)}}/></label>
+    {import.meta.env.DEV&&<AudioDebug/>}
+  </section>,slot):null
 }

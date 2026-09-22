@@ -9,7 +9,7 @@ import { conversationPayload, WORLD_EVENT_LABELS } from '../src/conversation/tra
 const actions=MORU_ACTIONS.filter(a=>a.category==='gesture').map(a=>a.id)
 const nullableEnum=(values:readonly string[])=>({type:['string','null'],enum:[...values,null]})
 export const responseSchema={type:'object',additionalProperties:false,required:['speech','emotion','attention','action','emote'],properties:{
- speech:{type:'string',minLength:1,maxLength:120},emotion:nullableEnum(['calm','happy','curious','sleepy','warm']),
+ speech:{type:'string',minLength:1,maxLength:120},emotion:nullableEnum(['calm','happy','curious','sleepy','warm','sad','angry','annoyed']),
  attention:{type:'string',enum:['USER','SKY','WATER','HOME','WORLD','NONE']},action:nullableEnum(actions),emote:nullableEnum(['heart','sparkle','question','surprise','music']),
 }}
 export { compactIdentity as identity } from './moruIdentity.ts'

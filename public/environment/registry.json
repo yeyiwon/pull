@@ -1,1 +1,401 @@
-{"version":1,"assets":[]}
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "moru-meadow-cluster",
+      "category": "vegetation",
+      "url": "/environment/moru-meadow-cluster.glb",
+      "season": [
+        "spring",
+        "summer",
+        "autumn"
+      ],
+      "scaleRange": [
+        0.65,
+        0.65
+      ],
+      "placementType": "catalog",
+      "placements": [],
+      "lod": [],
+      "materialResponse": {
+        "wetness": true,
+        "snow": false
+      },
+      "review": {
+        "status": "CANDIDATE",
+        "semanticCategory": "VEGETATION_CLUSTER",
+        "scaleClass": "MICRO",
+        "densityCost": 1,
+        "triangles": 51717,
+        "vertices": 113662,
+        "bytes": 34656840,
+        "groundOffset": -0.5640629529953003,
+        "qualityTier": "NEAR_MID",
+        "allowedAreas": [
+          "MEADOW_WEST",
+          "MEADOW_EAST"
+        ],
+        "lodRole": "LOD0",
+        "autonomousEligible": false,
+        "preview": [
+          {
+            "position": [
+              2,
+              0.366641,
+              1
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "scale": 0.65
+          }
+        ]
+      }
+    },
+    {
+      "id": "pull-house-hero",
+      "category": "house",
+      "url": "/environment/pull-house-hero.glb",
+      "season": [
+        "spring",
+        "summer",
+        "autumn",
+        "winter"
+      ],
+      "scaleRange": [
+        5.7,
+        5.7
+      ],
+      "placementType": "catalog",
+      "placements": [],
+      "lod": [],
+      "materialResponse": {
+        "wetness": true,
+        "snow": false
+      },
+      "review": {
+        "status": "CANDIDATE",
+        "semanticCategory": "HOUSE_HERO",
+        "qualityTier": "HERO",
+        "allowedAreas": [
+          "HOME"
+        ],
+        "scaleClass": "HERO",
+        "lodRole": "LOD0",
+        "autonomousEligible": false,
+        "densityCost": 1,
+        "groundOffset": -0.793968,
+        "triangles": 119692,
+        "vertices": 141073,
+        "bytes": 36400428,
+        "preview": [
+          {
+            "position": [
+              9.6,
+              4.525618,
+              -25.3
+            ],
+            "rotation": [
+              0,
+              -0.12,
+              0
+            ],
+            "scale": 5.7
+          }
+        ]
+      }
+    },
+    {
+      "id": "pull-tree-hero-a",
+      "category": "tree",
+      "url": "/environment/pull-tree-hero-a.glb",
+      "season": [
+        "spring",
+        "summer",
+        "autumn",
+        "winter"
+      ],
+      "scaleRange": [
+        5.0,
+        5.0
+      ],
+      "placementType": "catalog",
+      "placements": [],
+      "lod": [],
+      "materialResponse": {
+        "wetness": true,
+        "snow": false
+      },
+      "review": {
+        "status": "CANDIDATE",
+        "semanticCategory": "TREE_HERO_A",
+        "qualityTier": "HERO",
+        "allowedAreas": [
+          "GROVE_WEST"
+        ],
+        "scaleClass": "HERO",
+        "lodRole": "LOD0",
+        "autonomousEligible": false,
+        "densityCost": 1,
+        "groundOffset": -0.949593,
+        "triangles": 55108,
+        "vertices": 125625,
+        "bytes": 43321808,
+        "preview": [
+          {
+            "position": [
+              -6,
+              4.76,
+              -19
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "scale": 5.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "pull-tree-hero-b",
+      "category": "tree",
+      "url": "/environment/pull-tree-hero-b.glb",
+      "season": [
+        "spring",
+        "summer",
+        "autumn",
+        "winter"
+      ],
+      "scaleRange": [
+        5.8,
+        5.8
+      ],
+      "placementType": "catalog",
+      "placements": [],
+      "lod": [],
+      "materialResponse": {
+        "wetness": true,
+        "snow": false
+      },
+      "review": {
+        "status": "CANDIDATE",
+        "semanticCategory": "TREE_HERO_B",
+        "qualityTier": "HERO",
+        "allowedAreas": [
+          "GROVE_WEST"
+        ],
+        "scaleClass": "HERO",
+        "lodRole": "LOD0",
+        "autonomousEligible": false,
+        "densityCost": 1,
+        "groundOffset": -0.952770,
+        "triangles": 29502,
+        "vertices": 66696,
+        "bytes": 66878696,
+        "preview": [
+          {
+            "position": [
+              -8,
+              5.526066,
+              -32
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "scale": 5.8
+          }
+        ]
+      }
+    },
+    {
+      "id": "pull-riverbank-cluster-a",
+      "category": "vegetation",
+      "url": "/environment/pull-riverbank-cluster-a.glb",
+      "season": [
+        "spring",
+        "summer",
+        "autumn",
+        "winter"
+      ],
+      "scaleRange": [
+        2.0,
+        2.0
+      ],
+      "placementType": "catalog",
+      "placements": [],
+      "lod": [],
+      "materialResponse": {
+        "wetness": true,
+        "snow": false
+      },
+      "review": {
+        "status": "CANDIDATE",
+        "semanticCategory": "RIVERBANK_CLUSTER",
+        "qualityTier": "HERO",
+        "allowedAreas": [
+          "RIVERBANK_EAST"
+        ],
+        "scaleClass": "SMALL",
+        "lodRole": "LOD0",
+        "autonomousEligible": false,
+        "densityCost": 1,
+        "groundOffset": -0.301402,
+        "triangles": 30822,
+        "vertices": 52042,
+        "bytes": 31905408,
+        "preview": [
+          {
+            "position": [
+              7.2,
+              0.41,
+              -3
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "scale": 2.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "pull-mountain-a",
+      "category": "landmark",
+      "url": "/environment/pull-mountain-a.glb",
+      "season": ["spring", "summer", "autumn", "winter"],
+      "scaleRange": [85, 85],
+      "placementType": "catalog",
+      "placements": [],
+      "lod": [],
+      "materialResponse": {"wetness": false, "snow": false},
+      "review": {
+        "status": "CANDIDATE",
+        "semanticCategory": "DISTANT_MOUNTAIN_A",
+        "qualityTier": "HERO",
+        "allowedAreas": ["FAR_WEST"],
+        "scaleClass": "FAR",
+        "lodRole": "LOD0",
+        "autonomousEligible": false,
+        "densityCost": 1,
+        "groundOffset": -0.319535,
+        "triangles": 25062,
+        "vertices": 12533,
+        "bytes": 451904,
+        "preview": [{"position": [-58, 20.8, -165], "rotation": [0, 0.18, 0], "scale": 65}]
+      }
+    },
+    {
+      "id": "pull-mountain-b",
+      "category": "landmark",
+      "url": "/environment/pull-mountain-b.glb",
+      "season": [
+        "spring",
+        "summer",
+        "autumn",
+        "winter"
+      ],
+      "scaleRange": [
+        55,
+        55
+      ],
+      "placementType": "catalog",
+      "placements": [],
+      "lod": [],
+      "materialResponse": {
+        "wetness": false,
+        "snow": false
+      },
+      "review": {
+        "status": "CANDIDATE",
+        "semanticCategory": "DISTANT_MOUNTAIN_B",
+        "qualityTier": "HERO",
+        "allowedAreas": [
+          "FAR_EAST"
+        ],
+        "scaleClass": "FAR",
+        "lodRole": "LOD0",
+        "autonomousEligible": false,
+        "densityCost": 1,
+        "groundOffset": -0.952335,
+        "triangles": 21699,
+        "vertices": 21638,
+        "bytes": 24404788,
+        "preview": [
+          {
+            "position": [
+              98,
+              52.378,
+              -220
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "scale": 55
+          }
+        ]
+      }
+    },
+    {
+      "id": "pull-bench-a",
+      "category": "prop",
+      "url": "/environment/pull-bench-a.glb",
+      "season": ["spring", "summer", "autumn", "winter"],
+      "scaleRange": [1.1, 1.1],
+      "placementType": "catalog",
+      "placements": [],
+      "lod": [],
+      "materialResponse": {"wetness": true, "snow": true},
+      "review": {
+        "status": "CANDIDATE",
+        "semanticCategory": "BENCH",
+        "qualityTier": "NEAR_MID",
+        "allowedAreas": ["RESTING_AREA", "LAKE_VIEW"],
+        "scaleClass": "SMALL",
+        "lodRole": "LOD0",
+        "autonomousEligible": false,
+        "densityCost": 1,
+        "groundOffset": -0.528486,
+        "triangles": 10695,
+        "vertices": 13131,
+        "bytes": 26034132,
+        "preview": [{"position": [-19.582, 0.581335, 59], "rotation": [0, 0, 0], "scale": 1.1}]
+      }
+    },
+    {
+      "id": "pull-lamppost-a",
+      "category": "prop",
+      "url": "/environment/pull-lamppost-a.glb",
+      "season": ["spring", "summer", "autumn", "winter"],
+      "scaleRange": [1.8, 1.8],
+      "placementType": "catalog",
+      "placements": [],
+      "lod": [],
+      "materialResponse": {"wetness": true, "snow": true},
+      "review": {
+        "status": "CANDIDATE",
+        "semanticCategory": "LAMPPOST",
+        "qualityTier": "NEAR_MID",
+        "allowedAreas": ["QUIET_PATH", "LAKE_VIEW"],
+        "scaleClass": "SMALL",
+        "lodRole": "LOD0",
+        "autonomousEligible": false,
+        "densityCost": 1,
+        "groundOffset": -0.952162,
+        "triangles": 12156,
+        "vertices": 13299,
+        "bytes": 26022708,
+        "preview": [{"position": [34.994, 1.713891, 102], "rotation": [0, 0, 0], "scale": 1.8}]
+      }
+    }
+  ]
+}

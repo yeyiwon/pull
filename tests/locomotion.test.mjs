@@ -113,9 +113,15 @@ test('camera-relative movement preserves idle facing and can reach the landmark'
     const expected = new Vector3(-Math.sin(yaw), 0, -Math.cos(yaw)).multiplyScalar(2.1).add(new Vector3(0, 0, 1))
     assert.ok(p.position.distanceTo(expected) < 1e-7)
   }
-  const p = createPlayer(); p.cameraYaw = -Math.atan2(12, 58); p.keys.add('KeyW'); p.keys.add('ShiftLeft')
-  const frames = Math.round(Math.hypot(12, 58) / 4.6 * 60)
-  for (let i = 0; i < frames; i++) movePlayer(p, 1 / 60)
+  const p = createPlayer(); p.keys.add('KeyW'); p.keys.add('ShiftLeft')
+  // The enlarged home is a real obstacle. Reach the landmark via its west side,
+  // rather than asserting that a straight line may pass through its wall.
+  for(const target of [new Vector3(0,0,-38),new Vector3(12,0,-57)]){
+    for(let i=0;i<1200&&Math.hypot(target.x-p.position.x,target.z-p.position.z)>.15;i++){
+      p.cameraYaw=-Math.atan2(target.x-p.position.x,p.position.z-target.z)
+      movePlayer(p,1/60)
+    }
+  }
   assert.ok(p.position.distanceTo(new Vector3(12, 0, -57)) < 3)
 })
 

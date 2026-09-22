@@ -1,7 +1,10 @@
+import { readFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 const git=(...args)=>execFileSync('git',args,{encoding:'utf8',maxBuffer:32*1024*1024})
 const sourceNames=new Set(['full-life.glb','moru_rescue.glb','moru-funnydancing-03.glb','moru-love-you-pop-dance.glb','moru-penguin-walk.glb','moru-pod-baby-groove.glb','moru-regular-jump.glb','moru-skip-forward-inplace.glb','moru-superlove-pop-dance.glb','moru-you-groove.glb'])
 const approvedLarge=new Set(['public/moru/moru-walk.glb'])
+const reviewed=JSON.parse(readFileSync(new URL('./reviewed-environment-assets.json',import.meta.url),'utf8'))
 const limit=5_000_000
 function forbidden(path){
  const lower=path.toLowerCase(),base=lower.split('/').at(-1)
@@ -9,6 +12,7 @@ function forbidden(path){
 }
 function inspect(oid,path){
  const size=Number(git('cat-file','-s',oid).trim())
+ if(reviewed[path]&&!forbidden(path)){const blob=execFileSync('git',['cat-file','blob',oid],{maxBuffer:100*1024*1024});return size===reviewed[path].bytes&&createHash('sha256').update(blob).digest('hex')===reviewed[path].sha256?null:`${path}: reviewed asset hash/size changed`}
  return forbidden(path)?`${path}: source/secret/generated path`:size>limit&&!approvedLarge.has(path)?`${path}: ${size} bytes exceeds reviewed 5MB limit`:null
 }
 const issues=[]

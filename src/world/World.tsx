@@ -1,5 +1,6 @@
+import { worldInterface } from '../ui/interface.ts'
 import { conversationActive } from '../conversation/session.ts'
-import { Component, Suspense, useEffect } from 'react'
+import { Component, Suspense, useEffect, useRef } from 'react'
 import type { ReactNode, RefObject } from 'react'
 import { MOVE_KEYS } from './locomotion.ts'
 import { moru } from '../characters/expression.ts'
@@ -27,11 +28,12 @@ class CharacterBoundary extends Component<
 }
 
 function World({ onReady, onError, player, bubble }: { onReady: () => void; onError: () => void; player: RefObject<Player>; bubble: RefObject<HTMLDivElement | null> }) {
+  const selection=useRef({x:0,y:0})
   useEffect(() => {
     const input = player.current
     function down(event: KeyboardEvent) {
       if(conversationActive())return
-      if (event.target instanceof HTMLElement && (event.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName))) return
+      if (event.target instanceof HTMLElement && (event.target.isContentEditable || event.target.closest('button,summary,[role=dialog]') || /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName))) return
       if (!MOVE_KEYS.has(event.code) || event.metaKey || event.ctrlKey || event.altKey) return
       event.preventDefault()
       if (event.repeat) return
@@ -66,7 +68,7 @@ function World({ onReady, onError, player, bubble }: { onReady: () => void; onEr
       <Environment player={player} />
       <CharacterBoundary onError={onError}>
         <Suspense fallback={null}>
-          <Character player={player} onReady={onReady} />
+          <group onPointerDown={e=>{selection.current={x:e.clientX,y:e.clientY}}} onPointerUp={e=>{if(Math.hypot(e.clientX-selection.current.x,e.clientY-selection.current.y)<6&&!conversationActive()){moru.perform('listen','user',false);worldInterface.open('moru')}}}><Character player={player} onReady={onReady} /></group>
           <SpeechBubble player={player} element={bubble} />
         </Suspense>
       </CharacterBoundary>

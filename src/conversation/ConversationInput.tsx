@@ -17,14 +17,14 @@ export default function ConversationInput({player,disabled}:{player:RefObject<Pl
   return()=>{window.removeEventListener('keydown',escape);viewport?.removeEventListener('resize',resize);viewport?.removeEventListener('scroll',resize);clearControls(currentPlayer)}
  },[active,player])
  useEffect(()=>{if(state.phase==='composing')input.current?.focus();else input.current?.blur()},[state.phase])
- if(!active)return <button className="moru-talk" disabled={disabled||!state.ready} onClick={()=>conversationSession.open()}>Moru · 말 걸기</button>
+ if(!active)return null
  return <>
   <div className="conversation-shield" onPointerDown={()=>conversationSession.cancel()} aria-hidden="true"/>
-  <form ref={form} className="moru-conversation" aria-label="Moru에게 말 걸기" onSubmit={async e=>{e.preventDefault();if(await conversationSession.send(text))setText('')}}>
-   <label className="sr-only" htmlFor="moru-message">Moru에게 할 말</label>
-   <input id="moru-message" ref={input} value={text} onChange={e=>setText(e.target.value)} maxLength={280} autoComplete="off" enterKeyHint="send" placeholder="Moru에게 작은 한마디…" disabled={state.phase!=='composing'}/>
-   <button type="submit" disabled={!text.trim()||state.phase!=='composing'} aria-label="말 보내기">↗</button>
-   <button type="button" onClick={()=>conversationSession.cancel()} aria-label="대화 닫기">×</button>
+  <form ref={form} className="moru-conversation" aria-label="모루에게 말 걸기" onSubmit={async e=>{e.preventDefault();if(await conversationSession.send(text))setText('')}}>
+   <label className="sr-only" htmlFor="moru-message">모루에게 할 말</label>
+   <input id="moru-message" ref={input} value={text} onChange={e=>setText(e.target.value)} maxLength={280} autoComplete="off" enterKeyHint="send" placeholder="모루에게 말하기…" disabled={disabled||state.phase!=='composing'}/>
+   <button type="submit" disabled={!text.trim()||state.phase!=='composing'} aria-label="말 보내기"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m4 12 15-7-5.5 14-2.2-6.3L4 12Z"/><path d="m11.3 12.7 7.7-7.7"/></svg></button>
+   <button type="button" onClick={()=>conversationSession.cancel()} aria-label="대화 닫기"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M5 5 19 19M19 5 5 19"/></svg></button>
    <span className="conversation-notice" role="status">{state.notice}</span>
   </form>
   <span className="sr-only" role="status" aria-live="polite">{state.phase==='speaking'?state.reply:''}</span>

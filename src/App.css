@@ -208,3 +208,10 @@
 .moru-fx .question { color: #d6e4ed; }
 .moru-fx .joy { color: #e5d5ed; }
 .moru-fx .surprise { color: #e9dfc6; }
+.moru-reaction[data-emotion="warm"] .moru-speech,.moru-reaction[data-emotion="happy"] .moru-speech{color:#fff0ef;text-shadow:0 1px 3px #151d35d9,0 2px 12px #17203991,0 0 13px #eda7b477}
+.moru-reaction[data-emotion="sad"] .moru-speech{color:#d9d9e6;transform:translateY(4px)}
+.moru-reaction[data-emotion="angry"] .moru-speech,.moru-reaction[data-emotion="annoyed"] .moru-speech{color:#f3d4ce;letter-spacing:.015em}
+.moru-fx .warm,.moru-fx .happy{color:#f1c4d3}
+.moru-fx .sad{color:#bbc4df}
+.moru-fx .angry,.moru-fx .annoyed{color:#dfb5ae}
+.moru-fx .reaction-blush{position:absolute;width:17px;height:9px;border-radius:50%;background:radial-gradient(ellipse,#ef9bb1 0%,#efa6bc55 54%,transparent 100%);filter:blur(2px);transform:translate(-50%,-50%);pointer-events:none}

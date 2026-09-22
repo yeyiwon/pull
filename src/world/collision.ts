@@ -1,33 +1,37 @@
 import { DOOR, homeState, homeWorldPoint } from './homeSpace.ts'
 import type { Vector3 } from 'three'
-import { CRYSTALS, FLOWERS, RIDGES, RING, HALO_ARCS, ROCKS, TREES, MUSHROOMS, HOME } from './worldLayout.ts'
+import { isWorldReconstructionV3 } from './worldLayoutMode.ts'
+import { promenadeBank } from './lakesideRoute.ts'
+import { CRYSTALS, FLOWERS, RIDGES, ROCKS, TREES, MUSHROOMS, HOME } from './worldLayout.ts'
 export type Obstacle = { x: number; z: number; rx: number; rz: number; angle: number; bottom: number; top: number; box?: boolean }
 const shapes = (items: readonly (readonly number[])[], turn: number): Obstacle[] => items.map(([x, y, z, sx, sy, sz], i) => ({
   x, z, rx: sx * 1.22, rz: sz * 1.22, angle: i * turn, bottom: y - sy * 1.2, top: y + sy * 1.2,
 }))
-function wall(x: number, z: number, rx: number, rz: number): Obstacle { return { ...homeWorldPoint(x,z), rx, rz, angle: HOME.yaw, bottom: -.5, top: 4.8, box: true } }
+function wall(x: number, z: number, rx: number, rz: number): Obstacle { return { ...homeWorldPoint(x,z), rx:rx*HOME.scale, rz:rz*HOME.scale, angle: HOME.yaw, bottom: -.5, top: 4.8*HOME.scale, box: true } }
 export const HOME_DOOR = wall(DOOR.x, DOOR.z, DOOR.width / 2, .1)
 export const HOME_WALLS = [wall(-4,0,.15,3.5), wall(4,0,.15,3.5), wall(0,-3.5,4,.15), wall(-1.7,3.5,2.3,.15), wall(3.55,3.5,.45,.15), HOME_DOOR]
 export const WORLD_OBSTACLES: readonly Obstacle[] = [
   ...HOME_WALLS,
-  {...wall(-2.5,.5,1.1,.65),top:1.7},{...wall(-.9,-.9,.55,.55),top:.8},
+  {...wall(-2.5,.5,1.1,.65),top:1.7*HOME.scale},{...wall(-.9,-.9,.55,.55),top:.8*HOME.scale},
   ...TREES.map(([x, z, s]) => ({ x, z, rx: s * .65, rz: s * .65, angle: 0, bottom: 0, top: 7 * s })),
   ...MUSHROOMS.map(([x, z, s]) => ({ x, z, rx: s * .5, rz: s * .5, angle: 0, bottom: 0, top: 3 * s })),
-  ...shapes(ROCKS, .7), ...shapes(RIDGES, .3),
+  // The two rear skyline masses are visual-only; their rotated footprints cover the lake walk.
+  ...shapes(ROCKS, .7), ...shapes(RIDGES, .3).filter((_,i)=>i!==4&&i!==9),
   ...FLOWERS.map(([x, z, s]) => ({ x, z, rx: s * .85, rz: s * .85, angle: 0, bottom: 0, top: 6 * s })),
   ...CRYSTALS.map(([x, z, s]) => ({ x, z, rx: s * .9, rz: s * .9, angle: 0, bottom: 0, top: 3.8 * s })),
-  // Match the thin, incomplete halo; its missing arcs must not leave invisible walls.
-  ...Array.from({ length: 48 }, (_, i) => i / 48 * Math.PI * 2).filter(t => HALO_ARCS.some(([start,arc]) => (t-start+Math.PI*2)%(Math.PI*2)<=arc)).map(t => {
-    const x = Math.cos(t) * RING.radius, y = Math.sin(t) * RING.radius * 1.2
-    const tiltedX = x * Math.cos(RING.tilt) - y * Math.sin(RING.tilt)
-    const height = RING.y + x * Math.sin(RING.tilt) + y * Math.cos(RING.tilt)
-    return { x: RING.x + tiltedX * Math.cos(RING.yaw), z: RING.z - tiltedX * Math.sin(RING.yaw),
-      rx: .08, rz: .06, angle: RING.yaw, bottom: height - .07, top: height + .07 }
-  }),
+  // The Arc is atmospheric sky now, with no invisible ground collider.
+]
+const heroTree=promenadeBank(43,-1)
+const WORLD_V3_OBSTACLES:readonly Obstacle[]=[
+ ...HOME_WALLS,
+ {...wall(-5.5,-1,1.5,2.4),top:8*HOME.scale},
+ {...wall(.85,-2.85,.9,.35),top:1.05*HOME.scale},
+ {...wall(-2.5,.5,1.1,.65),top:1.7*HOME.scale},{...wall(-.9,-.9,.55,.55),top:.8*HOME.scale},
+ {x:heroTree.x-15,z:43,rx:1.7,rz:1.7,angle:0,bottom:0,top:16},
 ]
 
 export const MORU_COLLISION={radius:.65,height:2.8}
-export function moveWithCollisions(position: Vector3, direction: Vector3, distance: number, obstacles = WORLD_OBSTACLES, body = MORU_COLLISION) {
+export function moveWithCollisions(position: Vector3, direction: Vector3, distance: number, obstacles = isWorldReconstructionV3()?WORLD_V3_OBSTACLES:WORLD_OBSTACLES, body = MORU_COLLISION) {
   // Small steps prevent tunneling, including at low frame rates. No mesh raycasts.
   const steps = Math.max(1, Math.ceil(Math.abs(distance) / .12))
   const dx = direction.x * distance / steps, dz = direction.z * distance / steps
@@ -56,7 +60,8 @@ export function moveWithCollisions(position: Vector3, direction: Vector3, distan
       position.x += pushX * cos + pushZ * sin
       position.z += -pushX * sin + pushZ * cos
     }
-    position.x = Math.max(-90, Math.min(90, position.x))
-    position.z = Math.max(-90, Math.min(90, position.z))
+    const limit=isWorldReconstructionV3()?124:90
+    position.x = Math.max(-limit, Math.min(limit, position.x))
+    position.z = Math.max(-90, Math.min(isWorldReconstructionV3()?184:130, position.z))
   }
 }

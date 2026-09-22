@@ -7,7 +7,7 @@ import { createPlayer, movePlayer, setTouchIntent, requestAction } from '../src/
 test('local phases, wraparound, and continuous profile boundaries', () => {
  for (const [h, phase] of [[0,'NIGHT'],[5,'DAWN'],[7,'MORNING'],[10,'MORNING'],[11,'DAY'],[17,'SUNSET'],[19,'EVENING'],[21,'NIGHT']]) assert.equal(phaseAt(h), phase)
  assert.equal(sampleTime(24).hour, 0)
- for (const h of [0,5,7,11,17,19,21,24]) {
+ for (const h of [0,4,5,7,11,16,17,18,19,20,21,24]) {
    const a=sampleTime(h-.00001), b=sampleTime(h+.00001)
    for (const key of ['top','horizon','fog','light']) {
      const ca=new Color(a.from[key]).lerp(new Color(a.to[key]),a.blend)

@@ -22,7 +22,7 @@ export function createMoruMind(options:{execute:(intent:Intent)=>Execution;rando
  const working={actions:[] as {id:string;at:number}[],lines:[] as {text:string;at:number}[],observations:[] as string[]}
  const short:MeaningfulMemory[]=[];const seen=new Set<string>()
  try{for(const e of options.longMemory?.recall().slice(-64)??[]){if(typeof e.key==='string')seen.add(e.key)}}catch{/* Memory availability never blocks local presence. */}
- let now=0,nextReaction=5+random()*4,age=0,nextIdle=25+random()*25,attention:AttentionTarget='NONE'
+ let now=0,nextReaction=5+random()*4,age=0,nextIdle=16+random()*14,attention:AttentionTarget='NONE'
  let previous:Observation|null=null,current:Observation|null=null,alive=true,pending:Event|null=null,conversationPending=false
  let conversationLock=false
  let lastConversation=-100
@@ -51,11 +51,11 @@ export function createMoruMind(options:{execute:(intent:Intent)=>Execution;rando
   working.actions=working.actions.slice(-12);working.lines=working.lines.slice(-24)
   const expressed=!!(result.action||result.speech||result.emote)
   lastIntent=expressed?{...intent,action:result.action,speech:result.speech}:waitIntent('presentation cooldown')
-  if(expressed){attention=intent.attention;age=0;nextReaction=now+32+random()*30;trace(`ACT ${result.action??'—'} · SAY ${result.speech??'—'} · ATTENTION ${attention}`)}
+  if(expressed){attention=intent.attention;age=0;nextReaction=now+20+random()*14;trace(`ACT ${result.action??'—'} · SAY ${result.speech??'—'} · ATTENTION ${attention}`)}
   return lastIntent
  }
  function line(category:LineCategory){
-  const candidates=AMBIENT_LINES[category].filter(text=>!working.lines.some(x=>x.text===text&&now-x.at<300)&&!current?.recentSpeech.includes(text))
+  const candidates=AMBIENT_LINES[category].filter(text=>!working.lines.some(x=>x.text===text&&now-x.at<90)&&!current?.recentSpeech.includes(text))
   return candidates.length?candidates[Math.min(candidates.length-1,Math.floor(random()*candidates.length))]:null
  }
  function choose(event:Event):Intent{
@@ -104,7 +104,7 @@ export function createMoruMind(options:{execute:(intent:Intent)=>Execution;rando
   if(!available(o)||conversationPending||conversationLock){lastIntent=waitIntent('direct action priority');publish(lastIntent.reason);return}
   if(now<nextReaction){lastIntent=waitIntent('cooldown');publish(lastIntent.reason);return}
   let event=pending;pending=null
-  if(!event&&now>=nextIdle&&o.userIdleDuration>=12){event=ambient(o);nextIdle=now+18+random()*35}
+  if(!event&&now>=nextIdle&&o.userIdleDuration>=10){event=ambient(o);nextIdle=now+14+random()*18}
   if(!event){lastIntent=waitIntent('nothing salient');publish(lastIntent.reason);return}
   const novelty=seen.has(event.key)?0:1
   const chance=Math.min(.95,event.importance*.65+state.curiosity*.17+state.attention*.1+novelty*.1)

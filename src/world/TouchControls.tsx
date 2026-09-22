@@ -18,6 +18,7 @@ export default function TouchControls({ player, disabled }: { player: RefObject<
     document.addEventListener('visibilitychange', hide)
     return () => { reset(); window.removeEventListener('blur', reset); document.removeEventListener('visibilitychange', hide) }
   })
+  useEffect(()=>{if(disabled)reset()})
   function move(e: PointerEvent<HTMLDivElement>) {
     if (active.current !== e.pointerId) return
     const r = e.currentTarget.getBoundingClientRect()
@@ -28,6 +29,7 @@ export default function TouchControls({ player, disabled }: { player: RefObject<
     setTouchIntent(player.current, x, z)
     if (knob.current) knob.current.style.transform = `translate(${x * 34}px, ${z * 34}px)`
   }
+  if(disabled)return null
   return <div ref={surface} className="touch-stick" aria-label="Move joystick" role="group" onPointerDown={e => {
     if (disabled || active.current !== -1) return
     e.currentTarget.dataset.active="true"; active.current = e.pointerId; e.currentTarget.setPointerCapture(e.pointerId); move(e)

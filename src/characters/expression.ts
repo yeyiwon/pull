@@ -22,7 +22,7 @@ export function createMoruExpression(random:()=>number=Math.random) {
     if(origin==='user')userVersion++
     pending={...reaction,speech:text,duration:Math.max(1.5,Math.min(origin==='conversation'?8:3,reaction.duration))}
     busyUntil=time+pending.duration;nextEmote=time+6
-    if(text){recent.set(text,time);nextSpeech=time+35+random()*30;nextUserSpeech=time+4}
+    if(text){recent.set(text,time);nextSpeech=time+20+random()*16;nextUserSpeech=time+4}
     return true
   }
   function perform(id:MoruActionId,origin:Origin='user',decorate=true) {
@@ -64,7 +64,7 @@ export function createMoruExpression(random:()=>number=Math.random) {
     returned(){returning=true;nextAmbient=Math.min(nextAmbient,time+8+random()*12)},
     update(delta:number,next:AmbientContext){
       time+=delta;context=next;idle=next.idle?idle+delta:0
-      for(const [line,at]of recent)if(time-at>240)recent.delete(line)
+      for(const [line,at]of recent)if(time-at>90)recent.delete(line)
       if(autonomy&&time>=nextAmbient){
         if(idle>=12){
           const seasonal=random()<.2 && context.season in AMBIENT_LINES ? context.season as LineCategory:undefined

@@ -10,6 +10,12 @@ export function createConversationSession(provider:MoruConversationProvider=new 
  let port:Port|null=null,token=0,abort:AbortController|null=null,release:ReturnType<typeof setTimeout>|undefined
  let state={phase:'closed' as ConversationPhase,ready:false,notice:'',reply:'',revision:0}
  const listeners=new Set<()=>void>(),turns:Turn[]=[]
+ const historyKey='pull-moru-conversation-history-v1'
+ const history:Turn[]=[]
+ if(typeof localStorage!=='undefined')try{
+  const saved:unknown=JSON.parse(localStorage.getItem(historyKey)??'[]')
+  if(Array.isArray(saved))for(const turn of saved.slice(-60))if(turn&&typeof turn.user==='string'&&typeof turn.moru==='string')history.push({user:turn.user.slice(0,280),moru:turn.moru.slice(0,120)})
+ }catch{/* Private mode or unavailable storage leaves conversation usable. */}
  const debug={context:null as Context|null,raw:null as unknown,parsed:null as Response|null,rejected:[] as string[],outcome:'none'}
  function update(patch:Partial<typeof state>){state={...state,...patch,revision:state.revision+1};listeners.forEach(fn=>fn())}
  function cancel(){token++;abort?.abort();abort=null;if(release)clearTimeout(release);port?.cancel();port?.hold(false);update({phase:'closed',notice:''})}
@@ -38,12 +44,15 @@ export function createConversationSession(provider:MoruConversationProvider=new 
   if(token!==id||!port)return false
   debug.raw=raw;const parsed=parseResponse(raw,context);debug.parsed=parsed.response;debug.rejected=parsed.rejected
   if(!parsed.response.speech||!port.speak(parsed.response)){update({phase:'composing',notice:'잠깐 뒤에 다시 말 걸어줘.'});return false}
-  turns.push({user:clean,moru:parsed.response.speech});if(turns.length>8)turns.shift()
+  const turn={user:clean,moru:parsed.response.speech}
+  turns.push(turn);if(turns.length>8)turns.shift()
+  history.push(turn);if(history.length>60)history.shift()
+  if(typeof localStorage!=='undefined')try{localStorage.setItem(historyKey,JSON.stringify(history))}catch{/* Storage is optional. */}
   update({phase:'speaking',notice:'',reply:parsed.response.speech})
   release=setTimeout(()=>{if(token!==id)return;port?.hold(false);update({phase:'closed',notice:''})},Math.min(8000,2800+parsed.response.speech.length*70))
   return true
  }
- return {subscribe(fn:()=>void){listeners.add(fn);return()=>{listeners.delete(fn)}},getSnapshot:()=>state,debug,turns,open,send,cancel,
+ return {subscribe(fn:()=>void){listeners.add(fn);return()=>{listeners.delete(fn)}},getSnapshot:()=>state,getHistory:()=>history.slice(),debug,turns,open,send,cancel,
   attach(next:Port){port=next;update({ready:true});return()=>{if(port===next){cancel();port=null;update({ready:false})}}},
  }
 }

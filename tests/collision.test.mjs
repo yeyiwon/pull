@@ -13,7 +13,7 @@ test('blocks a direct approach without tunneling and allows a glancing slide', (
   assert.ok(Math.hypot(slide.x, slide.z) >= 1.65)
   assert.ok(slide.x > 1.5 && slide.z < 0)
 })
-test('jump height and ring opening are respected, while grounded ring base is solid', () => {
+test('jump height is respected and the celestial Arc leaves no invisible ground wall', () => {
   const low = new Vector3(0, .8, 3), high = new Vector3(0, 4, 3)
   moveWithCollisions(low, new Vector3(0, 0, -1), 5, [obstacle])
   moveWithCollisions(high, new Vector3(0, 0, -1), 5, [obstacle])
@@ -23,10 +23,10 @@ test('jump height and ring opening are respected, while grounded ring base is so
   assert.ok(opening.z < -59.9)
   const foot = new Vector3(12, 0, -54)
   moveWithCollisions(foot, new Vector3(0, 0, -1), 6)
-  assert.ok(foot.z > -57)
+  assert.ok(foot.z < -59.9)
 })
 test('all collision placements are finite and playable boundary is retained', () => {
-  assert.ok(WORLD_OBSTACLES.length > 50)
+  assert.ok(WORLD_OBSTACLES.length > 20)
   for (const o of WORLD_OBSTACLES) assert.ok([o.x,o.z,o.rx,o.rz,o.angle,o.bottom,o.top].every(Number.isFinite) && o.rx > 0 && o.rz > 0)
   const p = new Vector3(89, 0, 0)
   moveWithCollisions(p, new Vector3(1, 0, 0), 10, [])

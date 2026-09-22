@@ -3,7 +3,7 @@ import type { MoruEvent, Player } from './locomotion.ts'
 type ReactionEvent = MoruEvent | 'REPEATED_JUMP' | 'LONG_IDLE' | 'RUN_STOP' | 'ENTRY' | 'LATE_NIGHT' | 'BRAIN'
 export type ReactionFX = 'HEARTS' | 'SPARKLES' | 'QUESTION' | 'JOY' | 'SURPRISE'
 // Optional channels are requests, not a claim that the current asset supports them.
-export type Reaction = { event: ReactionEvent; speech?: string; fx?: ReactionFX; duration: number; expression?: 'SMILE' | 'HAPPY' | 'CURIOUS'; sound?: string }
+export type Reaction = { event: ReactionEvent; speech?: string; fx?: ReactionFX; duration: number; expression?: 'SMILE' | 'HAPPY' | 'CURIOUS'; emotion?: 'calm'|'happy'|'curious'|'sleepy'|'warm'|'sad'|'angry'|'annoyed'|null; typing?:boolean; sound?: string }
 // Events remain independent of presentation. Future sound assets can be mapped here.
 const lines: Partial<Record<ReactionEvent, readonly string[]>> = {
   ENTRY: ['왔네', 'ㅎㅇ'], LATE_NIGHT: ['안 자?', '새벽이네', '...'],

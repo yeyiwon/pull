@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/prune-build-sources.mjs",
     "lint": "oxlint",
     "check:assets": "node scripts/check-runtime-assets.mjs",
     "preview": "vite preview",
@@ -20,6 +20,7 @@
     "three": "^0.186.0"
   },
   "devDependencies": {
+    "@sparkjsdev/spark": "^2.2.0",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",

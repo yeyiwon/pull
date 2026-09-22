@@ -128,7 +128,7 @@ export class AudioManager {
   if(!assets[id])return
   const event=id.startsWith('event_'),now=c.currentTime,key=event?'event':group
   if(now<(this.failures.get(id)??-1))return
-  const cooldown=Math.max((f?.cooldownMs??(event?30000:100))/1000,group.includes('emotion')?8:0)
+  const cooldown=group==='moru-expression'?0:Math.max((f?.cooldownMs??(event?30000:100))/1000,group.includes('emotion')?8:0)
   if(now<(this.cooldowns.get(key)??-1))return
   const active=[...this.voices.values()].filter(g=>g===key).length+(this.pending.get(key)??0)
   if(active>=Math.min(f?.maxConcurrent??1,key==='footstep'?2:3)||this.voices.size+[...this.pending.values()].reduce((a,b)=>a+b,0)>=8)return

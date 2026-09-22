@@ -1,11 +1,13 @@
+import { environmentState as env } from '../world/environmentState.ts'
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { RING, HALO_ARCS } from '../world/worldLayout.ts'
 import { branch } from '../world/artGeometry.ts'
 import { artMaterial, updateArtMaterial } from './artMaterial.ts'
-import { BufferGeometry, Float32BufferAttribute } from 'three'
+import { BufferGeometry, Float32BufferAttribute, MeshStandardMaterial } from 'three'
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 
+function atmosphericStone(m:MeshStandardMaterial){m.color.set('#9eafba');m.emissive.copy(env.skyHorizon);m.emissiveIntensity=.5;m.transparent=true;m.opacity=.38+env.night*.12;m.depthWrite=false;m.roughness=.94;m.metalness=0}
 function carvedArc(start:number,arc:number,seed:number){
  const p:number[]=[],indices:number[]=[],cross=[[-1,-.7],[-.8,-1],[.8,-1],[1,-.7],[1,.7],[.8,1],[-.8,1],[-1,.7]]
  for(let i=0;i<=12;i++){
@@ -27,10 +29,12 @@ export default function WorldHalo(){
   }))
   const geometry=mergeGeometries(parts);parts.forEach(g=>g.dispose())
   const roots=branch([[-2,-8.3,0],[-3,-6.5,.05],[-5,-4.8,.1],[-6.7,-1.3,.16]],.12,.018)
-  return {geometry,roots,stone:artMaterial('#a5b6aa'),moss:artMaterial('#708c78','bark')}
+  return {geometry,roots,stone:artMaterial('#b7c6c7'),moss:artMaterial('#708c78','bark')}
  },[])
  useEffect(()=>()=>{r.geometry.dispose();r.roots.dispose();r.stone.dispose();r.moss.dispose()},[r])
- useFrame((_,dt)=>{time.current+=dt;updateArtMaterial(r.stone,time.current);updateArtMaterial(r.moss,time.current)})
+ useFrame((_,dt)=>{time.current+=dt;updateArtMaterial(r.stone,time.current);updateArtMaterial(r.moss,time.current)
+  atmosphericStone(r.stone)
+ })
  return <group position={[RING.x,RING.y,RING.z]} rotation={[0,RING.yaw,RING.tilt]} scale={[1,1.2,.65]}>
   <mesh geometry={r.geometry} material={r.stone} castShadow receiveShadow/>
   <mesh geometry={r.roots} material={r.moss}/>

@@ -8,7 +8,7 @@ import type { AttentionTarget, BrainEmote, InternalState, MeaningfulMemory, Obse
 export type Turn={user:string;moru:string}
 export type Context={continuity?:Continuity;research?:ResearchSummary;userMessage:string;world:Pick<Observation,'season'|'timeOfDay'|'weather'|'location'|'indoor'|'nearWater'|'skyEvent'>;moru:InternalState&{target:AttentionTarget};recentConversation:Turn[];recentEvents:MeaningfulMemory[]}
 export interface MoruConversationProvider{respond(context:Context,signal:AbortSignal):Promise<unknown>}
-export type Response={speech:string;emotion:'calm'|'happy'|'curious'|'sleepy'|'warm'|null;attention:AttentionTarget;action:MoruActionId|null;emote:BrainEmote|null}
+export type Response={speech:string;emotion:'calm'|'happy'|'curious'|'sleepy'|'warm'|'sad'|'angry'|'annoyed'|null;attention:AttentionTarget;action:MoruActionId|null;emote:BrainEmote|null}
 export function buildContext(userMessage:string,o:Observation,state:InternalState,target:AttentionTarget,turns:Turn[],events:MeaningfulMemory[],research?:ResearchSummary,continuity?:Continuity):Context{
  const {season,timeOfDay,weather,location,indoor,nearWater,skyEvent}=o
  return structuredClone({...(continuity&&continuityQuestion(userMessage)?{continuity:parseContinuity(continuity)}:{}),...(research&&/궁금|관심|연구|탐구|발견|뭐.*생각|뭐.*하|뭐해|없을 때|없는 동안|뭐했|뭐 했/.test(userMessage)?{research:parseResearchSummary(research)}:{}),userMessage,world:{season,timeOfDay,weather,location,indoor,nearWater,skyEvent},moru:{...state,target},recentConversation:turns.slice(-8),recentEvents:events.slice(-8)})
@@ -20,7 +20,7 @@ export function parseResponse(raw:unknown,context:Context){
  if(!speech)rejected.push('speech')
  const optional=(key:string,valid:boolean)=>{if(v[key]!=null&&!valid)rejected.push(key);return valid}
  const action=optional('action',MORU_ACTIONS.some(a=>a.id===v.action&&a.category==='gesture'))?v.action as MoruActionId:null
- const emotion=optional('emotion',['calm','happy','curious','sleepy','warm'].includes(String(v.emotion)))?v.emotion as Response['emotion']:null
+ const emotion=optional('emotion',['calm','happy','curious','sleepy','warm','sad','angry','annoyed'].includes(String(v.emotion)))?v.emotion as Response['emotion']:null
  const emote=optional('emote',['heart','sparkle','question','surprise','music'].includes(String(v.emote)))?v.emote as BrainEmote:null
  const t=typeof v.attention==='string'?v.attention.toUpperCase():''
  const validTarget=['USER','WORLD','NONE'].includes(t)||t==='SKY'&&!context.world.indoor||t==='WATER'&&context.world.nearWater||t==='HOME'&&context.world.indoor

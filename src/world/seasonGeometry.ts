@@ -17,3 +17,8 @@ export function snowflakeGeometry() {
  }
  const g=new BufferGeometry();g.setAttribute('position',new Float32BufferAttribute(positions,3));g.computeVertexNormals();return g
 }
+
+export function mapleGeometry(){
+ const s=new Shape(),points=[[0,-.85],[.06,-.38],[.44,-.45],[.34,-.2],[.85,.1],[.57,.19],[.69,.58],[.34,.48],[.32,.78],[.12,.63],[0,1],[-.12,.63],[-.32,.78],[-.34,.48],[-.69,.58],[-.57,.19],[-.85,.1],[-.34,-.2],[-.44,-.45],[-.06,-.38]]
+ points.forEach(([x,y],i)=>i?s.lineTo(x,y):s.moveTo(x,y));s.closePath();return new ShapeGeometry(s)
+}

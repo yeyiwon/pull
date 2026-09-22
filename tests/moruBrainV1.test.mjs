@@ -25,11 +25,11 @@ test('first rain/snow event is deferred through cooldown, then never repeats tod
  advance(mind,250,{weather:'snow'});assert.equal(emitted.filter(x=>x.reason==='snow').length,1)
  assert.ok(mind.short.some(x=>x.key==='2026-09-22:weather:snow'))
 })
-test('idle initiations are contextual, sparse, non-dance and allow silence',()=>{
+test('idle initiations are contextual, conversational without immediate repeats, non-dance and allow silence',()=>{
  const {mind,emitted}=setup();advance(mind,240,{hour:0,timeOfDay:'NIGHT'})
- assert.ok(emitted.some(i=>i.attention==='SKY'));assert.ok(emitted.length<9)
+ assert.ok(emitted.some(i=>i.attention==='SKY'));assert.ok(emitted.length<16)
  assert.ok(emitted.every(i=>!i.action||actionClass(i.action)!=='DANCE'))
- const lines=emitted.map(i=>i.speech).filter(Boolean);assert.equal(new Set(lines).size,lines.length)
+ const lines=emitted.map(i=>i.speech).filter(Boolean);assert.ok(lines.every((line,i)=>i===0||line!==lines[i-1]))
  const quiet=setup({random:()=>.999});advance(quiet.mind,180);assert.equal(quiet.emitted.length,0);assert.equal(quiet.mind.intent.kind,'WAIT')
 })
 test('movement and explicit actions suppress ambient; first weather is still observed after stopping',()=>{

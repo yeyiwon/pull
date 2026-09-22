@@ -11,7 +11,7 @@ export default function ContactDepth(){
  const quality=useQuality(),group=useRef<Group>(null)
  const patches=useMemo(()=>{
   const furniture=[homeWorldPoint(-2.5,.5),homeWorldPoint(-.9,-.9),homeWorldPoint(-2.5,-2.8)]
-  return [[HOME.x,HOME.z,10,9],...ROCKS.map(([x,,z,sx,,sz])=>[x,z,sx*2.5,sz*2.5]),...TREES.map(([x,z,s])=>[x,z,s*4,s*4]),...[-1,1].map(side=>[streamCenter(BRIDGE.z)+side*BRIDGE.halfLength,BRIDGE.z,2,4]),...furniture.map(p=>[p.x,p.z,2.8,2])] 
+  return [[HOME.x,HOME.z,10*HOME.scale,9*HOME.scale],...ROCKS.map(([x,,z,sx,,sz])=>[x,z,sx*2.5,sz*2.5]),...TREES.map(([x,z,s])=>[x,z,s*4,s*4]),...[-1,1].map(side=>[streamCenter(BRIDGE.z)+side*BRIDGE.halfLength,BRIDGE.z,2,4]),...furniture.map(p=>[p.x,p.z,2.8*HOME.scale,2*HOME.scale])]
  },[])
  useFrame(()=>{if(group.current)group.current.visible=QUALITY[quality].contact&&graphicsState.contact})
  return <group ref={group}>{patches.map(([x,z,w,h],i)=><mesh key={i} position={[x,Math.max(.012,surfaceHeight(x,z)+.012)+(i>=12?.03:0),z]} rotation={[-Math.PI/2,0,0]} scale={[w,h,1]} renderOrder={0}>

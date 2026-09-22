@@ -65,17 +65,18 @@ function windMaterial(color:string,family:keyof typeof VEGETATION) {
   m.customProgramCacheKey=()=>`hero-wind-${speed}-${amplitude}`
   return {material:m,u}
 }
-export default function HeroMeadow() {
+export default function HeroMeadow({clusters=MEADOW_CLUSTERS,accepts=acceptsPlant,dense=false}:{clusters?:readonly (readonly number[])[];accepts?:(x:number,z:number)=>boolean;dense?:boolean}) {
+  const grassCount=dense?16000:3000,fernCount=dense?1000:210,flowerCount=dense?2200:260
   const quality=useQuality(),grass=useRef<InstancedMesh>(null),ferns=useRef<InstancedMesh>(null),flowers=useRef<InstancedMesh>(null)
   const r=useMemo(()=>({blade:blade(),fern:fern(),flower:blossom(),green:windMaterial('#8b9b72','grass'),shrub:windMaterial('#6e9579','fern'),petals:windMaterial('#ded2b8','flower'),object:new Object3D(),color:new Color()}),[])
   useEffect(()=>{
-    for(const [mesh,count,family] of [[grass.current,1800,0],[ferns.current,126,1],[flowers.current,180,2]] as const){
+    for(const [mesh,count,family] of [[grass.current,grassCount,0],[ferns.current,fernCount,1],[flowers.current,flowerCount,2]] as const){
       if(!mesh)continue
       for(let i=0;i<count;i++){
         // Interleave clusters so lower quality retains the whole composition.
-        const [cx,cz,rx,rz]=MEADOW_CLUSTERS[i%MEADOW_CLUSTERS.length],a=i*2.399963,radius=Math.sqrt(((i*37)%101)/101)
+        const [cx,cz,rx,rz]=clusters[i%clusters.length],a=i*2.399963,radius=Math.sqrt(((i*37)%101)/101)
         const x=cx+Math.cos(a)*radius*rx,z=cz+Math.sin(a)*radius*rz
-        const scale=acceptsPlant(x,z)?(.5+((i*17)%13)/13*.65):0
+        const scale=accepts(x,z)?(.5+((i*17)%13)/13*(dense?1.35:.65)):0
         r.object.position.set(x,riverbedHeight(x,z)+.008,z);r.object.rotation.set(.05,a,family===1?.2:0)
         r.object.scale.setScalar(scale);r.object.updateMatrix();mesh.setMatrixAt(i,r.object.matrix)
         r.color.setRGB(.78+(i%7)*.03,.82+(i%5)*.035,.75+(i%3)*.055);mesh.setColorAt(i,r.color)
@@ -84,7 +85,7 @@ export default function HeroMeadow() {
       mesh.computeBoundingSphere()
     }
     return()=>{for(const g of [r.blade,r.fern,r.flower])g.dispose();for(const m of [r.green,r.shrub,r.petals])m.material.dispose()}
-  },[r])
+  },[r,clusters,accepts,dense,grassCount,fernCount,flowerCount])
   useFrame((_,delta)=>{
     const season=worldTime.realWorld.season, smooth=1-Math.exp(-delta*1.4)
     blendDensity(r.green.u.density,VEGETATION.grass.season[season],smooth)
@@ -93,13 +94,13 @@ export default function HeroMeadow() {
     for(const m of [r.green,r.shrub,r.petals]){m.u.time.value+=delta;m.u.wind.value=env.wind;m.u.snow.value=env.snow;m.u.wet.value=env.wetness}
     r.green.material.color.copy(env.grass).lerp(env.foliage,.35).multiplyScalar(1.15);r.shrub.material.color.copy(env.foliage);r.petals.material.color.copy(env.flower)
     const density=QUALITY[quality].vegetation
-    if(grass.current)grass.current.count=Math.floor(1800*density)
-    if(ferns.current)ferns.current.count=Math.floor(126*density)
-    if(flowers.current)flowers.current.count=Math.floor(180*density*(1-env.snow*.9))
+    if(grass.current)grass.current.count=Math.floor(grassCount*density)
+    if(ferns.current)ferns.current.count=Math.floor(fernCount*density)
+    if(flowers.current)flowers.current.count=Math.floor(flowerCount*density*(1-env.snow*.9))
   })
   return <group name="HeroMeadow">
-    <instancedMesh ref={grass} args={[r.blade,r.green.material,1800]} receiveShadow/>
-    <instancedMesh ref={ferns} args={[r.fern,r.shrub.material,126]} receiveShadow/>
-    <instancedMesh ref={flowers} args={[r.flower,r.petals.material,180]} receiveShadow/>
+    <instancedMesh ref={grass} args={[r.blade,r.green.material,grassCount]} receiveShadow/>
+    <instancedMesh ref={ferns} args={[r.fern,r.shrub.material,fernCount]} receiveShadow/>
+    <instancedMesh ref={flowers} args={[r.flower,r.petals.material,flowerCount]} receiveShadow/>
   </group>
 }

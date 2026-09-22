@@ -27,14 +27,20 @@ function present(node: HTMLDivElement, reaction: Reaction) {
   const speech = node.querySelector<HTMLElement>('.moru-speech')
   const fx = node.querySelector<HTMLElement>('.moru-fx')
   node.dataset.tone = reaction.fx?.toLowerCase() ?? 'normal'
-  if (speech) { speech.textContent = reaction.speech ?? ''; speech.hidden = !reaction.speech }
+  node.dataset.emotion = reaction.emotion ?? 'calm'
+  if (speech) { speech.textContent = reaction.typing ? '' : reaction.speech ?? ''; speech.hidden = !reaction.speech }
   if (fx) {
     fx.replaceChildren()
-    const symbols = { HEARTS: ['♡', '♡'], SPARKLES: ['✧', '✧'], QUESTION: ['?'], JOY: ['♪'], SURPRISE: ['!'] }
-    if (reaction.fx) for (const [i, text] of symbols[reaction.fx].entries()) {
+    const symbols = { HEARTS: ['♡', '✿', '✿'], SPARKLES: ['✧', '✧'], QUESTION: ['?'], JOY: ['♪'], SURPRISE: ['!'] }
+    const display = reaction.fx ? symbols[reaction.fx] : reaction.emotion === 'sad' ? ['·', '·'] : reaction.emotion === 'angry' || reaction.emotion === 'annoyed' ? ['⌁'] : reaction.emotion === 'happy' || reaction.emotion === 'warm' ? ['✿', '✿'] : []
+    for (const [i, text] of display.entries()) {
       const span = document.createElement('span')
-      span.textContent = text; span.className = `reaction-glyph ${reaction.fx.toLowerCase()}`
+      span.textContent = text; span.className = `reaction-glyph ${reaction.fx?.toLowerCase() ?? reaction.emotion ?? 'normal'}`
       span.style.setProperty('--i', String(i)); fx.append(span)
+    }
+    if(reaction.emotion==='warm'||reaction.emotion==='happy')for(let i=0;i<2;i++){
+      const blush=document.createElement('span')
+      blush.className='reaction-blush';blush.style.setProperty('--side',String(i));fx.append(blush)
     }
   }
 }
@@ -46,7 +52,7 @@ function paint(node: HTMLDivElement, opacity: string, transform?: string) {
 
 function SpeechBubble({ player, element }: { player: RefObject<Player>; element: RefObject<HTMLDivElement | null> }) {
   const brain = useRef<ReturnType<typeof createMoruMind> | null>(null)
-  const active = useRef({ age: 0, duration: 0 })
+  const active = useRef({ age: 0, duration: 0, letters: [] as string[], shown: 0 })
   const semantic = useRef({elapsed:0,idle:0,returned:false,userVersion:0})
   useEffect(() => {
     const memory=getMemorySession()
@@ -66,7 +72,7 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
         const p=player.current;if(userControlsMoru(p))return false
         const fx={heart:'HEARTS',sparkle:'SPARKLES',question:'QUESTION',surprise:'SURPRISE',music:'JOY'} as const
         active.current.duration=0
-        const offered=moru.offer({event:'BRAIN',speech:response.speech,fx:response.emote?fx[response.emote]:undefined,duration:Math.min(8,2.8+response.speech.length*.07)},'conversation')
+        const offered=moru.offer({event:'BRAIN',speech:response.speech,fx:response.emote?fx[response.emote]:undefined,emotion:response.emotion,typing:true,duration:Math.min(8,2.8+response.speech.length*.07)},'conversation')
         if(response.action)moru.perform(response.action,'user',false)
         return offered
       },cancel(){moru.cancelSpeech();active.current.duration=0},
@@ -85,6 +91,9 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
   const headTop = useRef(new Vector3())
   const emotePoint = useRef(new Vector3())
   const cameraRight = useRef(new Vector3())
+  const facePoint = useRef(new Vector3())
+  const faceDirection = useRef(new Vector3())
+  const toCamera = useRef(new Vector3())
   const reducedMotion = useRef(false)
   useEffect(() => {
     const preference = matchMedia('(prefers-reduced-motion: reduce)')
@@ -100,7 +109,7 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
     if (document.hidden) return
     const pState=player.current
     const available=pState.state==='IDLE'&&!pState.actionRequested&&!pState.jumpRequested&&pState.isGrounded
-    moru.update(Math.min(delta,.05),{hour:worldTime.current.hour,season:worldTime.realWorld.season,weather:livingWorld.weather?.type??'clear',inside:homeState.inside,
+    moru.update(Math.min(delta,.05),{hour:worldTime.canonical.hour+worldTime.canonical.minute/60,season:worldTime.canonical.season,weather:livingWorld.weather?.type??'clear',inside:homeState.inside,
       nearWater:Math.abs(pState.position.x-streamCenter(pState.position.z))<streamWidth(pState.position.z)+2,idle:available})
     const clock=semantic.current
     const dt=Math.min(delta,.1)
@@ -121,15 +130,19 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
     const node = element.current
     if (!node) return
     // No stacking: the short FX cooldown and longer speech cooldown keep channels sparse.
-    if (reaction && active.current.age >= active.current.duration) {
+    if (reaction && (reaction.typing || active.current.age >= active.current.duration)) {
       present(node, reaction)
-      if (reaction.fx === 'JOY' || reaction.fx === 'HEARTS') void audio.play('moru_happy', 'character', 'emotion')
-      else if (reaction.fx === 'QUESTION') void audio.play('moru_curious', 'character', 'emotion')
-      active.current = { age: 0, duration: reaction.duration }
+      const cue = reaction.fx === 'HEARTS' || reaction.emotion === 'warm' ? 'moru_affection' : reaction.fx === 'JOY' || reaction.emotion === 'happy' ? 'moru_happy' : reaction.fx === 'QUESTION' || reaction.emotion === 'curious' ? 'moru_curious' : reaction.fx === 'SURPRISE' || reaction.emotion === 'angry' || reaction.emotion === 'annoyed' ? 'moru_surprise' : reaction.emotion === 'sleepy' || reaction.emotion === 'sad' ? 'moru_sleepy' : 'moru_greeting'
+      if (reaction.speech || reaction.fx) void audio.play(cue, 'character', 'moru-expression')
+      active.current = { age: 0, duration: reaction.duration, letters: reaction.typing && !reducedMotion.current ? Array.from(reaction.speech ?? '') : [], shown: 0 }
     }
     active.current.age += delta
     const { age, duration } = active.current
     if (age >= duration) { paint(node, '0'); return }
+    if(active.current.letters.length){
+      const count=Math.min(active.current.letters.length,Math.floor(Math.max(0,age-.2)/.055))
+      if(count!==active.current.shown){active.current.shown=count;const speech=node.querySelector<HTMLElement>('.moru-speech');if(speech)speech.textContent=active.current.letters.slice(0,count).join('')}
+    }
     projected.current.copy(player.current.headPosition).project(camera)
     const p = projected.current
     // Project an upper envelope above the ears, plus a fixed pixel gap at every zoom.
@@ -157,6 +170,16 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
       glyph.style.top = `${(-point.y * .5 + .5) * size.height - anchorY}px`
       glyph.style.opacity = String(Math.sin(Math.PI * t) * .78)
       glyph.style.fontSize = `${Math.max(12, Math.min(23, 160 / camera.position.distanceTo(player.current.headPosition)))}px`
+    })
+    faceDirection.current.set(0,0,1).applyQuaternion(player.current.rotation)
+    toCamera.current.copy(camera.position).sub(player.current.headPosition).normalize()
+    const faceVisible=faceDirection.current.dot(toCamera.current)>.25
+    node.querySelectorAll<HTMLElement>('.reaction-blush').forEach((blush,index)=>{
+      facePoint.current.copy(player.current.headPosition).addScaledVector(player.current.up,-.78)
+        .addScaledVector(cameraRight.current,index===0?-.19:.19).project(camera)
+      blush.style.left=`${(facePoint.current.x*.5+.5)*size.width-anchorX}px`
+      blush.style.top=`${(-facePoint.current.y*.5+.5)*size.height-anchorY}px`
+      blush.style.opacity=faceVisible?String(Math.sin(Math.PI*Math.min(1,age/duration))*.46):'0'
     })
   })
   return null

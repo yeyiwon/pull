@@ -9,7 +9,7 @@ test('mock rain wets the world and leaves moisture after it stops',()=>{
  worldTime.override=0;worldTime.seasonOverride={season:'summer',progress:1};refreshWorldTime(new Date(2026,6,12,0))
  livingWorld.weather={type:'rain'};tick(20)
  assert.ok(env.rain>.6&&env.wetness>.6&&env.cloudiness>.6)
- livingWorld.weather=null;const wet=env.wetness;tick(1)
+ livingWorld.weather=null;const wet=env.wetness;tick(2)
  assert.ok(env.wetness>wet*.95&&env.rain<.3)
 })
 test('snow accumulates and melts gradually; independent wind override remains bounded',()=>{

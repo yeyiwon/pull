@@ -1,0 +1,26 @@
+{
+  "public/environment/moru-meadow-cluster.glb": {
+    "bytes": 34656840,
+    "sha256": "6765c1fee411127e669d62ae2a8ce9b68c2c771b16c693b716710e8cd548e281"
+  },
+  "public/environment/pull-bench-a.glb": {
+    "bytes": 26034132,
+    "sha256": "f8ae82dfd144e8826cdd0a59aafcb4c16d0b05e01f5cf6aeba638d57947ae313"
+  },
+  "public/environment/pull-lamppost-a.glb": {
+    "bytes": 26022708,
+    "sha256": "99366e5d66c55abf0af1fd467158899d0a3a30837e60b6389f915bedeebabc6c"
+  },
+  "public/environment/pull-mountain-a.glb": {
+    "bytes": 451904,
+    "sha256": "fdb63f2588b6f3f8b17f91f3afbcd87a9912ed9d6ca23f4e55003ebbcf24c497"
+  },
+  "public/environment/pull-riverbank-cluster-a.glb": {
+    "bytes": 31905408,
+    "sha256": "f5ee83bb1eb8bb5f3c717ddb31faa65987e5becb486ba79d9b14693220aeaf92"
+  },
+  "public/environment/pull-tree-hero-a.glb": {
+    "bytes": 43321808,
+    "sha256": "39c76fa2c92318266e873fd438aa9b47ae5f7d8191d1483c2301aa81912c1f6f"
+  }
+}
