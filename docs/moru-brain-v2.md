@@ -41,3 +41,24 @@ Server aborts at 9s, client session times out at 11s. Missing key or model → s
 Lint, TypeScript build, production build and 104 tests passed. Tests inject provider responses and cover allowlists, payload minimization, context/world fidelity, bounded history, malformed/overlong/refusal output, timeout, abort, no key, offline fallback, concurrency/rate guard, and Local Brain hold/resume. Client bundle scan found no key variable, OpenAI endpoint or server identity prompt. Browser desktop and phone-sized viewport checks are documented in task report; no real API quality/latency, hosted Vercel route, or physical iPhone keyboard verification was performed.
 
 References: [OpenAI structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs), [Vercel Web Handlers](https://vercel.com/docs/functions/functions-api-reference).
+
+## Client / API compilation
+
+`tsconfig.app.json` owns the Vite browser graph (DOM + vite/client types).
+`tsconfig.node.json` owns Vite tooling. `api/tsconfig.json` owns the deployed
+Node Function and its server/shared imports (ES2022, NodeNext, Node types).
+The root solution references all three, so `npm run build` checks each graph.
+Use `npm run typecheck:client` and `npm run typecheck:server` independently.
+
+Vercel finds `tsconfig.json` from the API entrypoint; root project references
+alone do not supply its compiler options. The API config intentionally contains
+explicit target/module options, including for builders that supply defaults
+before resolving extended configs. `@types/node` was already installed.
+
+Shared TypeScript imports retain `.ts` for the existing native Node strip-types
+tests. `rewriteRelativeImportExtensions` emits `.js` imports for Node ESM rather
+than merely suppressing extension errors with `allowImportingTsExtensions`.
+The server targets ES2022, including `Array.at`, without changing the browser
+target. `tests/apiBuild.test.mjs` checks entrypoint config discovery, emits the
+API graph to a temporary directory and executes the emitted handler with MOCK
+forced and network access rejected. No secret or real API call is needed.

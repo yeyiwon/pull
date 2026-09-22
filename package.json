@@ -9,7 +9,9 @@
     "lint": "oxlint",
     "check:assets": "node scripts/check-runtime-assets.mjs",
     "preview": "vite preview",
-    "test": "node --experimental-strip-types --test tests/*.test.mjs"
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
+    "typecheck:client": "tsc -p tsconfig.app.json --noEmit",
+    "typecheck:server": "tsc -p api/tsconfig.json --noEmit"
   },
   "dependencies": {
     "@react-three/fiber": "^9.7.0",
