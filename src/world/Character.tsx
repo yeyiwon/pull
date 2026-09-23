@@ -18,6 +18,7 @@ import { moru } from '../characters/expression.ts'
 import { MORU_ACTIONS, UNAVAILABLE_MORU_ACTIONS } from '../characters/actions.ts'
 import { moruAnimations } from '../characters/assets.ts'
 import { characters } from '../characters/registry.ts'
+import { worldInterface } from '../ui/interface.ts'
 
 function Character({ player, onReady }: { player: RefObject<Player>; onReady: () => void }) {
   const {gl}=useThree()
@@ -55,7 +56,7 @@ function Character({ player, onReady }: { player: RefObject<Player>; onReady: ()
       if (!moruAnimations.some(entry=>entry.name===name)) continue
       const clip = prepareBodyAnimation(source,false,offsets)
       if(name===BENCH_CROSS){const hips=clip.tracks.find(t=>t.name==='mixamorigHips.position');if(hips)for(let i=1;i<hips.values.length;i+=3)hips.values[i]+=.066}
-      extras[name] = { clip, loop: name===BENCH_CROSS, hold: name===BENCH_CLIP||name===BENCH_STAND }
+      extras[name] = { clip, loop: name===BENCH_CROSS||name==='Idle', hold: name===BENCH_CLIP||name===BENCH_STAND }
     }
     // No standalone sit-down export is present. Reverse the supplied stand-up
     // transition instead of importing an incompatible old-body animation.
@@ -87,6 +88,7 @@ function Character({ player, onReady }: { player: RefObject<Player>; onReady: ()
     }
   }, [gl, model])
   const animation = useRef<ReturnType<typeof createLocomotion> | null>(null)
+  const wardrobeWasOpen = useRef(false)
   useEffect(() => {
     const controller = createLocomotion(model.scene, model.clips, { extras: model.extras, automaticObservation: false })
     // Keep the rest/bind pose offscreen until the first mixer evaluation.
@@ -119,6 +121,11 @@ function Character({ player, onReady }: { player: RefObject<Player>; onReady: ()
     for(const material of materialRefs.current)material.envMapIntensity=profile.environmentDay+(profile.environmentNight-profile.environmentDay)*night
     if(faceFill.current)faceFill.current.intensity=profile.fillDay+(profile.fillNight-profile.fillDay)*night
     const controller=animation.current
+    const wardrobePreview=worldInterface.getSnapshot()==='appearance'
+    if(wardrobePreview&&!wardrobeWasOpen.current){controller?.stopExtra();controller?.playExtra('Idle')}
+    else if(wardrobePreview&&controller&&(Object.keys(model.clips) as string[]).includes(controller.activeClip))controller.playExtra('Idle')
+    else if(!wardrobePreview&&wardrobeWasOpen.current)controller?.stopExtra()
+    wardrobeWasOpen.current=wardrobePreview
     if([BENCH_CLIP,BENCH_CROSS,BENCH_REST,BENCH_STAND].includes(controller?.activeClip??'')&&!isSeated(player.current))controller?.stopExtra()
     updateBench(player.current,dt,clip=>controller?.playExtra(clip)??false,()=>controller?.stopExtra())
     movePlayer(player.current, dt)

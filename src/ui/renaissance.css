@@ -227,7 +227,7 @@ html.frame-review .experiment :is(.pull-header,.interface-layer,.moru-conversati
  .touch-stick:not([data-active="true"]){opacity:.55}
  .touch-stick .stick-orbit{width:66px;height:66px;border-color:#f3ecd950}
  .touch-stick .stick-knob{width:26px;height:26px;background:#f3ecda30}
- .touch-jump{display:grid;place-items:center;right:calc(20px + env(safe-area-inset-right));bottom:calc(36px + env(safe-area-inset-bottom));width:52px;height:52px;background:#202a3b20;color:#f4ede2cc}
+ .touch-jump{display:grid;place-items:center;right:calc(20px + env(safe-area-inset-right));bottom:calc(36px + env(safe-area-inset-bottom));width:54px;height:54px;padding:11px;background:#202a3b20;color:#f4ede2cc}
  .moru-conversation[data-active="false"]{bottom:calc(38px + env(safe-area-inset-bottom));width:min(300px,calc(100vw - 208px - env(safe-area-inset-left) - env(safe-area-inset-right)));min-height:48px;padding:9px 13px}
  .moru-conversation[data-active="false"] input::placeholder{font-size:12px;letter-spacing:0}
  .moru-conversation[data-active="true"]{bottom:calc(12px + env(safe-area-inset-bottom) + var(--keyboard-offset,0px));width:calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right));max-width:430px}
@@ -261,6 +261,14 @@ html.frame-review .experiment :is(.pull-header,.interface-layer,.moru-conversati
 @keyframes glyph-waddle{0%,60%,100%{transform:rotate(0)}72%{transform:rotate(-8deg) translateX(-1px)}87%{transform:rotate(8deg) translateX(1px)}}
 @media(pointer:coarse),(max-width:600px){.moru-gesture-entry{left:calc(50% + 62px);right:auto;bottom:calc(38px + env(safe-area-inset-bottom));width:44px;min-width:44px;height:54px;padding:0}.moru-conversation[data-active="true"]{height:54px;padding:0}}
 @media(pointer:coarse) and (orientation:landscape){.moru-gesture-entry{bottom:calc(30px + env(safe-area-inset-bottom))}}
+@media(max-height:500px) and (orientation:landscape){
+ .interface-sheet[data-panel="moru"]{top:auto;bottom:calc(8px + env(safe-area-inset-bottom));width:min(620px,calc(100vw - 180px));max-height:118px;padding:8px 14px}
+ .interface-sheet[data-panel="moru"] .sheet-scroll-body{overflow:hidden}
+ .interface-sheet[data-panel="moru"] .moru-actions{margin-top:0}
+ .interface-sheet[data-panel="moru"] .moru-dances{padding:4px 2px 6px}
+ .interface-sheet[data-panel="moru"] .moru-dances button{min-height:62px;flex-basis:60px;padding:5px 3px;gap:4px}
+ .interface-sheet[data-panel="moru"] .moru-dances .gesture-glyph{width:27px;height:27px}
+}
 @media(max-width:360px){.touch-stick{left:8px;width:76px}.touch-jump{right:12px;width:44px}.moru-conversation[data-active="false"]{width:88px;left:calc(50% - 4px)}.moru-gesture-entry{left:calc(50% + 48px)}}
 @media(prefers-reduced-motion:reduce){.moru-conversation,.moru-conversation .conversation-fields{transition:none}.glyph-body{animation:none}}
 
@@ -277,21 +285,31 @@ html.frame-review .experiment :is(.pull-header,.interface-layer,.moru-conversati
 .moru-conversation,.moru-conversation[data-active="false"],.moru-conversation[data-active="true"] { height:48px; min-height:48px; }
 .moru-conversation .conversation-fields { top:2px; bottom:2px; }
 /* Preserve the touch target while keeping the send disc inside the compact composer. */
-.moru-conversation .conversation-fields button[type="submit"] { position:relative; isolation:isolate; width:44px; height:44px; padding:0; background:transparent; border:0; box-shadow:none; }
-.moru-conversation .conversation-fields button[type="submit"]::before { content:""; position:absolute; inset:5px; border-radius:50%; background:#ffffff18; z-index:-1; transition:background .2s ease; }
-.moru-conversation .conversation-fields button[type="submit"]:hover::before { background:#ffffff28; }
-.moru-conversation .conversation-fields button[type="submit"] svg { width:17px; height:17px; }
+.moru-conversation .conversation-fields button { flex:0 0 36px; width:36px; height:36px; min-width:36px; min-height:36px; border-radius:50%; }
+.moru-conversation .conversation-fields button[type="submit"] { position:relative; isolation:isolate; padding:0; background:var(--accent); color:var(--accent-ink); border:1px solid #ffffff26; box-shadow:inset 0 1px 0 #ffffff38,0 3px 10px #1017281f; }
+.moru-conversation .conversation-fields button[type="submit"]:disabled { background:var(--surface); color:var(--quiet); box-shadow:inset 0 1px 0 #ffffff14; }
+.moru-conversation .conversation-fields button[type="submit"]:not(:disabled):hover { transform:translateY(-1px); box-shadow:inset 0 1px 0 #ffffff50,0 5px 14px #1017282e; }
+.moru-conversation .conversation-fields button[type="submit"] svg { width:15px; height:15px; }
+.moru-conversation .conversation-fields button:last-of-type svg { width:14px; height:14px; }
 
 /* Wardrobe leaves the live character visible beside (or above) its selector. */
-.interface-layer:has([data-panel="appearance"]) .interface-scrim{background:transparent;animation:none}
+.interface-layer:has([data-panel="appearance"]){pointer-events:none}
+.interface-layer:has([data-panel="appearance"]) .interface-scrim{background:transparent;animation:none;pointer-events:none}
+.interface-layer:has([data-panel="appearance"]) .interface-sheet{pointer-events:auto}
 .interface-sheet[data-panel="appearance"]{width:360px;padding:18px 22px;overflow:hidden}
 .interface-sheet[data-panel="appearance"] .sheet-content{height:100%}
 .interface-sheet[data-panel="appearance"] .sheet-fixed-header{padding-bottom:8px}
 .interface-sheet[data-panel="appearance"] .sheet-scroll-body{flex:1;overflow:hidden;display:flex}
+.interface-sheet[data-panel="appearance"] .appearance-workspace{display:flex;flex-direction:column;min-height:0;width:100%}
 .interface-sheet[data-panel="appearance"] .body-selector{display:flex;flex-direction:column;min-height:0;width:100%;margin:0}
 .interface-sheet[data-panel="appearance"] .body-selector>.section-label{margin:0 0 10px}
 .interface-sheet[data-panel="appearance"] .wardrobe-scroll{flex:1;min-height:0;max-height:none}
 .interface-sheet[data-panel="appearance"] .sheet-intro{flex:none;font-size:11px;line-height:1.5;margin:10px 0 0}
+.interface-sheet[data-panel="appearance"] .appearance-dances{flex:none;border-top:1px solid var(--line);margin-top:8px;padding-top:8px}
+.interface-sheet[data-panel="appearance"] .appearance-dances>.section-label{margin:0 0 3px}
+.interface-sheet[data-panel="appearance"] .appearance-dances .moru-dances{padding:2px 0 4px;gap:6px}
+.interface-sheet[data-panel="appearance"] .appearance-dances .moru-dances button{flex-basis:58px;min-height:56px;padding:4px 2px;gap:2px}
+.interface-sheet[data-panel="appearance"] .appearance-dances .gesture-glyph{width:24px;height:24px}
 @media(max-width:600px){
  .interface-sheet[data-panel="appearance"]{top:auto;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));width:auto;height:42dvh;max-height:42dvh;padding:10px 18px 14px}
  .interface-sheet[data-panel="appearance"] .sheet-handle{display:none}

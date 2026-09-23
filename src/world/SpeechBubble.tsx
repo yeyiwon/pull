@@ -143,13 +143,15 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
       const count=Math.min(active.current.letters.length,Math.floor(Math.max(0,age-.2)/.055))
       if(count!==active.current.shown){active.current.shown=count;const speech=node.querySelector<HTMLElement>('.moru-speech');if(speech)speech.textContent=active.current.letters.slice(0,count).join('')}
     }
-    projected.current.copy(player.current.headPosition).project(camera)
+    // Character.headPosition includes an interaction clearance above the skull;
+    // pull the typography anchor back toward the visible head.
+    projected.current.copy(player.current.headPosition).addScaledVector(player.current.up,-.27).project(camera)
     const p = projected.current
-    // Project an upper envelope above the ears, plus a fixed pixel gap at every zoom.
-    headTop.current.copy(player.current.headPosition).addScaledVector(player.current.up, .3).project(camera)
+    // Keep speech close enough to read as Moru's voice without covering the face.
+    headTop.current.copy(projected.current)
     const visible = p.z >= -1 && p.z <= 1 && Math.abs(p.x) < 1.15 && Math.abs(p.y) < 1.6
     const { opacity, rise, blur } = speechEnvelope(age, duration, reducedMotion.current)
-    const y = Math.min((-p.y * .5 + .5) * size.height, (-headTop.current.y * .5 + .5) * size.height) - 20 - rise
+    const y = Math.min((-p.y * .5 + .5) * size.height, (-headTop.current.y * .5 + .5) * size.height) - 24 - rise
     blurText(node, blur)
     const anchorX = Math.max(Math.min(150,size.width*.42),Math.min(size.width-Math.min(150,size.width*.42),(p.x*.5+.5)*size.width))
     const anchorY = Math.min(size.height-130,Math.max(node.offsetHeight+68,y))

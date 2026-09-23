@@ -50,7 +50,9 @@ export function createConversationSession(provider:MoruConversationProvider=new 
   history.push(turn);if(history.length>60)history.shift()
   if(typeof localStorage!=='undefined')try{localStorage.setItem(historyKey,JSON.stringify(history))}catch{/* Storage is optional. */}
   update({phase:'speaking',notice:'',reply:parsed.response.speech})
-  release=setTimeout(()=>{if(token!==id)return;port?.hold(false);update({phase:'closed',notice:''})},speechDuration(parsed.response.speech)*1000)
+  // Keep the composer open after Moru finishes. The user closes it explicitly
+  // by tapping the world/close control, so a reply never dismisses their input.
+  release=setTimeout(()=>{if(token!==id)return;update({phase:'composing',notice:''})},speechDuration(parsed.response.speech)*1000)
   return true
  }
  return {subscribe(fn:()=>void){listeners.add(fn);return()=>{listeners.delete(fn)}},getSnapshot:()=>state,getHistory:()=>history.slice(),debug,turns,open,send,cancel,

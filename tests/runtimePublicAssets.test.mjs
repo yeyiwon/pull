@@ -8,7 +8,7 @@ test('release manifest preserves Moru and excludes source/secret assets',()=>{
  assert.equal(new Set(files).size,files.length)
  assert.ok(files.filter(p=>p.endsWith('.glb')).every(p=>p.startsWith('moru/')), 'Only Moru GLBs belong in the procedural runtime')
  assert.equal(files.filter(p=>p==='moru/final/moru-base.glb'&&p.endsWith('.glb')).length,1)
- assert.equal(files.filter(p=>p.startsWith('moru/final/animations/')&&p.endsWith('.glb')).length,17)
+ assert.equal(files.filter(p=>p.startsWith('moru/final/animations/')&&p.endsWith('.glb')).length,18)
  for(const p of files){assert.ok(!p.split('/').includes('..')&&!p.startsWith('/'));assert.ok(!/\.env|full-life|rescue|\.blend|worldlabs/i.test(p));assert.ok(existsSync(new URL(`public/${p}`,root)),p)}
 })
 test('archived environment GLBs remain preserved and excluded from production',()=>{

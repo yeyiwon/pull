@@ -186,6 +186,15 @@ export const moruAnimations = [
     ],
     "bytes": 96688,
     "sha256": "77cd3002f58aeab8bf243edf5d7ae018a7a79a4e2fb729a493a500efb9c88387"
+  },
+  {
+    "name": "Idle",
+    "url": "/moru/final/animations/Idle.glb",
+    "source": "preview1111.glb",
+    "duration": 8.541666984558105,
+    "supportClips": [],
+    "bytes": 227732,
+    "sha256": "faa753166720f9531e74187539c609e16f1f5405324175115e4762f83a673cb4"
   }
 ] as const
 export const manifests = { MORU: { body: MORU_BODY_URL, actions: moruAnimations } }

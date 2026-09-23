@@ -5,7 +5,9 @@ export function prepareBodyAnimation(source:AnimationClip, physicsJump=false, of
  const clip=physicsJump?AnimationUtils.subclip(source,source.name,source.name==='Hop_with_Arms_Raised'?22:110,source.name==='Hop_with_Arms_Raised'?41:128,24):source.clone()
  const hips=clip.tracks.find(track=>track.name==='mixamorigHips.position')
  if(!hips)throw Error(`Missing hips translation: ${source.name}`)
- const ground=offsets[source.name]??0
+ // The approved upright idle uses the same rig/rest pose as the canonical body,
+ // but its hips start 0.03196 units higher than the previous breathing idle.
+ const ground=offsets[source.name]??(source.name==='Idle'?(offsets.Short_Breathe_and_Look_Around??0)-.00693:0)
  for(let i=0;i<hips.values.length;i+=3){
   hips.values[i]=hips.values[0];hips.values[i+2]=hips.values[2]
   hips.values[i+1]=(physicsJump?source.tracks.find(t=>t.name==='mixamorigHips.position')!.values[1]:hips.values[i+1])+ground

@@ -16,7 +16,7 @@ test('body replacement preserves pending speech and semantic history',()=>{
 })
 
 test('expanded categorized semantic actions resolve actual clips; rejected clips absent',()=>{
- assert.equal(MORU_ACTIONS.length,23);assert.equal(moruAnimations.length,17)
+ assert.equal(MORU_ACTIONS.length,23);assert.equal(moruAnimations.length,18)
  for(const a of MORU_ACTIONS)assert.ok(UNAVAILABLE_MORU_ACTIONS.has(a.id)||a.id==='sitBack'||moruAnimations.some(clip=>clip.name===a.clip))
  assert.equal(MORU_ACTIONS.filter(a=>a.category==='dance').length,6)
  for(const file of ['moru-talk-with-hands-open.glb','clips/moru-talk-with-hands-open.glb','moru-cherish-pop-dance.glb','moru-confused.glb','clips/moru-cherish-pop-dance.glb','clips/moru-look-around-dumbfounded.glb'])assert.equal(existsSync(new URL('../public/moru/'+file,import.meta.url)),false)

@@ -74,5 +74,9 @@
   "public/moru/final/appearances/platinum-noir.glb": {
     "bytes": 19384636,
     "sha256": "63b02a92fdbdf96c9995ec1314074da9802d93d11fc65a18248f33f0b84e303f"
+  },
+  "public/moru/final/animations/Idle.glb": {
+    "bytes": 227732,
+    "sha256": "faa753166720f9531e74187539c609e16f1f5405324175115e4762f83a673cb4"
   }
 }

@@ -33,6 +33,20 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
     function down(event: PointerEvent) {
       if(conversationActive())return
       if (event.button !== 0 || state.pointer !== -1) return
+      if(worldInterface.getSnapshot()==='appearance'){
+        const rect=canvas.getBoundingClientRect()
+        const head=player.current.headPosition.clone().addScaledVector(player.current.up,-.18).project(camera)
+        const feet=player.current.position.clone().project(camera)
+        const headX=(head.x*.5+.5)*rect.width+rect.left,headY=(-head.y*.5+.5)*rect.height+rect.top
+        const feetX=(feet.x*.5+.5)*rect.width+rect.left,feetY=(-feet.y*.5+.5)*rect.height+rect.top
+        const height=Math.max(120,Math.abs(feetY-headY))
+        // Keep preview orbit intentional: only a press close to Moru's rendered
+        // body starts a drag, rather than the broad empty scene around her.
+        const halfWidth=MathUtils.clamp(height*.23,60,112)
+        const centerX=(headX+feetX)/2
+        const hitsMoru=event.clientX>=centerX-halfWidth&&event.clientX<=centerX+halfWidth&&event.clientY>=headY-20&&event.clientY<=feetY+14
+        if(!hitsMoru){worldInterface.open(null);return}
+      }
       framing.current.idle=0
       state.pointer = event.pointerId; state.x = event.clientX; state.y = event.clientY
       canvas.setPointerCapture(event.pointerId)
@@ -64,7 +78,7 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
       window.removeEventListener('blur', stop)
       stop()
     }
-  }, [gl])
+  }, [gl,camera,player])
   // Run before movement so input uses this frame's visible viewing direction.
   useFrame((_, delta) => {
     const state = orbit.current
@@ -116,14 +130,17 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
       const portrait=size.width<=600
       const availableHeight=portrait?size.height*.58-100:size.height-100
       const visibleFraction=Math.max(.2,availableHeight/size.height)*.8
-      const previewDistance=1.55/(Math.tan(MathUtils.degToRad(camera.fov/2))*visibleFraction)
+      const landscape=size.width>size.height
+      const previewDistance=1.55/(Math.tan(MathUtils.degToRad(camera.fov/2))*visibleFraction)*(landscape ? .8 : 1)
       previewTarget.current.set(p.position.x,p.position.y+1.45,p.position.z)
-      facing.current.set(0,0,1).applyQuaternion(p.rotation);facing.current.y=0;facing.current.normalize()
+      // Wardrobe preview is an orbit around the live Moru. Pointer dragging now
+      // reveals the back and sides instead of keeping the camera front-locked.
+      facing.current.set(Math.sin(yaw),0,Math.cos(yaw)).normalize()
       previewPosition.current.copy(previewTarget.current).addScaledVector(facing.current,previewDistance)
       previewPosition.current.y+=.12
       camera.position.lerp(previewPosition.current,preview)
       desiredFocus.current.lerp(previewTarget.current,preview)
-      const offsetX=portrait?0:204
+      const offsetX=portrait?0:180
       const offsetY=portrait?(size.height*.42-100)/2:-25
       camera.setViewOffset(size.width,size.height,offsetX*preview,offsetY*preview,size.width,size.height)
     }else if(camera instanceof PerspectiveCamera && camera.view?.enabled){camera.clearViewOffset()}

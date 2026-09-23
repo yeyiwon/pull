@@ -70,7 +70,7 @@ export default function WorldInterface({player,ready,theme,onThemeChange}:{playe
    <nav aria-label="세계 메뉴"><button aria-label={muted?'소리 켜기':'소리 끄기'} aria-pressed={muted} data-muted={muted} title={muted?'소리 켜기':'소리 끄기'} onClick={()=>setMuted(value=>!value)}>♪</button><button aria-label="메뉴 열기" aria-expanded={requestedPanel!==null} onClick={()=>openPanel(panel?null:'menu')}><span className="menu-lines" aria-hidden="true"/></button></nav>
   </header>
   <AudioControls mode={panel==='music'?'panel':'hidden'} slot={musicSlot} muted={muted} onMute={setMuted}/>
-  {!panel&&conversation.phase==='closed'&&<button className="touch-jump" aria-label="점프" disabled={!ready} onClick={()=>jump(player.current)}><GestureGlyph kind="jump"/></button>}
+  {!panel&&conversation.phase==='closed'&&<button className="touch-jump" aria-label="점프" disabled={!ready} onPointerDown={event=>{event.preventDefault();jump(player.current)}}><GestureGlyph kind="jump"/></button>}
   {panel&&<div className="interface-layer" data-closing={closing} inert={closing} aria-hidden={closing}>
    <button className="interface-scrim" aria-label="세계로 돌아가기" onClick={close}/>
    <div ref={sheet} className="interface-sheet" data-panel={panel} role="dialog" aria-modal="true" aria-label={labels[panel]} tabIndex={-1}>
@@ -84,7 +84,7 @@ export default function WorldInterface({player,ready,theme,onThemeChange}:{playe
     {panel==='conversations'&&<div className="conversation-history">{conversationSession.getHistory().length?conversationSession.getHistory().map((turn,index)=><div className="conversation-history-turn" key={index}><p className="conversation-history-user">{turn.user}</p><p className="conversation-history-moru">{turn.moru}</p></div>):<p className="sheet-intro">아직 모루와 나눈 이야기가 없어요.</p>}<p className="sheet-intro">이 기기에만 저장돼요. 이전에 저장되지 않았던 대화는 표시할 수 없어요.</p></div>}
     {panel==='world'&&<><WorldClock player={player} mode="panel"/><p className="section-label">Display quality</p><GraphicsControls diagnostics={false}/></>}
     {panel==='music'&&<div ref={setMusicSlot} id="music-panel-slot"/>}
-    {panel==='appearance'&&<BodySelector disabled={isSeated(player.current)}/>}
+    {panel==='appearance'&&<div className="appearance-workspace"><BodySelector disabled={isSeated(player.current)}/><div className="appearance-dances"><p className="section-label">Preview motion</p><ActionControls player={player} danceOnly disabled={!ready||!bodyReady}/></div></div>}
     {panel==='moru'&&<ActionControls player={player} disabled={!ready||!bodyReady||!conversation.ready}/>}
     {panel==='display'&&<><fieldset className="theme-picker"><legend>Appearance</legend><div>{(['light','dark'] as const).map(value=><button key={value} aria-pressed={theme===value} onClick={()=>onThemeChange(value)}>{value==='light'?'Light':'Dark'}<small>{value==='light'?'맑고 부드럽게':'차분하고 깊게'}</small></button>)}</div><p>메뉴와 채팅의 테마예요. 세계의 시간은 그대로 유지돼요.</p></fieldset><GraphicsControls/><button className="text-link" onClick={()=>worldInterface.open('controls')}>Controls<span>조작 안내</span></button></>}
     {panel==='controls'&&<div className="control-guide"><p><span>이동</span>WASD / 방향키 · 터치 스틱</p><p><span>달리기</span>Shift · 스틱 바깥쪽</p><p><span>둘러보기</span>화면 드래그</p><p><span>점프</span>Space · ↑</p><p><span>인사 / 춤</span>1 / 2</p><p><span>반응</span>E · 모루 메뉴</p><p className="sheet-intro">움직이면 현재 행동을 멈추고 따라가요.</p></div>}

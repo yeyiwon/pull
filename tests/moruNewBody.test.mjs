@@ -9,17 +9,18 @@ import {groundOffsets} from '../src/characters/bodyProfile.ts'
 const audit=JSON.parse(readFileSync(new URL('../docs/moru-final-inventory.json',import.meta.url)))
 const hash=b=>createHash('sha256').update(b).digest('hex')
 function read(url){const b=readFileSync(new URL('../public'+url,import.meta.url)),n=b.readUInt32LE(12);return {raw:b,j:JSON.parse(b.subarray(20,20+n)),bin:b.subarray(28+n)}}
-test('one unchanged canonical body and seventeen mesh-free resources preserve all thirty-four clips',()=>{
+test('one unchanged canonical body and eighteen mesh-free resources preserve approved clips',()=>{
  const base=read(MORU_BODY_URL),original=audit.new.find(r=>r.file===audit.canonical)
  assert.equal(hash(base.raw),original.sha256)
  assert.equal(base.j.skins[0].joints.length,28)
  const nodes=base.j.nodes.map(({mesh:_mesh,skin:_skin,weights:_weights,...node})=>node)
- assert.equal(moruAnimations.length,17)
+ assert.equal(moruAnimations.length,18)
  for(const item of moruAnimations){
   const {j,bin,raw}=read(item.url),source=audit.new.find(r=>item.source===r.file)
   assert.equal(hash(raw),item.sha256);assert.deepEqual(j.nodes,nodes)
   for(const key of ['meshes','images','textures','materials','skins'])assert.equal(j[key],undefined)
   assert.deepEqual(j.animations.map(a=>a.name),[item.name,...item.supportClips])
+  if(!source){assert.equal(item.name,'Idle');assert.equal(j.animations[0].channels.length,56);continue}
   j.animations.forEach((a,ai)=>a.samplers.forEach((s,si)=>{for(const field of ['input','output']){
    const accessor=j.accessors[s[field]],v=j.bufferViews[accessor.bufferView],expected=source.samplerChecks[ai][si][field]
    assert.equal(accessor.count,expected.count);assert.equal(accessor.type,expected.type)
@@ -34,4 +35,11 @@ test('ground adapter preserves source and vertical motion while bounding root dr
  assert.ok(Math.abs(values[1]-(-.34+groundOffsets[source.name]))<1e-6)
  assert.ok(Math.abs((values[4]-values[1])-.01)<1e-6)
  assert.equal(values[3],values[0]);assert.equal(values[5],values[2])
+})
+test('upright Idle is retained as the shared Wardrobe preview pose',()=>{
+ const idle=moruAnimations.find(item=>item.name==='Idle')
+ assert.ok(idle);assert.equal(idle.duration,8.541666984558105)
+ const {j}=read(idle.url)
+ assert.equal(j.meshes,undefined);assert.equal(j.skins,undefined)
+ assert.equal(j.animations[0].channels.length,56)
 })
