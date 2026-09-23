@@ -1,3 +1,4 @@
+import GestureGlyph from './GestureGlyph.tsx'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import type { RefObject } from 'react'
 import type { Player } from '../world/locomotion.ts'
@@ -25,8 +26,6 @@ export default function WorldInterface({player,ready,theme,onThemeChange}:{playe
  },[])
  const requestedPanel=useSyncExternalStore(worldInterface.subscribe,worldInterface.getSnapshot)
  const [panel,setPanel]=useState(requestedPanel)
- const [gesturesSeen,setGesturesSeen]=useState(false)
- if(requestedPanel==='moru'&&!gesturesSeen)setGesturesSeen(true)
  // Keep the outgoing surface mounted only for its exit transition.
  if(requestedPanel!==null&&requestedPanel!==panel)setPanel(requestedPanel)
  const closing=requestedPanel===null&&panel!==null
@@ -62,12 +61,12 @@ export default function WorldInterface({player,ready,theme,onThemeChange}:{playe
   return()=>{window.removeEventListener('keydown',key,true);if(previous?.isConnected)previous.focus()}
  },[requestedPanel,player])
  return <>
-  {ready&&!gesturesSeen&&!panel&&conversation.phase==='closed'&&<button className="moru-discovery-hint" onClick={()=>{moruAttention();openPanel('moru')}}>모루를 톡 눌러 몸짓 보기</button>}
+  {ready&&!panel&&conversation.phase==='closed'&&<button className="moru-gesture-entry" aria-label="모루 몸짓" onClick={()=>{moruAttention();openPanel('moru')}}><GestureGlyph/></button>}
   <header className="pull-header"><span className="pull-wordmark">PULL<span className="arc-mark" aria-hidden="true"/></span><WorldClock player={player} mode="status"/>
    <nav aria-label="세계 메뉴"><button aria-label={muted?'소리 켜기':'소리 끄기'} aria-pressed={muted} data-muted={muted} title={muted?'소리 켜기':'소리 끄기'} onClick={()=>setMuted(value=>!value)}>♪</button><button aria-label="메뉴 열기" aria-expanded={requestedPanel!==null} onClick={()=>openPanel(panel?null:'menu')}><span className="menu-lines" aria-hidden="true"/></button></nav>
   </header>
   <AudioControls mode={panel==='music'?'panel':'hidden'} slot={musicSlot} muted={muted} onMute={setMuted}/>
-  {!panel&&conversation.phase==='closed'&&<button className="touch-jump" aria-label="점프" disabled={!ready} onClick={()=>jump(player.current)}>↑</button>}
+  {!panel&&conversation.phase==='closed'&&<button className="touch-jump" aria-label="점프" disabled={!ready} onClick={()=>jump(player.current)}><GestureGlyph kind="jump"/></button>}
   {panel&&<div className="interface-layer" data-closing={closing} inert={closing} aria-hidden={closing}>
    <button className="interface-scrim" aria-label="세계로 돌아가기" onClick={close}/>
    <div ref={sheet} className="interface-sheet" data-panel={panel} role="dialog" aria-modal="true" aria-label={labels[panel]} tabIndex={-1}>
