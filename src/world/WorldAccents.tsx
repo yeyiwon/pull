@@ -2,12 +2,9 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Group,InstancedMesh,MeshStandardMaterial,Object3D,MathUtils } from 'three'
 import { environmentState as env } from './environmentState.ts'
-import { homeWorldPoint } from './homeSpace.ts'
 import { HOME,ROCKS } from './worldLayout.ts'
 import { worldTime } from './worldTime.ts'
 import { petalGeometry } from './seasonGeometry.ts'
-const flowerPositions=Array.from({length:48},(_,i)=>homeWorldPoint((i%2?1:-1)*(4.8+Math.sin(i*2.399)),2+(i%12)*.55))
-const runoffPositions=Array.from({length:12},(_,i)=>homeWorldPoint(i%2?4.4:-4.4,-3+(i/2)*1.1))
 function alpha(m:MeshStandardMaterial,v:number){m.opacity=v}
 export default function WorldAccents(){
  const insects=useRef<Group>(null),growth=useRef<Group>(null),flowers=useRef<InstancedMesh>(null),runoff=useRef<InstancedMesh>(null)
@@ -24,12 +21,12 @@ export default function WorldAccents(){
   })}
   if(growth.current)growth.current.scale.setScalar(MathUtils.smoothstep(env.richness,.45,.95))
   if(flowers.current){for(let i=0;i<48;i++){
-    const a=i*2.399,p=flowerPositions[i];o.position.set(p.x,.3+Math.sin(t*.3+a)*.04,p.z)
+    const a=i*2.399,side=i%2?1:-1;o.position.set(HOME.x+side*(4.8+Math.sin(a)),.3+Math.sin(t*.3+a)*.04,HOME.z+2+(i%12)*.55)
     o.rotation.set(-Math.PI/2+.3*Math.sin(a),0,a);const s=Math.max(0,Math.min(1,env.richness*48-i))*(.3+env.bloom*.7)*(1-env.snow*.85)
     o.scale.setScalar(.25*s);o.updateMatrix();flowers.current.setMatrixAt(i,o.matrix)
   }flowers.current.instanceMatrix.needsUpdate=true}
   if(runoff.current){for(let i=0;i<12;i++){
-    const a=(t*1.7+i*.37)%1,p=runoffPositions[i];o.position.set(p.x,(4.2-a*4)*HOME.scale,p.z);o.rotation.set(0,0,-env.wind*.1)
+    const a=(t*1.7+i*.37)%1;o.position.set(HOME.x+(i%2?4.4:-4.4),4.2-a*4,HOME.z-3+(i/2)*1.1);o.rotation.set(0,0,-env.wind*.1)
     o.scale.setScalar(env.rain);o.updateMatrix();runoff.current.setMatrixAt(i,o.matrix)
   }runoff.current.instanceMatrix.needsUpdate=true}
  })

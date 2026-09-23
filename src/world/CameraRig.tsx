@@ -1,24 +1,21 @@
 import { worldInterface } from '../ui/interface.ts'
 import { conversationActive } from '../conversation/session.ts'
-import { useEffect, useRef, useSyncExternalStore } from 'react'
+import { useEffect, useRef } from 'react'
 import type { RefObject } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { MathUtils, Vector3, PerspectiveCamera } from 'three'
 import { cinematicComposition, idleFramingWeight } from './cinematicFraming.ts'
+import { surfaceHeight } from './terrain.ts'
 import { homeState } from './homeSpace.ts'
 import type { Player } from './locomotion.ts'
-import { heroLab } from '../environment/heroLab.ts'
 
 // Shared mutable simulation data stays outside React render state.
 function frameCamera(camera:PerspectiveCamera,aspect:number){camera.fov=cinematicComposition(aspect).fov;camera.updateProjectionMatrix()}
 function updateHeading(player: Player, yaw: number) { player.cameraYaw = yaw }
 
 function CameraRig({ player }: { player: RefObject<Player> }) {
-  useSyncExternalStore(heroLab.subscribe,heroLab.snapshot)
-  const layoutV3=heroLab.layoutV3()
   const { camera, gl, size } = useThree()
   const orbit = useRef({ yaw: -.38, pitch: 0.1, desiredYaw: -.38, desiredPitch: 0.1, pointer: -1, x: 0, y: 0 })
-  const previousLayoutYaw=useRef<number|null>(null)
   const focus = useRef(new Vector3(0, 1.3, 1))
   const desiredFocus = useRef(new Vector3())
   const facing = useRef(new Vector3())
@@ -26,10 +23,6 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
   const distance = MathUtils.clamp(7.0/aspect,11.5,16.5)
   const framing=useRef({distance:15,reduced:false,idle:0,time:0})
   useEffect(()=>{if(camera instanceof PerspectiveCamera){frameCamera(camera,aspect)}},[camera,aspect])
-  useEffect(()=>{
-    if(layoutV3&&Math.abs(player.current.position.z)<35){previousLayoutYaw.current=orbit.current.desiredYaw;orbit.current.desiredYaw=Math.PI-.22}
-    else if(!layoutV3&&previousLayoutYaw.current!==null){orbit.current.desiredYaw=previousLayoutYaw.current;previousLayoutYaw.current=null}
-  },[layoutV3,player])
   useEffect(()=>{const media=window.matchMedia('(prefers-reduced-motion: reduce)');const sync=()=>{framing.current.reduced=media.matches};sync();media.addEventListener('change',sync);return()=>media.removeEventListener('change',sync)},[])
   useEffect(() => {
     const canvas = gl.domElement
@@ -45,7 +38,7 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
       if(conversationActive()){stop();return}
       if (event.pointerId !== state.pointer) return
       state.desiredYaw -= (event.clientX - state.x) * 0.005
-      state.desiredPitch = MathUtils.clamp(state.desiredPitch + (event.clientY - state.y) * 0.004, 0.08, 1.1)
+      state.desiredPitch = MathUtils.clamp(state.desiredPitch + (event.clientY - state.y) * 0.004, -.95, 1.1)
       state.x = event.clientX; state.y = event.clientY
     }
     function stop() {
@@ -88,17 +81,18 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
     desiredFocus.current.set(p.position.x, p.groundY + (p.position.y - p.groundY) * 0.3 + 1.3, p.position.z)
     focus.current.lerp(desiredFocus.current, 1 - Math.exp(-5 * Math.min(delta, 0.05)))
     const { yaw, pitch } = orbit.current
-    const targetDistance=MathUtils.lerp(distance+(layoutV3?3:0)-(conversationActive()?.45:0),7,homeState.cutaway)
+    const targetDistance=MathUtils.lerp(distance-(conversationActive()?.45:0),7,homeState.cutaway)
     framing.current.distance=MathUtils.damp(framing.current.distance,targetDistance,framing.current.reduced?14:3,Math.min(delta,.05))
     const followDistance=framing.current.distance
     const viewPitch = MathUtils.lerp(pitch, Math.max(.55, pitch), homeState.cutaway)
     camera.position.set(
       focus.current.x + Math.sin(yaw) * Math.cos(viewPitch) * followDistance,
-      focus.current.y + Math.sin(viewPitch) * followDistance,
+      focus.current.y + Math.sin(Math.max(0,viewPitch)) * followDistance,
       focus.current.z + Math.cos(yaw) * Math.cos(viewPitch) * followDistance,
     )
+    camera.position.setY(Math.max(camera.position.y,surfaceHeight(camera.position.x,camera.position.z)+.45))
     const composition=cinematicComposition(aspect),outside=1-homeState.cutaway
-    desiredFocus.current.copy(focus.current).y += composition.skyLift*outside
+    desiredFocus.current.copy(focus.current).y += (composition.skyLift+Math.sin(Math.max(0,-viewPitch))*followDistance)*outside
     // A fixed off-centre composition; idle movement is bounded and never rotates orbit yaw.
     desiredFocus.current.x+=Math.cos(yaw)*composition.side*outside
     desiredFocus.current.z-=Math.sin(yaw)*composition.side*outside

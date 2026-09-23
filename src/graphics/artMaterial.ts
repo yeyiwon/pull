@@ -25,20 +25,20 @@ export function artMaterial(color: string, kind: 'stone' | 'bark' | 'leaf' | 'pl
    float artNoise(vec3 p){return sin(p.x*3.1+sin(p.z*2.7))*sin(p.y*4.3+p.z*1.7);}`)
    .replace('#include <color_fragment>',`#include <color_fragment>
     float grain=artNoise(artPosition*${kind==='bark'?'vec3(5.,.3,5.)':kind==='plaster'?'2.0':'1.0'});
-    diffuseColor.rgb*=.94+grain*.055;
+    diffuseColor.rgb*=.94+grain*${kind==='bark'?'.12':'.055'};
     ${kind==='stone'?'float strata=sin(artPosition.y*24.+grain*2.);diffuseColor.rgb*=.97+strata*.025;':''}
     diffuseColor.rgb*=1.-artWet*.16;
     float snowMask=smoothstep(.35,.85,artNormal.y+grain*.12)*artSnow;
     diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.78,.85,.90),snowMask);
    `).replace('#include <normal_fragment_maps>',`#include <normal_fragment_maps>
-    float relief=grain*${kind==='bark'?'.012':kind==='stone'?'.009':kind==='plaster'?'.0015':'.0004'}*(1.-snowMask*.8);
+    float relief=grain*${kind==='bark'?'.022':kind==='stone'?'.009':kind==='plaster'?'.0015':'.0004'}*(1.-snowMask*.8);
     vec3 artDx=dFdx(vViewPosition),artDy=dFdy(vViewPosition);
     vec3 artRx=cross(artDy,normal),artRy=cross(normal,artDx);float artDet=dot(artDx,artRx);
     if(abs(artDet)>.000001)normal=normalize(abs(artDet)*normal-sign(artDet)*(dFdx(relief)*artRx+dFdy(relief)*artRy));
    `).replace('#include <roughnessmap_fragment>',`#include <roughnessmap_fragment>
     roughnessFactor=clamp(mix(roughnessFactor-artWet*${kind==='stone'?'.25':kind==='bark'?'.18':'.12'}+grain*.035,.92,snowMask),.32,.98);`)
  }
- m.customProgramCacheKey=()=>`pull-art-${kind}-4`
+ m.customProgramCacheKey=()=>`pull-art-${kind}-5`
  return m
 }
 export function updateArtMaterial(m:MeshStandardMaterial,time:number){

@@ -40,9 +40,9 @@ export function updateEnvironmentState(delta: number) {
   state.rain = MathUtils.lerp(state.rain,rain*MathUtils.smoothstep(state.cloudiness,.2,.7),1-Math.exp(-delta*.65))
   state.wind = MathUtils.lerp(state.wind,livingWorld.windOverride ?? (look.wind+(1-brain.calmness)*.06),t)
   state.wetness = MathUtils.lerp(state.wetness,state.rain,1-Math.exp(-delta*(state.rain>state.wetness?.2:.012)))
-  state.weatherSnow = MathUtils.clamp(state.weatherSnow + delta * (weather === 'snow' ? .025 : -.002),0,1)
+  state.weatherSnow = real.season !== 'winter' ? 0 : MathUtils.clamp(state.weatherSnow + delta * (weather === 'snow' ? .025 : -.002),0,1)
   state.snowAmount = MathUtils.lerp(state.snowAmount,weather === 'snow' ? {light:.3,normal:.6,heavy:1,magical:.65}[livingWorld.snowMode] : snow*.3,t)
-  state.snow = MathUtils.lerp(state.snow, Math.max(snow,state.weatherSnow), t); state.bloom = MathUtils.lerp(state.bloom, bloom * (.7 + brain.vitality * .3), t)
+  state.snow = real.season !== 'winter' ? 0 : MathUtils.lerp(state.snow, Math.max(snow,state.weatherSnow), t); state.bloom = MathUtils.lerp(state.bloom, bloom * (.7 + brain.vitality * .3), t)
   state.density = MathUtils.lerp(state.density, density, t); state.sunlight = MathUtils.lerp(state.sunlight, sun, t)
   state.haze = MathUtils.lerp(state.haze, haze * (1 + brain.mystery * .08) * look.haze, t)
   const sunY = worldTime.presentation.sunY

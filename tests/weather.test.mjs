@@ -13,11 +13,14 @@ test('mock rain wets the world and leaves moisture after it stops',()=>{
  assert.ok(env.wetness>wet*.95&&env.rain<.3)
 })
 test('snow accumulates and melts gradually; independent wind override remains bounded',()=>{
+ worldTime.seasonOverride={season:'winter',progress:.5};refreshWorldTime(new Date(2026,11,12,0))
  livingWorld.weather={type:'snow'};livingWorld.snowMode='heavy';livingWorld.windOverride=.8;tick(45)
  assert.ok(env.snow>.95&&env.snowAmount>.95&&env.wind>.79)
  livingWorld.weather=null;tick(5)
- assert.ok(env.snow>.95);assert.ok(env.snowAmount<.01)
+ assert.ok(env.snow>.95);assert.ok(env.snowAmount<.4)
  assert.ok(Object.values(env).filter(v=>typeof v==='number').every(Number.isFinite))
+ worldTime.seasonOverride={season:'spring',progress:.1};refreshWorldTime(new Date(2026,2,12,0));tick(.1)
+ assert.equal(env.snow,0);assert.equal(env.weatherSnow,0)
  livingWorld.windOverride=null;worldTime.override=null;worldTime.seasonOverride=null
 })
 test('rare discoveries are deterministic and ambience prepares channels without playback',()=>{

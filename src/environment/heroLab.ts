@@ -4,8 +4,8 @@ export const HERO_IDS=['pull-house-hero','pull-tree-hero-a','pull-tree-hero-b','
 export type HeroId=typeof HERO_IDS[number]
 export type HeroSelection=HeroId|'all'|'layout-v2'|'layout-v3'
 const LAYOUT_IDS:readonly HeroId[]=['pull-house-hero','pull-tree-hero-a','moru-meadow-cluster','pull-riverbank-cluster-a','pull-mountain-a']
-let selected:HeroSelection='layout-v3',enabled=true,revision=0
-setWorldReconstructionV3(true)
+let selected:HeroSelection='all',enabled=false,revision=0
+setWorldReconstructionV3(false)
 let lakeside:'pull-bench-a'|'pull-lamppost-a'|null=null
 const listeners=new Set<()=>void>()
 function publish(){setWorldReconstructionV3(Boolean(enabled&&selected==='layout-v3'));revision++;for(const listener of listeners)listener()}

@@ -14,10 +14,10 @@ function AudioDebug() {
     <small>Rain / snow / wind / visits: World preview</small>
   </details>
 }
-export default function AudioControls({mode='panel',slot=null,onMute}:{mode?:'hidden'|'panel';slot?:HTMLElement|null;onMute?:(muted:boolean)=>void}) {
+export default function AudioControls({mode='panel',slot=null,muted,onMute}:{mode?:'hidden'|'panel';slot?:HTMLElement|null;muted:boolean;onMute:(muted:boolean)=>void}) {
   const [volume,setVolume]=useState(.8),[track,setTrack]=useState('')
   useEffect(()=>{if(mode!=='panel')return;const update=()=>setTrack(audio.diagnostics.music);update();const id=setInterval(update,1000);return()=>clearInterval(id)},[mode])
-  const [muted, setMuted] = useState(false)
+  useEffect(()=>{audio.setMaster(muted?0:volume)},[muted,volume])
   useEffect(() => {
     const unlock = () => { if (!document.hidden) void audio.unlock() }
     const visibility = () => { if (document.hidden) audio.suspend(); else if (audio.context) unlock() }
@@ -29,7 +29,7 @@ export default function AudioControls({mode='panel',slot=null,onMute}:{mode?:'hi
   }, [])
   return slot?createPortal(<section className="music-panel">
     <p className="section-label">지금 흐르는 곡</p><p className="track-title">{track&&track!=='none'&&track!=='—'?track.replaceAll('_',' ').replaceAll('-',' '):'잠시 고요한 시간'}</p>
-    <button className="text-link" aria-pressed={muted} onClick={()=>{setMuted(!muted);onMute?.(!muted);audio.setMaster(muted?volume:0);if(muted)void audio.unlock()}}>{muted?'소리 켜기':'소리 끄기'} </button>
+    <button className="text-link" aria-pressed={muted} onClick={()=>{onMute(!muted);if(muted)void audio.unlock()}}>{muted?'소리 켜기':'소리 끄기'} </button>
     <label className="volume-label">음량 <span>{Math.round(volume*100)}%</span><input aria-label="Master volume" type="range" min="0" max="1" step=".01" value={volume} onChange={e=>{const v=Number(e.target.value);setVolume(v);if(!muted)audio.setMaster(v)}}/></label>
     {import.meta.env.DEV&&<AudioDebug/>}
   </section>,slot):null

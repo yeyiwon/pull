@@ -34,15 +34,11 @@ test('riverbed is shallow, banks continuous, bridge stays above water',()=>{
  for(let i=-60;i<60;i++){const a=x+i*.1;assert.ok(Math.abs(surfaceHeight(a,z)-surfaceHeight(a+.1,z))<.05)}
  const bx=streamCenter(BRIDGE.z);assert.ok(surfaceHeight(bx,BRIDGE.z)>.3);assert.equal(waterDepth(bx,BRIDGE.z),0)
 })
-test('stream widens into a walkable lakeshore without changing the bridge crossing',()=>{
- const lakeZ=83,center=streamCenter(lakeZ),width=streamWidth(lakeZ)
- assert.ok(width>22)
- assert.ok(streamWidth(BRIDGE.z)<6)
- assert.ok(waterDepth(center,lakeZ)>.3)
- assert.equal(surfaceHeight(center+width+3.4,lakeZ),0)
- const p=createPlayer();p.position.set(center+width+3.4,0,85);p.keys.add('KeyS')
+test('restored procedural channel keeps its original narrow footprint and movement bounds',()=>{
+ for(const z of [-60,-9,15])assert.equal(streamWidth(z),3.4+Math.sin(z*.03)*1.4)
+ const p=createPlayer();p.position.set(65,0,85);p.keys.add('KeyS')
  for(let i=0;i<300;i++)movePlayer(p,1/60)
- assert.ok(p.position.z>90)
+ assert.ok(p.position.z<=90)
 })
 test('lakeside semantic anchors are dry and reviewed furniture remains candidate-only',()=>{
  for(const area of Object.values(LAKESIDE_AREAS)){
@@ -65,7 +61,7 @@ test('procedural petal, ginkgo and six-armed crystal have finite distinct geomet
 })
 
 
-test('enlarged home preserves porch anchor, coordinate round trips and dry floor',()=>{
+test('procedural home preserves porch anchor, coordinate round trips and dry floor',()=>{
  const porch=homeWorldPoint(1.8,5.5)
  assert.ok(Math.abs(porch.x-(10+1.8*Math.cos(-.12)+5.5*Math.sin(-.12)))<1e-9)
  assert.ok(Math.abs(porch.z-(-24-1.8*Math.sin(-.12)+5.5*Math.cos(-.12)))<1e-9)

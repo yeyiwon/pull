@@ -1,3 +1,4 @@
+import { useThree } from '@react-three/fiber'
 import { worldInterface } from '../ui/interface.ts'
 import { conversationActive } from '../conversation/session.ts'
 import { Component, Suspense, useEffect, useRef } from 'react'
@@ -28,6 +29,8 @@ class CharacterBoundary extends Component<
 }
 
 function World({ onReady, onError, player, bubble }: { onReady: () => void; onError: () => void; player: RefObject<Player>; bubble: RefObject<HTMLDivElement | null> }) {
+  const {gl}=useThree()
+  useEffect(()=>()=>{gl.domElement.style.removeProperty('cursor')},[gl])
   const selection=useRef({x:0,y:0})
   useEffect(() => {
     const input = player.current
@@ -68,7 +71,7 @@ function World({ onReady, onError, player, bubble }: { onReady: () => void; onEr
       <Environment player={player} />
       <CharacterBoundary onError={onError}>
         <Suspense fallback={null}>
-          <group onPointerDown={e=>{selection.current={x:e.clientX,y:e.clientY}}} onPointerUp={e=>{if(Math.hypot(e.clientX-selection.current.x,e.clientY-selection.current.y)<6&&!conversationActive()){moru.perform('listen','user',false);worldInterface.open('moru')}}}><Character player={player} onReady={onReady} /></group>
+          <group onPointerOver={()=>{gl.domElement.style.setProperty('cursor','pointer')}} onPointerOut={()=>{gl.domElement.style.removeProperty('cursor')}} onPointerDown={e=>{selection.current={x:e.clientX,y:e.clientY}}} onPointerUp={e=>{if(Math.hypot(e.clientX-selection.current.x,e.clientY-selection.current.y)<6&&!conversationActive()){moru.perform('listen','user',false);worldInterface.open('moru')}}}><Character player={player} onReady={onReady} /></group>
           <SpeechBubble player={player} element={bubble} />
         </Suspense>
       </CharacterBoundary>

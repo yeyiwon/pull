@@ -186,3 +186,35 @@ html.frame-review .experiment :is(.pull-header,.interface-layer,.moru-conversati
 .interface-sheet[data-panel="moru"] .sheet-fixed-header{display:none}
 
 .hero-environment-lab{display:grid;gap:8px;margin:18px 0 28px}.hero-environment-lab>button,.hero-environment-lab>div button{min-height:42px;padding:9px 12px;border:1px solid var(--glass-line);border-radius:12px;background:transparent;color:var(--quiet);text-align:left}.hero-environment-lab>div{display:flex;flex-wrap:wrap;gap:6px}.hero-environment-lab button[aria-pressed="true"]{color:var(--ivory);background:var(--surface)}.hero-environment-lab small{color:var(--quiet);line-height:1.5}
+
+/* The horizontal action strip must shrink inside its flex ancestors. */
+.interface-sheet[data-panel="moru"]{box-sizing:border-box;min-width:0;max-width:calc(100vw - 32px)}
+.interface-sheet[data-panel="moru"] :is(.sheet-content,.sheet-scroll-body,.moru-context){min-width:0;max-width:100%;width:100%;box-sizing:border-box}
+.moru-dances{min-width:0;max-width:100%;width:100%;box-sizing:border-box}
+.moru-specials{flex-wrap:wrap}.moru-context-row{min-width:0;flex-wrap:wrap}
+
+/* Contextual gestures belong at the viewport center, not the menu's right edge.
+   Auto margins leave transform free for the existing open/close animation. */
+.interface-sheet[data-panel="moru"]{left:0;right:0;margin-inline:auto;width:min(600px,calc(100vw - 32px));max-width:calc(100vw - 32px)}
+.moru-context-row{justify-content:center}
+.moru-context-row button:first-child{margin-right:0}
+.moru-dances,.moru-specials{justify-content:center;flex-wrap:wrap}
+.moru-dances{overflow:visible;scroll-snap-type:none;gap:8px}
+
+/* A single composer expands in place; gestures stay with Moru. */
+.moru-conversation[data-active="false"]{width:min(340px,calc(100vw - 132px));min-height:44px;padding:10px 17px;border:1px solid #ffffff25;border-radius:24px;background:#202a3b26;box-shadow:inset 0 1px 0 #ffffff12}
+.moru-conversation[data-active="false"] input::placeholder{font-size:13px;color:var(--ivory);opacity:.8}
+.moru-conversation[data-active="false"] .conversation-notice{display:none}
+.moru-context-row button:first-child{font-weight:400}
+@media(max-width:600px){.moru-conversation[data-active="false"]{bottom:calc(116px + env(safe-area-inset-bottom));width:calc(100vw - 48px)}}
+
+.moru-discovery-hint{position:absolute;z-index:10;left:50%;bottom:calc(80px + env(safe-area-inset-bottom));translate:-50% 0;border:0;background:none;padding:6px 12px;color:var(--ivory);font:inherit;font-size:11px;white-space:nowrap;opacity:.7;text-shadow:0 1px 5px #101928;cursor:pointer}
+.moru-discovery-hint:hover,.moru-discovery-hint:focus-visible{opacity:1}
+@media(max-width:600px){.moru-discovery-hint{bottom:calc(164px + env(safe-area-inset-bottom))}}
+
+.wind-heading{display:flex;align-items:center;justify-content:space-between;margin:30px 0 12px}.wind-heading .section-label{margin:0}.wind-auto{border:1px solid var(--glass-line);border-radius:20px;background:transparent;color:var(--quiet);padding:6px 13px;min-height:36px;font:inherit;font-size:12px}.wind-auto[aria-pressed="true"]{background:var(--surface);color:var(--ivory)}.wind-slider{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--quiet)}.wind-slider input{flex:1;min-width:0;accent-color:#cabbdc}
+
+.interface-sheet .wind-choices button{font-size:12px!important;font-weight:400;min-height:40px;padding:8px 12px}
+
+.interface-sheet .wind-choices button,.interface-sheet .wind-choices button[aria-pressed="true"]{border:0;background:none;box-shadow:none;border-radius:0;color:var(--quiet)}
+.interface-sheet .wind-choices button[aria-pressed="true"]{color:var(--ivory)}
