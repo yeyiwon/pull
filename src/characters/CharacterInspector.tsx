@@ -12,6 +12,9 @@ export default function CharacterInspector() {
       <button onClick={()=>moru.contextReaction()}>Say random</button>
       <button onClick={()=>moru.emote('heart')}>Heart</button>
       <button onClick={()=>moru.emote('sparkle')}>Sparkle</button>
+      <button onClick={()=>moru.offer({event:'BRAIN',speech:'여기 좋다.',emotion:'happy',typing:true,duration:4},'conversation')}>Happy preview</button>
+      <button onClick={()=>moru.offer({event:'BRAIN',speech:'오?',fx:'SURPRISE',typing:true,duration:3},'conversation')}>Surprise preview</button>
+      <button onClick={()=>moru.offer({event:'BRAIN',speech:'같이 있으니까 좋네.',emotion:'warm',typing:true,duration:4},'conversation')}>Affection preview</button>
       <button onClick={()=>moru.perform('wave')}>Wave</button>
       <button onClick={()=>moru.perform('listen')}>Gesture</button>
       <button onClick={()=>moru.perform('bubbleDance')}>Dance</button>

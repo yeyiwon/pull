@@ -1,5 +1,7 @@
 // Presentation stays inside the existing reaction lifetime, so Brain resume is unchanged.
 const smooth = (x: number) => { const t = Math.max(0, Math.min(1, x)); return t * t * (3 - 2 * t) }
+export function speechDuration(text:string){return .3+Array.from(text).length*.055+4}
+export function initialSpeech(text:string,typing:boolean,reducedMotion:boolean){return typing&&!reducedMotion?'':text}
 export function speechEnvelope(age: number, duration: number, reducedMotion = false) {
  const enter = smooth((age - .3) / .45)
  const exit = smooth((age - (duration - .65)) / .65)

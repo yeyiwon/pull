@@ -7,7 +7,6 @@ import { homeState } from '../world/homeSpace.ts'
 import { worldTime } from '../world/worldTime.ts'
 import { audio } from './AudioManager.ts'
 import { audioPlan } from './AudioDirector.ts'
-import { characters } from '../characters/registry.ts'
 import { livingWorld } from '../world/livingWorld.ts'
 import { footSurface } from './worldAudio.ts'
 
@@ -47,8 +46,6 @@ export default function WorldAudio({ player }: { player: RefObject<Player> }) {
     if (t.elapsed < .1) return
     t.elapsed = 0
     audio.applyPlan(audioPlan({season:worldTime.realWorld.season,hour:worldTime.current.hour,seasonProgress:worldTime.realWorld.seasonProgress,weather:livingWorld.weather?.type==='rain'?'rain':livingWorld.weather?.type==='storm'?'storm':livingWorld.weather?.type==='snow'?'snow':livingWorld.weather?.type==='fog'?'fog':env.wind>.55?'wind':'clear',inside:homeState.inside,wind:env.wind,x:p.position.x,z:p.position.z}))
-    const clip=characters.MORU?.clip??''
-    if(clip!==t.clips.MORU){if(clip==='stretch')void audio.play('moru_stretch','character','emotion');else if(clip==='WAVE')void audio.play('moru_greeting','character','emotion');t.clips.MORU=clip}
     const meteor = env.meteor > .4 || env.meteorShower > .4
     const events:Record<string,boolean>={shooting_star:meteor&&env.meteorShower<.4,meteor_shower:env.meteorShower>.4,aurora:env.aurora>.4,rainbow:env.rainbow>.4,firefly_night:env.fireflies>.4,cherry_blossom_shower:livingWorld.eventOverride==='petalShower',golden_wind:livingWorld.eventOverride==='goldenWind',first_snow:livingWorld.weather?.type==='snow'}
     for(const [id,active]of Object.entries(events)){if(active&&!t.events.has(id))void audio.play(`event_${id}`,'world','event');if(active)t.events.add(id);else t.events.delete(id)}

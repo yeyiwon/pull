@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import type { RefObject } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { MathUtils, Vector3, PerspectiveCamera } from 'three'
-import { cinematicComposition, idleFramingWeight } from './cinematicFraming.ts'
+import { cinematicComposition, idleFramingWeight, skyTargetHeight } from './cinematicFraming.ts'
 import { surfaceHeight } from './terrain.ts'
 import { homeState } from './homeSpace.ts'
 import type { Player } from './locomotion.ts'
@@ -19,9 +19,12 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
   const focus = useRef(new Vector3(0, 1.3, 1))
   const desiredFocus = useRef(new Vector3())
   const facing = useRef(new Vector3())
+  const previewPosition = useRef(new Vector3())
+  const previewTarget = useRef(new Vector3())
+  const wardrobeBlend = useRef(0)
   const aspect=size.width/size.height
-  const distance = MathUtils.clamp(7.0/aspect,11.5,16.5)
-  const framing=useRef({distance:15,reduced:false,idle:0,time:0})
+  const distance = MathUtils.clamp(5.2/aspect,8.3,11.5)
+  const framing=useRef({distance:10.5,reduced:false,idle:0,time:0})
   useEffect(()=>{if(camera instanceof PerspectiveCamera){frameCamera(camera,aspect)}},[camera,aspect])
   useEffect(()=>{const media=window.matchMedia('(prefers-reduced-motion: reduce)');const sync=()=>{framing.current.reduced=media.matches};sync();media.addEventListener('change',sync);return()=>media.removeEventListener('change',sync)},[])
   useEffect(() => {
@@ -38,7 +41,7 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
       if(conversationActive()){stop();return}
       if (event.pointerId !== state.pointer) return
       state.desiredYaw -= (event.clientX - state.x) * 0.005
-      state.desiredPitch = MathUtils.clamp(state.desiredPitch + (event.clientY - state.y) * 0.004, -.95, 1.1)
+      state.desiredPitch = MathUtils.clamp(state.desiredPitch + (event.clientY - state.y) * 0.004, -.55, 1.1)
       state.x = event.clientX; state.y = event.clientY
     }
     function stop() {
@@ -86,9 +89,9 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
     const followDistance=framing.current.distance
     const viewPitch = MathUtils.lerp(pitch, Math.max(.55, pitch), homeState.cutaway)
     camera.position.set(
-      focus.current.x + Math.sin(yaw) * Math.cos(viewPitch) * followDistance,
+      focus.current.x + Math.sin(yaw) * Math.cos(Math.max(0,viewPitch)) * followDistance,
       focus.current.y + Math.sin(Math.max(0,viewPitch)) * followDistance,
-      focus.current.z + Math.cos(yaw) * Math.cos(viewPitch) * followDistance,
+      focus.current.z + Math.cos(yaw) * Math.cos(Math.max(0,viewPitch)) * followDistance,
     )
     camera.position.setY(Math.max(camera.position.y,surfaceHeight(camera.position.x,camera.position.z)+.45))
     const composition=cinematicComposition(aspect),outside=1-homeState.cutaway
@@ -100,6 +103,30 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
     desiredFocus.current.x+=weight*(Math.sin(f.time*.12)*.035+facing.current.x*.035)
     desiredFocus.current.y+=weight*Math.sin(f.time*.09+1.7)*.025
     desiredFocus.current.z+=weight*facing.current.z*.035
+    if(viewPitch<0 && outside>.99 && camera instanceof PerspectiveCamera){
+      desiredFocus.current.y=skyTargetHeight(camera.position.y,p.position.y,
+        Math.hypot(camera.position.x-p.position.x,camera.position.z-p.position.z),
+        desiredFocus.current.y,camera.fov)
+    }
+    // Preview the existing live body, rather than loading a second GPU model.
+    const wardrobe=worldInterface.getSnapshot()==='appearance'
+    wardrobeBlend.current=MathUtils.damp(wardrobeBlend.current,wardrobe?1:0,f.reduced?100:7,dt)
+    const preview=wardrobeBlend.current
+    if(preview>.001 && camera instanceof PerspectiveCamera){
+      const portrait=size.width<=600
+      const availableHeight=portrait?size.height*.58-100:size.height-100
+      const visibleFraction=Math.max(.2,availableHeight/size.height)*.8
+      const previewDistance=1.55/(Math.tan(MathUtils.degToRad(camera.fov/2))*visibleFraction)
+      previewTarget.current.set(p.position.x,p.position.y+1.45,p.position.z)
+      facing.current.set(0,0,1).applyQuaternion(p.rotation);facing.current.y=0;facing.current.normalize()
+      previewPosition.current.copy(previewTarget.current).addScaledVector(facing.current,previewDistance)
+      previewPosition.current.y+=.12
+      camera.position.lerp(previewPosition.current,preview)
+      desiredFocus.current.lerp(previewTarget.current,preview)
+      const offsetX=portrait?0:204
+      const offsetY=portrait?(size.height*.42-100)/2:-25
+      camera.setViewOffset(size.width,size.height,offsetX*preview,offsetY*preview,size.width,size.height)
+    }else if(camera instanceof PerspectiveCamera && camera.view?.enabled){camera.clearViewOffset()}
     camera.lookAt(desiredFocus.current)
   })
   return null

@@ -1,93 +1,129 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { BENCH_CLIP, BENCH_CROSS, BENCH_REST, BENCH_STAND, isSeated, updateBench, clearBench } from './bench.ts'
+import { MORU_RENDERING_PROFILE as profile, prepareMoruRendering, createMoruEnvironment } from '../characters/renderingProfile.ts'
+import { environmentState } from './environmentState.ts'
+import { bodySelection } from '../characters/bodySelection.ts'
+import { appearanceAssets } from '../characters/appearanceAssets.ts'
+import { appearanceGroundOffsets } from '../characters/appearanceGroundOffsets.ts'
+import { retargetAnimation } from '../characters/retargetAnimation.ts'
+import { prepareBodyAnimation } from '../characters/bodyAnimation.ts'
+import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react'
 import type { RefObject } from 'react'
-import { useFrame, useLoader } from '@react-three/fiber'
-import { AnimationClip, AnimationUtils, Box3, Group, Mesh, Vector3 } from 'three'
+import { useFrame, useLoader, useThree } from '@react-three/fiber'
+import { AnimationClip, AnimationUtils, Box3, Group, Mesh, PointLight, SkinnedMesh, Vector3 } from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { clone } from 'three/addons/utils/SkeletonUtils.js'
 import { createLocomotion, movePlayer } from './locomotion.ts'
 import type { AnimationState, Player } from './locomotion.ts'
 import { moru } from '../characters/expression.ts'
-import { MORU_ACTIONS } from '../characters/actions.ts'
+import { MORU_ACTIONS, UNAVAILABLE_MORU_ACTIONS } from '../characters/actions.ts'
 import { moruAnimations } from '../characters/assets.ts'
 import { characters } from '../characters/registry.ts'
 
 function Character({ player, onReady }: { player: RefObject<Player>; onReady: () => void }) {
-  const walkingAsset = useLoader(GLTFLoader, '/moru/moru-walk.glb')
-  const animationAssets = useLoader(GLTFLoader, moruAnimations.map(a => a.url))
+  const {gl}=useThree()
+  const body=useSyncExternalStore(bodySelection.subscribe,bodySelection.getSnapshot)
+  const manifest=moruAnimations
+  const walkingAsset = useLoader(GLTFLoader, appearanceAssets[body])
+  const animationAssets = useLoader(GLTFLoader, manifest.map(a => a.url))
   const root = useRef<Group>(null)
+  const faceFill = useRef<PointLight>(null)
+  const fillDirection = useRef(new Vector3())
   const model = useMemo(() => {
     const scene = clone(walkingAsset.scene)
-    scene.traverse((object) => {
-      if (object instanceof Mesh) { object.castShadow = true; object.receiveShadow = true; object.frustumCulled = false }
-    })
-    // Update every bone before measuring: this export has a 0.01 root scale.
+    const materials=prepareMoruRendering(scene)
+    // Normalize the inspected new body's rest bounds without changing its mesh or rig.
     scene.updateMatrixWorld(true)
     const bounds = new Box3().setFromObject(scene)
     const size = bounds.getSize(new Vector3())
     const center = bounds.getCenter(new Vector3())
-    const sources = Object.fromEntries(animationAssets.flatMap(asset => asset.animations.map(clip => [clip.name, clip])))
-    const names = { IDLE: 'Short_Breathe_and_Look_Around', WALK: 'Walking', RUN: 'Running',
-      CONFUSED: 'Short_Breathe_and_Look_Around', LISTEN: 'Listening_Gesture', JUMP: 'Hop_with_Arms_Raised',
-      WAVE: 'Wave_One_Hand', BUBBLE_DANCE: 'Bubble_Dance' } as const
+    const sources = Object.fromEntries(animationAssets.flatMap(asset => asset.animations.map(clip => [clip.name, body==='base'?clip:retargetAnimation(clip,asset.scene,scene)])))
+    const offsets=body==='base'?undefined:appearanceGroundOffsets[body]
+    const semanticClip=(id:string)=>MORU_ACTIONS.find(action=>action.id===id)!.clip
+    const names = { IDLE: semanticClip('idle'), WALK: semanticClip('walk'), RUN: semanticClip('run'),
+      CONFUSED: semanticClip('idle'), LISTEN: semanticClip('listen'), JUMP: semanticClip('jump'),
+      WAVE: semanticClip('wave'), BUBBLE_DANCE: semanticClip('bubbleDance') }
     const clips = {} as Record<AnimationState, import('three').AnimationClip>
     for (const state of Object.keys(names) as AnimationState[]) {
       const name = names[state]
       const clip = sources[name]
       if (!clip) throw new Error(`Missing Moru animation: ${name}`)
-      clips[state] = clip.clone()
-      if (state === 'JUMP') {
-        // Keep the inspected hop (0.79–1.58s), not its long anticipation/recovery.
-        clips[state] = AnimationUtils.subclip(clip, clip.name, 19, 38, 24)
-        // The inspected export translates Hips during its leap. World motion owns
-        // displacement, so retain limb rotations but make this clip in-place.
-        const hips = clips[state].tracks.find((track) => track.name === 'mixamorigHips.position')
-        if (!hips) throw new Error('Expected Moru jump hips track is missing')
-        for (let i = 3; i < hips.values.length; i++) hips.values[i] = hips.values[i % 3]
-      }
+      clips[state] = prepareBodyAnimation(clip,state==='JUMP',offsets)
     }
-    const extras: Record<string, { clip: AnimationClip; loop: boolean }> = {}
+    const extras: Record<string, { clip: AnimationClip; loop: boolean; hold?: boolean }> = {}
     for (const [name, source] of Object.entries(sources)) {
-      if (Object.values(names).some(value => value === name)) continue
-      const clip = source.clone()
-      // Keep dances within the controller footprint; retain vertical body motion.
-      const hips = clip.tracks.find(track => track.name === 'mixamorigHips.position')
-      if (hips) for (let i = 3; i < hips.values.length; i += 3) {
-        hips.values[i] = hips.values[0]; hips.values[i + 2] = hips.values[2]
-      }
-      extras[name] = { clip, loop: false }
+      // Reference-pose .001 clips are retained in the inventory, not treated as emotes.
+      if (!moruAnimations.some(entry=>entry.name===name)) continue
+      const clip = prepareBodyAnimation(source,false,offsets)
+      if(name===BENCH_CROSS){const hips=clip.tracks.find(t=>t.name==='mixamorigHips.position');if(hips)for(let i=1;i<hips.values.length;i+=3)hips.values[i]+=.066}
+      extras[name] = { clip, loop: name===BENCH_CROSS, hold: name===BENCH_CLIP||name===BENCH_STAND }
     }
+    // No standalone sit-down export is present. Reverse the supplied stand-up
+    // transition instead of importing an incompatible old-body animation.
+    const stand=extras[BENCH_STAND].clip
+    const sit=stand.clone();sit.name=BENCH_CLIP
+    for(const track of sit.tracks){
+      const times=Array.from(track.times),values=Array.from(track.values),stride=track.getValueSize()
+      for(let i=0;i<times.length;i++){
+        track.times[i]=stand.duration-times[times.length-1-i]
+        for(let k=0;k<stride;k++)track.values[i*stride+k]=values[(times.length-1-i)*stride+k]
+      }
+    }
+    extras[BENCH_CLIP]={clip:sit,loop:false,hold:true}
+    extras[BENCH_REST]={clip:AnimationUtils.subclip(sit,BENCH_REST,Math.floor(sit.duration*24)-2,Math.ceil(sit.duration*24),24),loop:false,hold:true}
     const head = scene.getObjectByName('mixamorigHead')
     if (!head) throw new Error('Inspected Moru head bone is missing')
-    return { scene, head, scale: 2.8 / size.y, offset: new Vector3(-center.x, -bounds.min.y, -center.z), clips, extras }
-  }, [walkingAsset, animationAssets])
+    return { scene, head, materials, scale: 2.8 / size.y, offset: new Vector3(-center.x, -bounds.min.y, -center.z), clips, extras }
+  }, [walkingAsset, animationAssets, body])
+  const materialRefs = useRef(model.materials)
+  // GPU resources belong to the committed effect, not render: StrictMode can
+  // replay setup/cleanup and Suspense can discard an uncommitted render.
+  useEffect(() => {
+    materialRefs.current = model.materials
+    const studio = createMoruEnvironment(gl)
+    for (const material of materialRefs.current) { material.envMap = studio.texture; material.needsUpdate = true }
+    return () => {
+      for (const material of materialRefs.current) material.envMap = null
+      studio.dispose()
+    }
+  }, [gl, model])
   const animation = useRef<ReturnType<typeof createLocomotion> | null>(null)
   useEffect(() => {
     const controller = createLocomotion(model.scene, model.clips, { extras: model.extras, automaticObservation: false })
+    // Keep the rest/bind pose offscreen until the first mixer evaluation.
+    if(root.current)root.current.visible=false
+    const currentPlayer=player.current
     animation.current = controller
     characters.MORU = {
       play: (name) => { const state = (Object.keys(model.clips) as AnimationState[]).find(key => model.clips[key].name === name)
+        if (isSeated(player.current)||[BENCH_CLIP,BENCH_CROSS,BENCH_REST,BENCH_STAND,'Sit_Cross_Legged_on_Floor'].includes(name)) return false
         if (!player.current.isGrounded || player.current.groundState !== 'IDLE' || player.current.jumpRequested) return false
-        if (name in model.extras) return controller.playExtra(name)
-        if (!state) return false
-        if (state === 'JUMP') { player.current.jumpRequested = true; return true }
+        if (!state || state==='JUMP') return controller.playExtra(name)
         if (state === 'WAVE' || state === 'BUBBLE_DANCE' || state === 'LISTEN' || state === 'CONFUSED') { player.current.actionRequested = state; return true }
         return false
       }, greet: () => { player.current.actionRequested = 'WAVE' },
       clip: 'IDLE', position: player.current.position, head: player.current.headPosition,
-      anchors: [], status: `Original Moru · ${moruAnimations.length} compatible animations`,
+      anchors: ['mixamorigHead','mixamorigNeck','mixamorigSpine2','mixamorigLeftHand','mixamorigRightHand'], status: `Moru ${body} · ${manifest.length} animations`,
     }
     const unbind=moru.bind(id=>{
       const action=MORU_ACTIONS.find(a=>a.id===id)
-      return action?characters.MORU?.play(action.clip)??false:false
+      return action&&!UNAVAILABLE_MORU_ACTIONS.has(id)?characters.MORU?.play(action.clip)??false:false
     })
-    onReady()
-    return () => { unbind(); controller.dispose(); animation.current = null; delete characters.MORU }
-  }, [model, player, onReady])
+    return () => { clearBench(currentPlayer); unbind(); controller.dispose(); animation.current = null; delete characters.MORU; model.scene.traverse(node=>{if(node instanceof Mesh){if(node instanceof SkinnedMesh)node.skeleton.dispose();node.geometry.dispose();for(const material of Array.isArray(node.material)?node.material:[node.material]){for(const value of Object.values(material))if(value&&typeof value==='object'&&'isTexture' in value&&value.isTexture&&'dispose' in value)(value as import('three').Texture).dispose();material.dispose()}}}) }
+  }, [model, player, onReady, body, manifest.length])
 
-  useFrame((_, delta) => {
+  useFrame(({camera}, delta) => {
     const dt = Math.min(delta, 0.05)
+    const night=environmentState.night
+    // Three.js materials are mutable render resources, not React state.
+    // oxlint-disable-next-line react/immutability
+    for(const material of materialRefs.current)material.envMapIntensity=profile.environmentDay+(profile.environmentNight-profile.environmentDay)*night
+    if(faceFill.current)faceFill.current.intensity=profile.fillDay+(profile.fillNight-profile.fillDay)*night
+    const controller=animation.current
+    if([BENCH_CLIP,BENCH_CROSS,BENCH_REST,BENCH_STAND].includes(controller?.activeClip??'')&&!isSeated(player.current))controller?.stopExtra()
+    updateBench(player.current,dt,clip=>controller?.playExtra(clip)??false,()=>controller?.stopExtra())
     movePlayer(player.current, dt)
-    animation.current?.update(player.current, dt)
+    const firstPose=!!controller&&root.current?.visible===false
+    controller?.update(player.current, firstPose?Math.max(dt,.001):dt)
     if (characters.MORU && animation.current) characters.MORU.clip = animation.current.activeClip
     if (root.current) {
       root.current.position.copy(player.current.position)
@@ -95,15 +131,24 @@ function Character({ player, onReady }: { player: RefObject<Player>; onReady: ()
       root.current.updateMatrixWorld(true)
       model.head.getWorldPosition(player.current.headPosition)
       player.current.headPosition.addScaledVector(player.current.up, 0.85)
+      if(faceFill.current){model.head.getWorldPosition(faceFill.current.position);fillDirection.current.copy(camera.position).sub(faceFill.current.position).normalize();faceFill.current.position.addScaledVector(fillDirection.current,profile.fillDistance);faceFill.current.position.y+=.15}
+      if(firstPose){
+        root.current.visible=true
+        bodySelection.loaded(body)
+        onReady()
+      }
     }
   }, -1)
 
   return (
-    <group ref={root} position={[0, 0, 1]} rotation={[0, Math.PI, 0]}>
+    <>
+    <pointLight ref={faceFill} color="#fff1e2" intensity={profile.fillDay} distance={7} decay={2}/>
+    <group ref={root} visible={false} position={[0, 0, 1]} rotation={[0, Math.PI, 0]}>
       <group scale={model.scale}>
         <primitive object={model.scene} position={model.offset} dispose={null} />
       </group>
     </group>
+    </>
   )
 }
 export default Character

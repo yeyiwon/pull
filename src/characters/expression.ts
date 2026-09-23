@@ -3,6 +3,7 @@ import { MORU_ACTIONS, REACTION_ACTIONS } from './actions.ts'
 import type { MoruActionId, MoruReaction } from './actions.ts'
 import { AMBIENT_LINES, contextCategory, LINE_GESTURES } from './ambientLines.ts'
 import type { AmbientContext, LineCategory } from './ambientLines.ts'
+import { feedback, actionFeedback } from './feedback.ts'
 
 type Origin = 'user' | 'ambient' | 'brain' | 'conversation'
 type Performer = (id:MoruActionId)=>boolean
@@ -20,7 +21,7 @@ export function createMoruExpression(random:()=>number=Math.random) {
     if(origin!=='conversation' && text && (recent.has(text)||time<(origin==='user'?nextUserSpeech:nextSpeech)))return false
     if(!text && (!reaction.fx||time<nextEmote))return false
     if(origin==='user')userVersion++
-    pending={...reaction,speech:text,duration:Math.max(1.5,Math.min(origin==='conversation'?8:3,reaction.duration))}
+    pending={...reaction,speech:text,duration:Math.max(1.5,Math.min(origin==='conversation'?12:3,reaction.duration))}
     busyUntil=time+pending.duration;nextEmote=time+6
     if(text){recent.set(text,time);nextSpeech=time+20+random()*16;nextUserSpeech=time+4}
     return true
@@ -29,6 +30,7 @@ export function createMoruExpression(random:()=>number=Math.random) {
     const definition=MORU_ACTIONS.find(a=>a.id===id)
     if(!definition||!performer || (origin!=='user'&&definition.category==='dance') || (lastAction===id&&time-lastActionAt<12))return false
     if(!performer(id))return false
+    const effect=actionFeedback(id);if(effect&&origin!=='conversation')feedback.start(effect)
     lastAction=id;lastActionAt=time
     if(origin==='user')userVersion++
     if(decorate){
@@ -49,7 +51,8 @@ export function createMoruExpression(random:()=>number=Math.random) {
     return accepted
   }
   return {
-    bind(fn:Performer){performer=fn;return()=>{if(performer===fn){performer=null;pending=null;busyUntil=0}}},
+    // A Wardrobe swap detaches only the body; queued speech belongs to Moru.
+    bind(fn:Performer){performer=fn;return()=>{if(performer===fn)performer=null}},
     perform,offer,contextReaction,
     setAutonomy(enabled:boolean){autonomy=enabled},
     cancelSpeech(){pending=null;busyUntil=0},
@@ -74,7 +77,7 @@ export function createMoruExpression(random:()=>number=Math.random) {
         }else nextAmbient=time+8+random()*12
       }
     },
-    take(){const result=pending;pending=null;return result},
+    take(allowAmbient=true){if(!allowAmbient&&!pending?.typing)return null;const result=pending;pending=null;return result},
     get busy(){return time<busyUntil},
   }
 }

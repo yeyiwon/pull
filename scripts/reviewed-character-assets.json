@@ -1,0 +1,78 @@
+{
+  "public/moru/final/moru-base.glb": {
+    "bytes": 22436092,
+    "sha256": "72b8b835e99254108eaf1c7d2f7cdfcbf4b352048b51abf1145e0572afe44290"
+  },
+  "public/moru/final/appearances/spring.glb": {
+    "bytes": 20971604,
+    "sha256": "3d2d547164590e19b28081dfd3f07d4dad4f678e54e7f62a213227c6226f0d3e"
+  },
+  "public/moru/final/appearances/winter.glb": {
+    "bytes": 20186368,
+    "sha256": "9d86e5715ca79f05b3f2339bdbaebe75e2fb89246ee0478bcfbdda0788537199"
+  },
+  "public/moru/final/appearances/halloween.glb": {
+    "bytes": 23935340,
+    "sha256": "6e455c3df4cbf9f15d4ba277af6bc622ed8322a9da85e336aabc75c1a9ce863d"
+  },
+  "public/moru/final/appearances/summer.glb": {
+    "bytes": 21589976,
+    "sha256": "5045ac8e9bc3e47658aae3e417b3938c3bb8701805b1432090232d6f501d6e24"
+  },
+  "public/moru/final/appearances/autumn.glb": {
+    "bytes": 20130152,
+    "sha256": "bc0a7cc5b3c02fa0f6f08b4a40eeb912bac22e0cd16460cf606e75fa1e6323e5"
+  },
+  "public/moru/final/appearances/all-black.glb": {
+    "bytes": 20283508,
+    "sha256": "d57f8e3d3119bc975685da679526be6dc8be6faedc318f64da46d56c84f65b5a"
+  },
+  "public/moru/final/appearances/pearl-ballet.glb": {
+    "bytes": 19699640,
+    "sha256": "421db1d071352b6965566c88d6510c9e2e0980e5379fe2fad38016316d14e44a"
+  },
+  "public/moru/final/appearances/off-duty.glb": {
+    "bytes": 20265512,
+    "sha256": "c9bd99ef17bf064b3e87a14a209efedee9dcf255184731d3d31948430d851575"
+  },
+  "public/moru/final/appearances/midnight-training.glb": {
+    "bytes": 21837080,
+    "sha256": "8541b52a21dd31504e4ea23dca4a56e7445900980d4bc15d6bc1520a0f150d03"
+  },
+  "public/moru/final/appearances/amusement-park.glb": {
+    "bytes": 26905064,
+    "sha256": "4bacbd7996273bc0ed928f5048317313d0c86b92b32f90c741e95503260ca02e"
+  },
+  "public/moru/final/appearances/concert-night.glb": {
+    "bytes": 20857488,
+    "sha256": "aacf70c9a8472417272275722de6e60b573d1f4fc1dccecbc0f94b1a8773ae8e"
+  },
+  "public/moru/final/appearances/literary-chic.glb": {
+    "bytes": 19926360,
+    "sha256": "a1a6d726a8fc2b10301a94a45978d8bd6c58acbd32276a242df3b79f9765853f"
+  },
+  "public/moru/final/appearances/mode-sportif.glb": {
+    "bytes": 21282840,
+    "sha256": "5fdc8159357b637c1d2a44ae55cc248f4006444bc0b36a70a2faec6e90160c5d"
+  },
+  "public/moru/final/appearances/sculpted-mini.glb": {
+    "bytes": 20163112,
+    "sha256": "fa9aa4a002f15a839ade880b51cded12e97300f24b25c7916a87491a05439915"
+  },
+  "public/moru/final/appearances/sporty-prep.glb": {
+    "bytes": 20533188,
+    "sha256": "06bd7bc7a252acc99b5bb827fcb34d9ed7ad65daa2d02c219c46dada5a4cf288"
+  },
+  "public/moru/final/appearances/sunshine.glb": {
+    "bytes": 19231656,
+    "sha256": "a78861f6f531d1c15c94ba238d06080612dcf50f7c25020b9691e719f38a84e7"
+  },
+  "public/moru/final/appearances/black-glasses.glb": {
+    "bytes": 19242052,
+    "sha256": "3fdcdf132fa4c90259c9f0655d569c791b3ef0022a83727268ba561b98505ea1"
+  },
+  "public/moru/final/appearances/platinum-noir.glb": {
+    "bytes": 19384636,
+    "sha256": "63b02a92fdbdf96c9995ec1314074da9802d93d11fc65a18248f33f0b84e303f"
+  }
+}

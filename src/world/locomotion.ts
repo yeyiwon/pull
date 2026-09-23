@@ -86,7 +86,7 @@ export function movePlayer(player: Player, delta: number) {
   }
 }
 
-export function createLocomotion(scene: Object3D, clips: Record<AnimationState, AnimationClip>, { automaticObservation = false, extras = {} as Record<string, {clip: AnimationClip; loop: boolean; next?: string; layer?: string}> } = {}) {
+export function createLocomotion(scene: Object3D, clips: Record<AnimationState, AnimationClip>, { automaticObservation = false, extras = {} as Record<string, {clip: AnimationClip; loop: boolean; hold?: boolean; next?: string; layer?: string}> } = {}) {
   const sources:Record<string,AnimationClip>={...clips}
   const info:Record<string,ClipInfo>={}
   for(const name of Object.keys(clips))info[name]={layer:'BODY',loop:['IDLE','WALK','RUN'].includes(name)}
@@ -101,6 +101,7 @@ export function createLocomotion(scene: Object3D, clips: Record<AnimationState, 
   function transition(next:string){if(next===active)return;motion.play(next,next==='JUMP'||active==='JUMP'?.1:.25);active=next}
   return {
     get activeClip(){return extra??active},
+    stopExtra(){extra=null;gesture=null;transition('IDLE')},
     playLayer(name:string){return !!info[name]&&info[name].layer!=='BODY'&&motion.play(name)},
     playExtra(name:string){if(!(name in extras))return false;gesture=null;idleTime=0;extra=name;transition(name);return true},
     update(player: Player, delta: number) {
@@ -119,7 +120,7 @@ export function createLocomotion(scene: Object3D, clips: Record<AnimationState, 
         player.state = player.isGrounded ? player.groundState : 'AIRBORNE'
       } else {
         if(requested||listen)extra=null
-        if(extra&&motion.finished(extra)){const next=extras[extra].next;extra=next&&next in extras?next:null}
+        if(extra&&!extras[extra].hold&&motion.finished(extra)){const next=extras[extra].next;extra=next&&next in extras?next:null}
         if (extra) {
           player.state = 'BUBBLE_DANCE'
           motion.update(delta)

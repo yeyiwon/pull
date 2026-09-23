@@ -1,4 +1,5 @@
 import type { Continuity } from '../world/evolution/offline.ts'
+import { speechDuration } from '../characters/presentation.ts'
 import type { ResearchSummary } from '../research/model.ts'
 import { conversationProvider } from './provider.ts'
 import { buildContext, MockConversationAdapter, parseResponse } from './model.ts'
@@ -49,7 +50,7 @@ export function createConversationSession(provider:MoruConversationProvider=new 
   history.push(turn);if(history.length>60)history.shift()
   if(typeof localStorage!=='undefined')try{localStorage.setItem(historyKey,JSON.stringify(history))}catch{/* Storage is optional. */}
   update({phase:'speaking',notice:'',reply:parsed.response.speech})
-  release=setTimeout(()=>{if(token!==id)return;port?.hold(false);update({phase:'closed',notice:''})},Math.min(8000,2800+parsed.response.speech.length*70))
+  release=setTimeout(()=>{if(token!==id)return;port?.hold(false);update({phase:'closed',notice:''})},speechDuration(parsed.response.speech)*1000)
   return true
  }
  return {subscribe(fn:()=>void){listeners.add(fn);return()=>{listeners.delete(fn)}},getSnapshot:()=>state,getHistory:()=>history.slice(),debug,turns,open,send,cancel,

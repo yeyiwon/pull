@@ -22,7 +22,7 @@ export function createMoruMind(options:{execute:(intent:Intent)=>Execution;rando
  const working={actions:[] as {id:string;at:number}[],lines:[] as {text:string;at:number}[],observations:[] as string[]}
  const short:MeaningfulMemory[]=[];const seen=new Set<string>()
  try{for(const e of options.longMemory?.recall().slice(-64)??[]){if(typeof e.key==='string')seen.add(e.key)}}catch{/* Memory availability never blocks local presence. */}
- let now=0,nextReaction=5+random()*4,age=0,nextIdle=16+random()*14,attention:AttentionTarget='NONE'
+ let now=0,nextReaction=4+random()*3,age=0,nextIdle=10+random()*10,attention:AttentionTarget='NONE'
  let previous:Observation|null=null,current:Observation|null=null,alive=true,pending:Event|null=null,conversationPending=false
  let conversationLock=false
  let lastConversation=-100
@@ -51,7 +51,7 @@ export function createMoruMind(options:{execute:(intent:Intent)=>Execution;rando
   working.actions=working.actions.slice(-12);working.lines=working.lines.slice(-24)
   const expressed=!!(result.action||result.speech||result.emote)
   lastIntent=expressed?{...intent,action:result.action,speech:result.speech}:waitIntent('presentation cooldown')
-  if(expressed){attention=intent.attention;age=0;nextReaction=now+20+random()*14;trace(`ACT ${result.action??'—'} · SAY ${result.speech??'—'} · ATTENTION ${attention}`)}
+  if(expressed){attention=intent.attention;age=0;nextReaction=now+14+random()*10;trace(`ACT ${result.action??'—'} · SAY ${result.speech??'—'} · ATTENTION ${attention}`)}
   return lastIntent
  }
  function line(category:LineCategory){
@@ -63,15 +63,16 @@ export function createMoruMind(options:{execute:(intent:Intent)=>Execution;rando
   let action:Intent['action']=event.attention==='USER'?'wave':event.category==='snow'?'hop':'listen'
   if(recent?.id===action&&now-recent.at<90||current?.recentMoruActions.includes(action))action=null
   const speech=line(event.category)
-  return {kind:'REACT',attention:event.attention,action,speech:random()<.8?speech:null,
-   emote:event.category==='snow'?'sparkle':event.attention==='USER'&&random()<state.affection*.25?'heart':null,reason:event.category}
+  const emote=event.category==='snow'?'sparkle':event.category==='happy'?'music':event.category==='curious'?'question':
+   ['spring','sunset'].includes(event.category)&&random()<.35?'sparkle':event.attention==='USER'&&random()<state.affection*.32?'heart':null
+  return {kind:'REACT',attention:event.attention,action,speech:random()<.92?speech:null,emote,reason:event.category}
  }
  function ambient(o:Observation):Event{
   let category:LineCategory=o.indoor?'home':o.nearWater?'water':o.hour<5||o.hour>=21?'night':o.hour<11?'morning':o.hour>=17?'sunset':'day'
   if(state.sleepiness>.65&&random()<.4)category='sleepy'
   else if(random()<.18&&['spring','summer','autumn','winter'].includes(o.season))category=o.season as LineCategory
   const target:AttentionTarget=o.indoor?'HOME':o.nearWater?'WATER':(o.hour<5||o.hour>=21)?'SKY':'WORLD'
-  return {key:`idle:${ticks}`,category,attention:target,importance:.35,at:now}
+  return {key:`idle:${ticks}`,category,attention:target,importance:.5,at:now}
  }
  function tick(o:Observation,delta:number){
   if(!alive)return
@@ -104,13 +105,13 @@ export function createMoruMind(options:{execute:(intent:Intent)=>Execution;rando
   if(!available(o)||conversationPending||conversationLock){lastIntent=waitIntent('direct action priority');publish(lastIntent.reason);return}
   if(now<nextReaction){lastIntent=waitIntent('cooldown');publish(lastIntent.reason);return}
   let event=pending;pending=null
-  if(!event&&now>=nextIdle&&o.userIdleDuration>=10){event=ambient(o);nextIdle=now+14+random()*18}
+  if(!event&&now>=nextIdle&&o.userIdleDuration>=8){event=ambient(o);nextIdle=now+10+random()*14}
   if(!event){lastIntent=waitIntent('nothing salient');publish(lastIntent.reason);return}
   const novelty=seen.has(event.key)?0:1
   const chance=Math.min(.95,event.importance*.65+state.curiosity*.17+state.attention*.1+novelty*.1)
   trace(`OBSERVE ${event.category} · NOVELTY ${novelty} · GATE ${chance.toFixed(2)}`)
   if(!event.key.startsWith('idle:'))remember(event)
-  if(random()>chance){lastIntent=waitIntent('quiet observation');trace('DECISION WAIT · quiet observation');nextIdle=now+20+random()*30;publish(lastIntent.reason);return}
+  if(random()>chance){lastIntent=waitIntent('quiet observation');trace('DECISION WAIT · quiet observation');nextIdle=now+14+random()*18;publish(lastIntent.reason);return}
   dispatch(choose(event));publish(lastIntent.reason)
  }
  async function converse(text:string):Promise<Intent>{

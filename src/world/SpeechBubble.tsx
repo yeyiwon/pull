@@ -1,9 +1,10 @@
 import { continuitySummary } from './evolution/offline.ts'
+import { feedback, reactionFeedback } from '../characters/feedback.ts'
 import { conversationActive } from '../conversation/session.ts'
 import { evolve } from './evolution/runtime.ts'
 import { ServerResearchProvider } from '../research/provider.ts'
 import { researchSessionBudget } from '../research/controller.ts'
-import { speechEnvelope } from '../characters/presentation.ts'
+import { speechEnvelope, speechDuration, initialSpeech } from '../characters/presentation.ts'
 import { conversationSession } from '../conversation/session.ts'
 import { useEffect, useRef } from 'react'
 import type { RefObject } from 'react'
@@ -23,24 +24,20 @@ import type { Reaction } from './personality.ts'
 
 function clearEvents(player:Player){player.events.length=0}
 function markBrainAction(player:Player){player.brainRequested=true}
-function present(node: HTMLDivElement, reaction: Reaction) {
+function present(node: HTMLDivElement, reaction: Reaction, reducedMotion=false) {
   const speech = node.querySelector<HTMLElement>('.moru-speech')
   const fx = node.querySelector<HTMLElement>('.moru-fx')
   node.dataset.tone = reaction.fx?.toLowerCase() ?? 'normal'
   node.dataset.emotion = reaction.emotion ?? 'calm'
-  if (speech) { speech.textContent = reaction.typing ? '' : reaction.speech ?? ''; speech.hidden = !reaction.speech }
+  if (speech) { speech.textContent = initialSpeech(reaction.speech??'',!!reaction.typing,reducedMotion); speech.hidden = !reaction.speech }
   if (fx) {
     fx.replaceChildren()
-    const symbols = { HEARTS: ['♡', '✿', '✿'], SPARKLES: ['✧', '✧'], QUESTION: ['?'], JOY: ['♪'], SURPRISE: ['!'] }
-    const display = reaction.fx ? symbols[reaction.fx] : reaction.emotion === 'sad' ? ['·', '·'] : reaction.emotion === 'angry' || reaction.emotion === 'annoyed' ? ['⌁'] : reaction.emotion === 'happy' || reaction.emotion === 'warm' ? ['✿', '✿'] : []
+    const symbols = { HEARTS: ['♡','♡'], SPARKLES: ['✧'], QUESTION: ['?'], JOY: ['♪'], SURPRISE: ['!'] }
+    const display = reaction.fx ? symbols[reaction.fx] : reaction.emotion === 'sad' ? ['…'] : reaction.emotion === 'angry' || reaction.emotion === 'annoyed' ? ['⌁'] : reaction.emotion === 'warm' ? ['♡'] : reaction.emotion === 'happy' ? ['✿'] : []
     for (const [i, text] of display.entries()) {
       const span = document.createElement('span')
       span.textContent = text; span.className = `reaction-glyph ${reaction.fx?.toLowerCase() ?? reaction.emotion ?? 'normal'}`
       span.style.setProperty('--i', String(i)); fx.append(span)
-    }
-    if(reaction.emotion==='warm'||reaction.emotion==='happy')for(let i=0;i<2;i++){
-      const blush=document.createElement('span')
-      blush.className='reaction-blush';blush.style.setProperty('--side',String(i));fx.append(blush)
     }
   }
 }
@@ -69,11 +66,11 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
     const detach=conversationSession.attach({snapshot:()=>{const snapshot=controller.snapshot();return snapshot?{...snapshot,continuity:continuitySummary(memory.memory.offline,memory.memory.evolution)}:null},hold:controller.holdConversation,
       listen(){moru.cancelSpeech();active.current.duration=0;moru.perform('listen','user',false)},
       speak(response){
-        const p=player.current;if(userControlsMoru(p))return false
+        const p=player.current
         const fx={heart:'HEARTS',sparkle:'SPARKLES',question:'QUESTION',surprise:'SURPRISE',music:'JOY'} as const
         active.current.duration=0
-        const offered=moru.offer({event:'BRAIN',speech:response.speech,fx:response.emote?fx[response.emote]:undefined,emotion:response.emotion,typing:true,duration:Math.min(8,2.8+response.speech.length*.07)},'conversation')
-        if(response.action)moru.perform(response.action,'user',false)
+        const offered=moru.offer({event:'BRAIN',speech:response.speech,fx:response.emote?fx[response.emote]:undefined,emotion:response.emotion,typing:true,duration:speechDuration(response.speech)},'conversation')
+        if(response.action&&!userControlsMoru(p))moru.perform(response.action,'conversation',false)
         return offered
       },cancel(){moru.cancelSpeech();active.current.duration=0},
     })
@@ -91,9 +88,6 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
   const headTop = useRef(new Vector3())
   const emotePoint = useRef(new Vector3())
   const cameraRight = useRef(new Vector3())
-  const facePoint = useRef(new Vector3())
-  const faceDirection = useRef(new Vector3())
-  const toCamera = useRef(new Vector3())
   const reducedMotion = useRef(false)
   useEffect(() => {
     const preference = matchMedia('(prefers-reduced-motion: reduce)')
@@ -126,17 +120,23 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
       brain.current?.tick(observeWorld(pState,{idle:clock.idle,interacted,returned:clock.returned,actions:moru.recentActions,speech:moru.recentSpeech}),elapsed)
       clock.returned=false
     }
-    const reaction=moru.take()
     const node = element.current
     if (!node) return
+    const reaction=moru.take(active.current.age>=active.current.duration)
     // No stacking: the short FX cooldown and longer speech cooldown keep channels sparse.
     if (reaction && (reaction.typing || active.current.age >= active.current.duration)) {
-      present(node, reaction)
+      present(node, reaction,reducedMotion.current)
+      const effect=reactionFeedback(reaction)
+      feedback.start(effect)
+      if(reaction.typing&&available&&!userControlsMoru(pState)){
+        const gesture=effect.state==='AFFECTIONATE'||effect.state==='HAPPY'?'wave':effect.state==='PLAYFUL'?'playful':effect.state==='CURIOUS'||effect.state==='SURPRISED'?'listen':null
+        if(gesture)moru.perform(gesture,'conversation',false)
+      }
       const cue = reaction.fx === 'HEARTS' || reaction.emotion === 'warm' ? 'moru_affection' : reaction.fx === 'JOY' || reaction.emotion === 'happy' ? 'moru_happy' : reaction.fx === 'QUESTION' || reaction.emotion === 'curious' ? 'moru_curious' : reaction.fx === 'SURPRISE' || reaction.emotion === 'angry' || reaction.emotion === 'annoyed' ? 'moru_surprise' : reaction.emotion === 'sleepy' || reaction.emotion === 'sad' ? 'moru_sleepy' : 'moru_greeting'
       if (reaction.speech || reaction.fx) void audio.play(cue, 'character', 'moru-expression')
       active.current = { age: 0, duration: reaction.duration, letters: reaction.typing && !reducedMotion.current ? Array.from(reaction.speech ?? '') : [], shown: 0 }
     }
-    active.current.age += delta
+    active.current.age += Math.min(delta,.1)
     const { age, duration } = active.current
     if (age >= duration) { paint(node, '0'); return }
     if(active.current.letters.length){
@@ -147,14 +147,14 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
     const p = projected.current
     // Project an upper envelope above the ears, plus a fixed pixel gap at every zoom.
     headTop.current.copy(player.current.headPosition).addScaledVector(player.current.up, .3).project(camera)
-    const visible = p.z >= -1 && p.z <= 1 && Math.abs(p.x) < .92 && Math.abs(p.y) < .88
+    const visible = p.z >= -1 && p.z <= 1 && Math.abs(p.x) < 1.15 && Math.abs(p.y) < 1.6
     const { opacity, rise, blur } = speechEnvelope(age, duration, reducedMotion.current)
     const y = Math.min((-p.y * .5 + .5) * size.height, (-headTop.current.y * .5 + .5) * size.height) - 20 - rise
     blurText(node, blur)
     const anchorX = Math.max(Math.min(150,size.width*.42),Math.min(size.width-Math.min(150,size.width*.42),(p.x*.5+.5)*size.width))
-    const anchorY = Math.max(node.offsetHeight+24,y)
+    const anchorY = Math.min(size.height-130,Math.max(node.offsetHeight+68,y))
     paint(node, visible ? String(Math.max(0, opacity)) : '0',
-      `translate(${Math.max(Math.min(150,size.width*.42),Math.min(size.width-Math.min(150,size.width*.42),(p.x * .5 + .5) * size.width))}px, ${Math.max(node.offsetHeight+24, y)}px) translate(-50%, -100%)`)
+      `translate(${anchorX}px, ${anchorY}px) translate(-50%, -100%)`)
     // Lightweight DOM glyphs anchored at projected world positions, not screen-fixed confetti.
     cameraRight.current.setFromMatrixColumn(camera.matrixWorld, 0)
     const glyphs = node.querySelectorAll<HTMLElement>('.reaction-glyph')
@@ -170,16 +170,6 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
       glyph.style.top = `${(-point.y * .5 + .5) * size.height - anchorY}px`
       glyph.style.opacity = String(Math.sin(Math.PI * t) * .78)
       glyph.style.fontSize = `${Math.max(12, Math.min(23, 160 / camera.position.distanceTo(player.current.headPosition)))}px`
-    })
-    faceDirection.current.set(0,0,1).applyQuaternion(player.current.rotation)
-    toCamera.current.copy(camera.position).sub(player.current.headPosition).normalize()
-    const faceVisible=faceDirection.current.dot(toCamera.current)>.25
-    node.querySelectorAll<HTMLElement>('.reaction-blush').forEach((blush,index)=>{
-      facePoint.current.copy(player.current.headPosition).addScaledVector(player.current.up,-.78)
-        .addScaledVector(cameraRight.current,index===0?-.19:.19).project(camera)
-      blush.style.left=`${(facePoint.current.x*.5+.5)*size.width-anchorX}px`
-      blush.style.top=`${(-facePoint.current.y*.5+.5)*size.height-anchorY}px`
-      blush.style.opacity=faceVisible?String(Math.sin(Math.PI*Math.min(1,age/duration))*.46):'0'
     })
   })
   return null

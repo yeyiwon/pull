@@ -215,3 +215,15 @@
 .moru-fx .sad{color:#bbc4df}
 .moru-fx .angry,.moru-fx .annoyed{color:#dfb5ae}
 .moru-fx .reaction-blush{position:absolute;width:17px;height:9px;border-radius:50%;background:radial-gradient(ellipse,#ef9bb1 0%,#efa6bc55 54%,transparent 100%);filter:blur(2px);transform:translate(-50%,-50%);pointer-events:none}
+
+/* Short greetings share the head-centered anchor used by longer speech. */
+.moru-speech { margin-inline: auto; }
+.conversation-spinner { animation: conversation-spin .85s linear infinite; }
+@keyframes conversation-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .conversation-spinner { animation: none; } }
+
+.bench-controls { position:absolute; left:50%; bottom:calc(110px + env(safe-area-inset-bottom)); transform:translateX(-50%); display:flex; align-items:center; gap:18px; max-width:calc(100vw - 32px); z-index:12; animation:bench-appear .3s ease-out; }
+.bench-controls button { min-height:44px; padding:8px 4px; border:0; background:transparent; color:var(--ivory,#fff6e8); text-shadow:0 1px 5px #172331aa; font:400 12px/1.4 system-ui; white-space:nowrap; cursor:pointer; opacity:.84; transition:opacity .2s; }
+.bench-controls button:hover,.bench-controls button:focus-visible { opacity:1; }
+@keyframes bench-appear { from { opacity:0; translate:0 4px; } to { opacity:1; translate:0 0; } }
+@media(prefers-reduced-motion:reduce) { .bench-controls { animation:none; } }

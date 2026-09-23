@@ -5,10 +5,10 @@ import type { MoruActionId } from './actions.ts'
 import { moru } from './expression.ts'
 
 const gestures = [
-  ['skip', '깡총'], ['penguin', '펭귄'],
-  ['bubbleDance', '둥실둥실'], ['funnyDance', '장난스럽게'],
-  ['loveDance', '살랑살랑'], ['superloveDance', '두근두근'],
-  ['podGroove', '까딱까딱'], ['youGroove', '들썩들썩'],
+ ['skip','깡총'],['penguin','펭귄'],['hop','기쁜 점프'],['wave','손 인사'],
+ ['bow','꾸벅'],['playful','장난'],
+ ['squat','스쿼트'],
+ ['bubbleDance','둥실둥실'],['loveDance','살랑살랑'],['youGroove','들썩들썩'],
 ] as const
 export default function ActionControls({disabled}:{player:RefObject<Player>;disabled:boolean}) {
   const perform=(id:MoruActionId)=>{moru.perform(id)}

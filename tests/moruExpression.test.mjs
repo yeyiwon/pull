@@ -1,15 +1,23 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { existsSync,readFileSync } from 'node:fs'
-import { MORU_ACTIONS } from '../src/characters/actions.ts'
+import { MORU_ACTIONS, UNAVAILABLE_MORU_ACTIONS } from '../src/characters/actions.ts'
 import { moruAnimations } from '../src/characters/assets.ts'
 import { createMoruExpression } from '../src/characters/expression.ts'
 import { contextCategory } from '../src/characters/ambientLines.ts'
 const idle={hour:12,season:'spring',weather:'clear',inside:false,nearWater:false,idle:true}
 
-test('fifteen categorized semantic actions resolve actual clips; rejected clips absent',()=>{
- assert.equal(MORU_ACTIONS.length,15);assert.equal(moruAnimations.length,15)
- for(const a of MORU_ACTIONS)assert.ok(moruAnimations.some(clip=>clip.name===a.clip))
+test('body replacement preserves pending speech and semantic history',()=>{
+ const m=createMoruExpression(()=>.5),detach=m.bind(()=>true)
+ m.perform('wave','user',false);m.say('그대로 이어져.')
+ detach();m.bind(()=>true)
+ assert.equal(m.take().speech,'그대로 이어져.');assert.deepEqual(m.recentActions,['wave'])
+ assert.equal(m.busy,true)
+})
+
+test('expanded categorized semantic actions resolve actual clips; rejected clips absent',()=>{
+ assert.equal(MORU_ACTIONS.length,23);assert.equal(moruAnimations.length,17)
+ for(const a of MORU_ACTIONS)assert.ok(UNAVAILABLE_MORU_ACTIONS.has(a.id)||a.id==='sitBack'||moruAnimations.some(clip=>clip.name===a.clip))
  assert.equal(MORU_ACTIONS.filter(a=>a.category==='dance').length,6)
  for(const file of ['moru-talk-with-hands-open.glb','clips/moru-talk-with-hands-open.glb','moru-cherish-pop-dance.glb','moru-confused.glb','clips/moru-cherish-pop-dance.glb','clips/moru-look-around-dumbfounded.glb'])assert.equal(existsSync(new URL('../public/moru/'+file,import.meta.url)),false)
  const source=readFileSync(new URL('../src/world/Character.tsx',import.meta.url),'utf8')

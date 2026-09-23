@@ -3,13 +3,14 @@ import { readFile } from 'node:fs/promises'
 import { test } from 'node:test'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { clone } from 'three/addons/utils/SkeletonUtils.js'
-import { AnimationMixer, AnimationUtils, Box3, Vector3 } from 'three'
+import { AnimationMixer, Box3, Vector3 } from 'three'
+import { prepareBodyAnimation } from '../src/characters/bodyAnimation.ts'
 import { createPlayer, movePlayer, createLocomotion, requestAction } from '../src/world/locomotion.ts'
 
 // Headless tests retain the actual skin and clips; browser checks original textures.
 globalThis.ProgressEvent ??= class { constructor(type, props) { Object.assign(this, { type }, props) } }
 async function load(name) {
-  const buffer = await readFile(new URL(`../public/moru/${name}.glb`, import.meta.url))
+  const buffer = await readFile(new URL(`../public/moru/final/${name}.glb`, import.meta.url))
   const length = buffer.readUInt32LE(12)
   const json = JSON.parse(buffer.subarray(20, 20 + length))
   const binary = buffer.subarray(28 + length)
@@ -19,10 +20,10 @@ async function load(name) {
   json.buffers = [{ byteLength: binary.length, uri: `data:application/octet-stream;base64,${binary.toString('base64')}` }]
   return new GLTFLoader().parseAsync(JSON.stringify(json), '')
 }
-const files = { IDLE: 'moru-idle', WALK: 'moru-walk', RUN: 'moru-run', CONFUSED: 'moru-idle', LISTEN: 'moru-listen', JUMP: 'moru-raised', WAVE: 'moru-wave-one-hand', BUBBLE_DANCE: 'moru-bubble-dance' }
-const assets = Object.fromEntries(await Promise.all(Object.entries(files).map(async ([key, file]) => [key, await load(file)])))
-const clips = Object.fromEntries(Object.entries(assets).map(([key, asset]) => [key, asset.animations[0]]))
-clips.JUMP = AnimationUtils.subclip(clips.JUMP, clips.JUMP.name, 19, 38, 24)
+const files={IDLE:'Short_Breathe_and_Look_Around',WALK:'Walking',RUN:'Running',CONFUSED:'Short_Breathe_and_Look_Around',LISTEN:'Long_Breathe_and_Look_Around',JUMP:'Hop_with_Arms_Raised',WAVE:'Wave_One_Hand',BUBBLE_DANCE:'Bubble_Dance'}
+const base=await load('moru-base')
+const assets=Object.fromEntries(await Promise.all(Object.entries(files).map(async([key,file])=>[key,{scene:base.scene,animations:(await load('animations/'+file)).animations}])))
+const clips=Object.fromEntries(Object.entries(assets).map(([key,asset])=>[key,prepareBodyAnimation(asset.animations[0],key==='JUMP')]))
 function setup() {
   const player = createPlayer()
   const scene = clone(assets.WALK.scene)
@@ -61,7 +62,7 @@ test('idle, walking, running jumps land once; airborne requests do not queue', (
 
 test('real gesture clips finish, movement interrupts, idle never starts removed look-around', () => {
   const s = setup(); s.player.listenRequested = true; s.tick(.1)
-  assert.equal(s.player.state, 'LISTEN'); s.tick(10); assert.equal(s.player.state, 'IDLE')
+  assert.equal(s.player.state, 'LISTEN'); s.tick(clips.LISTEN.duration + .3); assert.equal(s.player.state, 'IDLE')
   s.player.listenRequested = true; s.tick(.1); s.player.keys.add('KeyW'); s.tick(.1)
   assert.equal(s.player.state, 'WALK'); s.player.keys.clear()
   s.tick(30); assert.equal(s.player.state, 'IDLE')
@@ -141,7 +142,7 @@ test('Wave and Dance one-shots finish, cancel for movement, reject airborne requ
     s.tick(1); assert.equal(s.player.state, 'IDLE')
     // Rapid transitions must still settle without stranded actions or invalid bone poses.
     for (let i = 0; i < 8; i++) { requestAction(s.player, i % 2 ? 'WAVE' : 'BUBBLE_DANCE'); s.tick(.05) }
-    s.tick(10); assert.equal(s.player.state, 'IDLE')
+    s.tick(clips.LISTEN.duration + .3); assert.equal(s.player.state, 'IDLE')
     s.scene.traverse(o => { if (o.isBone) assert.ok(o.quaternion.toArray().every(Number.isFinite)) })
     s.controller.dispose()
   }
@@ -158,18 +159,18 @@ test('all retained locomotion sources have no facial morph controls', async () =
         assert.equal(object.geometry.morphAttributes.position?.length ?? 0, 0)
       }
     })
-    assert.equal(bones, 23)
+    assert.equal(bones, 28)
     assert.ok(asset.animations.every(c => c.tracks.every(t => !t.name.includes('morphTargetInfluences'))))
   }
 })
 
 test('new one-shot actions complete, reject idle interruption and cancel on movement/jump', async () => {
- const asset = await load('clips/moru-pod-baby-groove')
+ const asset = await load('animations/You_Groove')
  const clip = asset.animations[0]
  const scene = clone(assets.WALK.scene), p = createPlayer()
  const c = createLocomotion(scene, clips, { extras: { PodGroove: {clip, loop:false} } })
  const tick = seconds => { for(let i=0;i<Math.ceil(seconds*60);i++){movePlayer(p,1/60);c.update(p,1/60)} }
- assert.equal(c.playExtra('PodGroove'),true);tick(13)
+ assert.equal(c.playExtra('PodGroove'),true);tick(clip.duration-.5)
  assert.equal(c.activeClip,'PodGroove'); assert.equal(p.state,'BUBBLE_DANCE')
  tick(4);assert.equal(c.activeClip,'IDLE')
  c.playExtra('PodGroove');p.keys.add('KeyW');tick(.2);assert.equal(c.activeClip,'WALK')

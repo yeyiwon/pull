@@ -1,0 +1,2450 @@
+[
+  {
+    "appearance": "spring",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6885964090871592,
+    "groundOffset": 0.01969
+  },
+  {
+    "appearance": "spring",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6803504925050552,
+    "groundOffset": 0.01973
+  },
+  {
+    "appearance": "spring",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7928703944012576,
+    "groundOffset": 0.02086
+  },
+  {
+    "appearance": "spring",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6740770635463602,
+    "groundOffset": 0.02925
+  },
+  {
+    "appearance": "spring",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6469376349411873,
+    "groundOffset": 0.04534
+  },
+  {
+    "appearance": "spring",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7171103424253022,
+    "groundOffset": -0.01909
+  },
+  {
+    "appearance": "spring",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.721165353058449,
+    "groundOffset": 0.01477
+  },
+  {
+    "appearance": "spring",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6613373269312415,
+    "groundOffset": 0.00013
+  },
+  {
+    "appearance": "spring",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.689542762357709,
+    "groundOffset": 0.04266
+  },
+  {
+    "appearance": "spring",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.3334431541651306,
+    "groundOffset": 0.10221
+  },
+  {
+    "appearance": "spring",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7042007317195693,
+    "groundOffset": 0.04878
+  },
+  {
+    "appearance": "spring",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.744803639537657,
+    "groundOffset": 0.03142
+  },
+  {
+    "appearance": "spring",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6761122930447054,
+    "groundOffset": -0.00809
+  },
+  {
+    "appearance": "spring",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.728360804683543,
+    "groundOffset": 0.04757
+  },
+  {
+    "appearance": "spring",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6932506373785678,
+    "groundOffset": -0.02153
+  },
+  {
+    "appearance": "spring",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.675418775673683,
+    "groundOffset": 0.04222
+  },
+  {
+    "appearance": "spring",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6948925829094519,
+    "groundOffset": 0.00956
+  },
+  {
+    "appearance": "summer",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.684437845865027,
+    "groundOffset": 0.0147
+  },
+  {
+    "appearance": "summer",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6777260906315001,
+    "groundOffset": 0.01551
+  },
+  {
+    "appearance": "summer",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.803579356429434,
+    "groundOffset": 0.01515
+  },
+  {
+    "appearance": "summer",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6834918515534778,
+    "groundOffset": 0.02889
+  },
+  {
+    "appearance": "summer",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6364455496365309,
+    "groundOffset": 0.04405
+  },
+  {
+    "appearance": "summer",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7171004008816246,
+    "groundOffset": -0.0217
+  },
+  {
+    "appearance": "summer",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.692507938133219,
+    "groundOffset": 0.00825
+  },
+  {
+    "appearance": "summer",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.673816613768836,
+    "groundOffset": 0.00248
+  },
+  {
+    "appearance": "summer",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.692610821521338,
+    "groundOffset": 0.04085
+  },
+  {
+    "appearance": "summer",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.3313519925043795,
+    "groundOffset": 0.10087
+  },
+  {
+    "appearance": "summer",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6996703540487452,
+    "groundOffset": 0.04373
+  },
+  {
+    "appearance": "summer",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7400260659869573,
+    "groundOffset": 0.02405
+  },
+  {
+    "appearance": "summer",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6776116565046357,
+    "groundOffset": -0.01109
+  },
+  {
+    "appearance": "summer",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7265309408573963,
+    "groundOffset": 0.04394
+  },
+  {
+    "appearance": "summer",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.679109288392115,
+    "groundOffset": -0.02115
+  },
+  {
+    "appearance": "summer",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6752497190473512,
+    "groundOffset": 0.0445
+  },
+  {
+    "appearance": "summer",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6987368269569936,
+    "groundOffset": 0.00239
+  },
+  {
+    "appearance": "autumn",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7041256557670503,
+    "groundOffset": 0.01954
+  },
+  {
+    "appearance": "autumn",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7000270405351983,
+    "groundOffset": 0.01408
+  },
+  {
+    "appearance": "autumn",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.800211996657467,
+    "groundOffset": 0.01436
+  },
+  {
+    "appearance": "autumn",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.701826826936574,
+    "groundOffset": 0.03231
+  },
+  {
+    "appearance": "autumn",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.669615778482044,
+    "groundOffset": 0.05255
+  },
+  {
+    "appearance": "autumn",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7376235239273705,
+    "groundOffset": -0.01727
+  },
+  {
+    "appearance": "autumn",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.718274845453562,
+    "groundOffset": 0.01505
+  },
+  {
+    "appearance": "autumn",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6764440259042428,
+    "groundOffset": 0.00256
+  },
+  {
+    "appearance": "autumn",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7048413653578427,
+    "groundOffset": 0.04828
+  },
+  {
+    "appearance": "autumn",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.3926622834226314,
+    "groundOffset": 0.13606
+  },
+  {
+    "appearance": "autumn",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7139537073771716,
+    "groundOffset": 0.07801
+  },
+  {
+    "appearance": "autumn",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7501422952106458,
+    "groundOffset": 0.0335
+  },
+  {
+    "appearance": "autumn",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6979007750221824,
+    "groundOffset": -0.00159
+  },
+  {
+    "appearance": "autumn",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7369584868827894,
+    "groundOffset": 0.04345
+  },
+  {
+    "appearance": "autumn",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.697895644774673,
+    "groundOffset": -0.00881
+  },
+  {
+    "appearance": "autumn",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6950832647612868,
+    "groundOffset": 0.04391
+  },
+  {
+    "appearance": "autumn",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7239994592159174,
+    "groundOffset": 0.00778
+  },
+  {
+    "appearance": "winter",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7124885038236115,
+    "groundOffset": 0.0149
+  },
+  {
+    "appearance": "winter",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7205321440760333,
+    "groundOffset": 0.01416
+  },
+  {
+    "appearance": "winter",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.786290261295189,
+    "groundOffset": 0.01397
+  },
+  {
+    "appearance": "winter",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7207568908380266,
+    "groundOffset": 0.03543
+  },
+  {
+    "appearance": "winter",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6917670190894796,
+    "groundOffset": 0.0565
+  },
+  {
+    "appearance": "winter",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7535422557910356,
+    "groundOffset": -0.00218
+  },
+  {
+    "appearance": "winter",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.719442104712933,
+    "groundOffset": 0.01293
+  },
+  {
+    "appearance": "winter",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6900702292334986,
+    "groundOffset": 0.00627
+  },
+  {
+    "appearance": "winter",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7132634549615882,
+    "groundOffset": 0.04941
+  },
+  {
+    "appearance": "winter",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.4026924766707927,
+    "groundOffset": 0.15722
+  },
+  {
+    "appearance": "winter",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7206837054913926,
+    "groundOffset": 0.0854
+  },
+  {
+    "appearance": "winter",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7462986031198349,
+    "groundOffset": 0.03309
+  },
+  {
+    "appearance": "winter",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7101902956778916,
+    "groundOffset": 0.00919
+  },
+  {
+    "appearance": "winter",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.740726529520275,
+    "groundOffset": 0.04179
+  },
+  {
+    "appearance": "winter",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7163477498151505,
+    "groundOffset": -0.00307
+  },
+  {
+    "appearance": "winter",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7135102988498623,
+    "groundOffset": 0.04616
+  },
+  {
+    "appearance": "winter",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.743633204143727,
+    "groundOffset": 0.02773
+  },
+  {
+    "appearance": "halloween",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7343995666431649,
+    "groundOffset": 0.02376
+  },
+  {
+    "appearance": "halloween",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7559417574340588,
+    "groundOffset": 0.02288
+  },
+  {
+    "appearance": "halloween",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7932924703882642,
+    "groundOffset": 0.02427
+  },
+  {
+    "appearance": "halloween",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7600662228339612,
+    "groundOffset": 0.03242
+  },
+  {
+    "appearance": "halloween",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7209329647220162,
+    "groundOffset": 0.04967
+  },
+  {
+    "appearance": "halloween",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.769137599736679,
+    "groundOffset": -0.01783
+  },
+  {
+    "appearance": "halloween",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7459988628460357,
+    "groundOffset": 0.0162
+  },
+  {
+    "appearance": "halloween",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.686840062773981,
+    "groundOffset": 0.00615
+  },
+  {
+    "appearance": "halloween",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7339716362004256,
+    "groundOffset": 0.04712
+  },
+  {
+    "appearance": "halloween",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.3485356690770756,
+    "groundOffset": 0.08076
+  },
+  {
+    "appearance": "halloween",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7525643614449293,
+    "groundOffset": 0.05259
+  },
+  {
+    "appearance": "halloween",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7906119540658414,
+    "groundOffset": 0.03229
+  },
+  {
+    "appearance": "halloween",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7413816425137993,
+    "groundOffset": -0.0065
+  },
+  {
+    "appearance": "halloween",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.767921934655367,
+    "groundOffset": 0.05244
+  },
+  {
+    "appearance": "halloween",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7461236399162543,
+    "groundOffset": -0.02144
+  },
+  {
+    "appearance": "halloween",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7424388476245043,
+    "groundOffset": 0.04389
+  },
+  {
+    "appearance": "halloween",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7607133365372398,
+    "groundOffset": 0.0143
+  },
+  {
+    "appearance": "all-black",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7188331665164784,
+    "groundOffset": 0.03238
+  },
+  {
+    "appearance": "all-black",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7261293519357945,
+    "groundOffset": 0.0224
+  },
+  {
+    "appearance": "all-black",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7911017714213404,
+    "groundOffset": 0.02367
+  },
+  {
+    "appearance": "all-black",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7477566972440528,
+    "groundOffset": 0.03916
+  },
+  {
+    "appearance": "all-black",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7046035598175164,
+    "groundOffset": 0.05977
+  },
+  {
+    "appearance": "all-black",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.730681531891369,
+    "groundOffset": 0.00396
+  },
+  {
+    "appearance": "all-black",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7156492681163293,
+    "groundOffset": 0.02114
+  },
+  {
+    "appearance": "all-black",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6798033770467447,
+    "groundOffset": 0.00887
+  },
+  {
+    "appearance": "all-black",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.702833501009028,
+    "groundOffset": 0.05507
+  },
+  {
+    "appearance": "all-black",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.3891887923100987,
+    "groundOffset": 0.14124
+  },
+  {
+    "appearance": "all-black",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7219661753050168,
+    "groundOffset": 0.07986
+  },
+  {
+    "appearance": "all-black",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7694792780181454,
+    "groundOffset": 0.04038
+  },
+  {
+    "appearance": "all-black",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7157039016599458,
+    "groundOffset": 0.00279
+  },
+  {
+    "appearance": "all-black",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.724481144476461,
+    "groundOffset": 0.05214
+  },
+  {
+    "appearance": "all-black",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7260514250025571,
+    "groundOffset": 0.00102
+  },
+  {
+    "appearance": "all-black",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7233715297115773,
+    "groundOffset": 0.05117
+  },
+  {
+    "appearance": "all-black",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7384474259420764,
+    "groundOffset": 0.01871
+  },
+  {
+    "appearance": "off-duty",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7515080199308268,
+    "groundOffset": 0.04058
+  },
+  {
+    "appearance": "off-duty",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7595540512353385,
+    "groundOffset": 0.0224
+  },
+  {
+    "appearance": "off-duty",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7731198157186054,
+    "groundOffset": 0.01541
+  },
+  {
+    "appearance": "off-duty",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.767423280862967,
+    "groundOffset": 0.03863
+  },
+  {
+    "appearance": "off-duty",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7400847464500566,
+    "groundOffset": 0.05119
+  },
+  {
+    "appearance": "off-duty",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7528586309397256,
+    "groundOffset": 0.03779
+  },
+  {
+    "appearance": "off-duty",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7608152129710195,
+    "groundOffset": 0.05808
+  },
+  {
+    "appearance": "off-duty",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7065859307313236,
+    "groundOffset": 0.03462
+  },
+  {
+    "appearance": "off-duty",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7336476598210326,
+    "groundOffset": 0.04619
+  },
+  {
+    "appearance": "off-duty",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.3997769032317193,
+    "groundOffset": 0.11192
+  },
+  {
+    "appearance": "off-duty",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7506257181829457,
+    "groundOffset": 0.07135
+  },
+  {
+    "appearance": "off-duty",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.8004126466616655,
+    "groundOffset": 0.03965
+  },
+  {
+    "appearance": "off-duty",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7487312925498848,
+    "groundOffset": 0.01885
+  },
+  {
+    "appearance": "off-duty",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7511759267788305,
+    "groundOffset": 0.04088
+  },
+  {
+    "appearance": "off-duty",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7525465236890165,
+    "groundOffset": -0.01092
+  },
+  {
+    "appearance": "off-duty",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7453799075225795,
+    "groundOffset": 0.04516
+  },
+  {
+    "appearance": "off-duty",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7688994141492822,
+    "groundOffset": 0.01739
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7365126538991362,
+    "groundOffset": 0.02863
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.752727181636723,
+    "groundOffset": 0.02233
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7615855602762727,
+    "groundOffset": 0.02215
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7424760561624006,
+    "groundOffset": 0.03291
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.730605188630229,
+    "groundOffset": 0.04845
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7494897846827777,
+    "groundOffset": -0.00515
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.746515483230119,
+    "groundOffset": 0.0236
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.694093237367651,
+    "groundOffset": 0.01691
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.72588260663984,
+    "groundOffset": 0.04205
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.432582027140633,
+    "groundOffset": 0.11564
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7505506999729636,
+    "groundOffset": 0.06817
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7715412670526018,
+    "groundOffset": 0.03694
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7423882897063871,
+    "groundOffset": 0.00717
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7469150460702751,
+    "groundOffset": 0.04528
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7522695737890213,
+    "groundOffset": -0.00959
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7411871581065,
+    "groundOffset": 0.03693
+  },
+  {
+    "appearance": "midnight-training",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.750647775149878,
+    "groundOffset": 0.01916
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7543398745411416,
+    "groundOffset": 0.01136
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7530281274520036,
+    "groundOffset": 0.00353
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7829822359698526,
+    "groundOffset": 0.00486
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7935505574898023,
+    "groundOffset": 0.01896
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7335740774936186,
+    "groundOffset": 0.03796
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7496233714588914,
+    "groundOffset": -0.02526
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7434943001991599,
+    "groundOffset": 0.00213
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7061231715838825,
+    "groundOffset": 0.01202
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7218859154878603,
+    "groundOffset": 0.03357
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.4086299788457064,
+    "groundOffset": 0.12007
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7481626266486048,
+    "groundOffset": 0.05519
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7902252889159238,
+    "groundOffset": 0.02133
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.748758045337032,
+    "groundOffset": -0.00806
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7508962635232614,
+    "groundOffset": 0.03286
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7482773483844454,
+    "groundOffset": -0.01858
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7501895261386113,
+    "groundOffset": 0.03247
+  },
+  {
+    "appearance": "pearl-ballet",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7675773144703175,
+    "groundOffset": 0.00029
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7377702343685182,
+    "groundOffset": 0.04006
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7616635054585192,
+    "groundOffset": 0.02975
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.756136298981884,
+    "groundOffset": 0.03238
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7547752687962483,
+    "groundOffset": 0.04001
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.734846936167085,
+    "groundOffset": 0.06144
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7620460985341442,
+    "groundOffset": -0.00544
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7548820720208531,
+    "groundOffset": 0.03201
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6883713114542593,
+    "groundOffset": 0.0187
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7347663420135169,
+    "groundOffset": 0.05638
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.3880943301273179,
+    "groundOffset": 0.10906
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7584478276947657,
+    "groundOffset": 0.06613
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7713286264550114,
+    "groundOffset": 0.04744
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7436261595329987,
+    "groundOffset": 0.00438
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7574326294557339,
+    "groundOffset": 0.05709
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7574653873303452,
+    "groundOffset": -0.00796
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7494959262827294,
+    "groundOffset": 0.0524
+  },
+  {
+    "appearance": "amusement-park",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7507320666088324,
+    "groundOffset": 0.02708
+  },
+  {
+    "appearance": "concert-night",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7484148896205962,
+    "groundOffset": 0.01756
+  },
+  {
+    "appearance": "concert-night",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7734467567132985,
+    "groundOffset": 0.02637
+  },
+  {
+    "appearance": "concert-night",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7905110803098394,
+    "groundOffset": 0.02464
+  },
+  {
+    "appearance": "concert-night",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7976333533225028,
+    "groundOffset": 0.03454
+  },
+  {
+    "appearance": "concert-night",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.746510795395457,
+    "groundOffset": 0.04439
+  },
+  {
+    "appearance": "concert-night",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7594210651152624,
+    "groundOffset": -0.00827
+  },
+  {
+    "appearance": "concert-night",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7498305493794435,
+    "groundOffset": 0.01592
+  },
+  {
+    "appearance": "concert-night",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6862139300836811,
+    "groundOffset": -0.00815
+  },
+  {
+    "appearance": "concert-night",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.732161791357287,
+    "groundOffset": 0.0379
+  },
+  {
+    "appearance": "concert-night",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.4327653264240596,
+    "groundOffset": 0.10909
+  },
+  {
+    "appearance": "concert-night",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7667377131230961,
+    "groundOffset": 0.04926
+  },
+  {
+    "appearance": "concert-night",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.811236930339246,
+    "groundOffset": 0.03451
+  },
+  {
+    "appearance": "concert-night",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7491479585632306,
+    "groundOffset": -0.00086
+  },
+  {
+    "appearance": "concert-night",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.764815013644079,
+    "groundOffset": 0.04771
+  },
+  {
+    "appearance": "concert-night",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7662874458788778,
+    "groundOffset": -0.01144
+  },
+  {
+    "appearance": "concert-night",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7694989576666396,
+    "groundOffset": 0.05055
+  },
+  {
+    "appearance": "concert-night",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7824826606169786,
+    "groundOffset": 0.01811
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7101961281106373,
+    "groundOffset": 0.02549
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7118534924396882,
+    "groundOffset": 0.02533
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7779026747306859,
+    "groundOffset": 0.01942
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7193569101968011,
+    "groundOffset": 0.02806
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6817997799066942,
+    "groundOffset": 0.04673
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7178451179611818,
+    "groundOffset": 0.01427
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7108238134215972,
+    "groundOffset": 0.02016
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6788615577913013,
+    "groundOffset": 0.02477
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.694288708315412,
+    "groundOffset": 0.04334
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.3373736344931741,
+    "groundOffset": 0.08417
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7147297452394665,
+    "groundOffset": 0.0474
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7706633834958168,
+    "groundOffset": 0.03073
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.707109879618474,
+    "groundOffset": 0.01612
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7152519963743815,
+    "groundOffset": 0.04502
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.716585481751919,
+    "groundOffset": -0.00686
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7046688523659914,
+    "groundOffset": 0.0403
+  },
+  {
+    "appearance": "literary-chic",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7343311034425206,
+    "groundOffset": 0.01241
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7195758914697465,
+    "groundOffset": 0.03944
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7260160739536823,
+    "groundOffset": 0.02987
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7397904357352587,
+    "groundOffset": 0.03174
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.719779433566922,
+    "groundOffset": 0.0404
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6990446679430469,
+    "groundOffset": 0.06202
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7347291493386698,
+    "groundOffset": -0.00547
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.727978847818199,
+    "groundOffset": 0.03161
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.677871675985961,
+    "groundOffset": 0.01798
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7113418862398173,
+    "groundOffset": 0.056
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.366578874522427,
+    "groundOffset": 0.10391
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7299460463768663,
+    "groundOffset": 0.06414
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7363398036461235,
+    "groundOffset": 0.04765
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7174574341112914,
+    "groundOffset": 0.00092
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7297059298078903,
+    "groundOffset": 0.05627
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7308762742045458,
+    "groundOffset": -0.00848
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7156414854301696,
+    "groundOffset": 0.05118
+  },
+  {
+    "appearance": "mode-sportif",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7184034932371297,
+    "groundOffset": 0.02766
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6920755261958969,
+    "groundOffset": 0.02164
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6989745376465994,
+    "groundOffset": 0.03404
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7723971441968007,
+    "groundOffset": 0.02969
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.685466674726417,
+    "groundOffset": 0.03245
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6560359925474735,
+    "groundOffset": 0.04488
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7062968048177833,
+    "groundOffset": -0.01211
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.695383420887161,
+    "groundOffset": 0.01956
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6749546641566977,
+    "groundOffset": 0.02587
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6853795141589196,
+    "groundOffset": 0.04272
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.297524506674435,
+    "groundOffset": 0.06656
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7126457835529787,
+    "groundOffset": 0.05814
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7553644038605334,
+    "groundOffset": 0.03143
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6889594549921223,
+    "groundOffset": 0.0297
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.715074773333578,
+    "groundOffset": 0.05544
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7073452039169819,
+    "groundOffset": -0.01513
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6899880527599058,
+    "groundOffset": 0.04664
+  },
+  {
+    "appearance": "sculpted-mini",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7054919719966704,
+    "groundOffset": 0.01734
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7016881632709984,
+    "groundOffset": 0.02135
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.711997995676682,
+    "groundOffset": 0.01995
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7813071826322107,
+    "groundOffset": 0.02076
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7435222163224267,
+    "groundOffset": 0.03416
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.687374359366646,
+    "groundOffset": 0.05036
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.719160927696742,
+    "groundOffset": -0.01201
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7008592131178646,
+    "groundOffset": 0.01731
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6801908660404974,
+    "groundOffset": 0.01481
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6930111111530706,
+    "groundOffset": 0.04566
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.399564509602203,
+    "groundOffset": 0.14116
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7073072471689528,
+    "groundOffset": 0.07384
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7508352250803103,
+    "groundOffset": 0.03477
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.701726323294965,
+    "groundOffset": 0.00401
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7122612076147055,
+    "groundOffset": 0.0467
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7103134318082787,
+    "groundOffset": -0.0012
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.706995036103747,
+    "groundOffset": 0.04539
+  },
+  {
+    "appearance": "sporty-prep",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.718587071097426,
+    "groundOffset": 0.01357
+  },
+  {
+    "appearance": "sunshine",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7023374194373064,
+    "groundOffset": 0.04384
+  },
+  {
+    "appearance": "sunshine",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6789981343815052,
+    "groundOffset": 0.03209
+  },
+  {
+    "appearance": "sunshine",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7713908825505646,
+    "groundOffset": 0.033
+  },
+  {
+    "appearance": "sunshine",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6718098216224866,
+    "groundOffset": 0.04419
+  },
+  {
+    "appearance": "sunshine",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6534678684776807,
+    "groundOffset": 0.0661
+  },
+  {
+    "appearance": "sunshine",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.722796179758865,
+    "groundOffset": -0.00559
+  },
+  {
+    "appearance": "sunshine",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7245694927736626,
+    "groundOffset": 0.03009
+  },
+  {
+    "appearance": "sunshine",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.664462060841893,
+    "groundOffset": 0.01363
+  },
+  {
+    "appearance": "sunshine",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.709889248934765,
+    "groundOffset": 0.06145
+  },
+  {
+    "appearance": "sunshine",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.3481419904878162,
+    "groundOffset": 0.11365
+  },
+  {
+    "appearance": "sunshine",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7110860644384334,
+    "groundOffset": 0.07124
+  },
+  {
+    "appearance": "sunshine",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7268660743314188,
+    "groundOffset": 0.04812
+  },
+  {
+    "appearance": "sunshine",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6756192329978925,
+    "groundOffset": 0.00321
+  },
+  {
+    "appearance": "sunshine",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7353844866991266,
+    "groundOffset": 0.05945
+  },
+  {
+    "appearance": "sunshine",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.700091907813551,
+    "groundOffset": -0.00386
+  },
+  {
+    "appearance": "sunshine",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6687019341390685,
+    "groundOffset": 0.0541
+  },
+  {
+    "appearance": "sunshine",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6965654462866877,
+    "groundOffset": 0.03069
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.682516611906223,
+    "groundOffset": 0.00853
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.681969721193069,
+    "groundOffset": 0.01238
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.8134959318352513,
+    "groundOffset": 0.01159
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.692260577405735,
+    "groundOffset": 0.01987
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6337300920682736,
+    "groundOffset": 0.03083
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7128955437870996,
+    "groundOffset": -0.02456
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7199419517843644,
+    "groundOffset": 0.00351
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.663240924837555,
+    "groundOffset": -0.01155
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.682195980768315,
+    "groundOffset": 0.02636
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.336943168845106,
+    "groundOffset": 0.09103
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.701932033456199,
+    "groundOffset": 0.04016
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7559770524012916,
+    "groundOffset": 0.01935
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6825024559027453,
+    "groundOffset": -0.01157
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7229676998796433,
+    "groundOffset": 0.03745
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6827322200117751,
+    "groundOffset": -0.02983
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.676930662714178,
+    "groundOffset": 0.03778
+  },
+  {
+    "appearance": "black-glasses",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7042458499326882,
+    "groundOffset": -0.00072
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "Bubble_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6929822201270883,
+    "groundOffset": 0.0304
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "Gentlemans_Bow",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.691812740541771,
+    "groundOffset": 0.03122
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "Happy_jump_f",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.8374122524555054,
+    "groundOffset": 0.03325
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "Hop_with_Arms_Raised",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6867078335105936,
+    "groundOffset": 0.0394
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "Long_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6618666440483212,
+    "groundOffset": 0.0547
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "Love_You_Pop_Dance",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7228959634851913,
+    "groundOffset": -0.00691
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "Not_Your_Mom",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7871004069019991,
+    "groundOffset": 0.02534
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "Running",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6557825489544256,
+    "groundOffset": 0.00631
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "Short_Breathe_and_Look_Around",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7044665614218257,
+    "groundOffset": 0.05256
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "Sit_Cross_Legged",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.3352429134241153,
+    "groundOffset": 0.1065
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "Sit_to_Stand_Transition_F",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.7105679361014399,
+    "groundOffset": 0.05881
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "Skip_Forward",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.727101598264625,
+    "groundOffset": 0.04099
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "Walking",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6768688494464987,
+    "groundOffset": -0.00073
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "Wave_One_Hand",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.735931809712419,
+    "groundOffset": 0.05837
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "You_Groove",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.699419103839314,
+    "groundOffset": -0.01227
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "air_squat",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6834831154358922,
+    "groundOffset": 0.05087
+  },
+  {
+    "appearance": "platinum-noir",
+    "name": "penguin_walk",
+    "samples": 13,
+    "finite": true,
+    "maxExtent": 1.6930752093442862,
+    "groundOffset": 0.0226
+  }
+]

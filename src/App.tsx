@@ -1,3 +1,5 @@
+import { bodySelection } from './characters/bodySelection.ts'
+import BenchPrompt from './world/BenchPrompt.tsx'
 import WorldInterface from './ui/WorldInterface.tsx'
 import { worldInterface } from './ui/interface.ts'
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
@@ -18,6 +20,7 @@ function initialTheme():Theme {
   return window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'
 }
 function App() {
+  const bodyReady=useSyncExternalStore(bodySelection.subscribe,bodySelection.getReadySnapshot)
   const [theme,setTheme]=useState<Theme>(initialTheme)
   useEffect(()=>{try{localStorage.setItem('pull.ui.theme',theme)}catch{/* Keep the theme usable without persistence. */}},[theme])
   const conversation=useSyncExternalStore(conversationSession.subscribe,conversationSession.getSnapshot)
@@ -44,8 +47,9 @@ function App() {
         <div className="moru-fx" />
       </div>
       <WorldInterface player={player} ready={status==='ready'} theme={theme} onThemeChange={setTheme}/>
-      <TouchControls player={player} disabled={status !== 'ready'||conversation.phase!=='closed'||panel!==null} />
-      <ConversationInput player={player} disabled={status!=='ready'}/>
+      <TouchControls player={player} disabled={status !== 'ready'||!bodyReady||conversation.phase!=='closed'||panel!==null} />
+      <BenchPrompt player={player} disabled={status!=='ready'||conversation.phase!=='closed'||panel!==null}/>
+      <ConversationInput player={player} disabled={status!=='ready'||!bodyReady}/>
       <p className="world-status" role="status">
         {status === 'loading' ? '세계에 들어가는 중…' : status === 'error'
           ? '캐릭터를 불러오지 못했습니다. 페이지를 새로고침해 주세요.'
