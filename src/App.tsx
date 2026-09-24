@@ -4,7 +4,7 @@ import WorldInterface from './ui/WorldInterface.tsx'
 import { worldInterface } from './ui/interface.ts'
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { PCFSoftShadowMap } from 'three'
+import { PCFShadowMap } from 'three'
 import { createPlayer } from './world/locomotion.ts'
 import World from './world/World.tsx'
 import TouchControls from './world/TouchControls.tsx'
@@ -35,7 +35,7 @@ function App() {
     <main data-theme={theme} className="experiment" aria-label="PULL — A living world">
       <Canvas
         camera={{ position: [1.6, 3.28, 10.5], fov: 48, near: 0.1, far: 600 }}
-        shadows={{ type: PCFSoftShadowMap }}
+        shadows={{ type: PCFShadowMap }}
         dpr={[1, 1.5]}
         gl={{ alpha: false, antialias: true }}
         fallback={<p className="fallback">PULL requires a browser with WebGL support.</p>}
