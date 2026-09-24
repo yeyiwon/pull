@@ -8,6 +8,7 @@ const assets:Record<string,Asset>=catalog.assets
 const families:Record<string,typeof catalog.families[keyof typeof catalog.families]>=catalog.families
 const tracks:Record<string,typeof catalog.tracks[keyof typeof catalog.tracks]>=catalog.tracks
 const aliases:Record<string,string>={soft_touch:'ui_tap',moru_land_soft:'moru_land'}
+const AUDIO_DIAGNOSTICS=import.meta.env?.DEV||(typeof location!=='undefined'&&location.protocol==='capacitor:')
 export const WORLD_AUDIO_CUES={SHOOTING_STAR:'event_shooting_star',DOOR_OPEN:'house_door_open',DOOR_CLOSE:'house_door_close',WATER_ENTER:'water_enter_water',WATER_EXIT:'water_exit_water',WATER_STEP:'step_water'} as const
 type Loop={id:string;source:AudioBufferSourceNode;gain:GainNode;start:number;end:number;level:number}
 export function chooseVariant(count: number, previous: number, random = Math.random) {
@@ -66,12 +67,13 @@ export class AudioManager {
  async unlock(){
   try{
    if(!this.context){const c=new AudioContext({latencyHint:'interactive',sampleRate:32000});this.context=c;this.master=c.createGain();this.master.gain.value=this.masterVolume;const limiter=c.createDynamicsCompressor();limiter.threshold.value=-6;limiter.knee.value=3;limiter.ratio.value=12;limiter.attack.value=.003;limiter.release.value=.18;this.analyser=c.createAnalyser();this.analyser.fftSize=256;this.master.connect(limiter);limiter.connect(this.analyser);this.analyser.connect(c.destination)
+    c.onstatechange=()=>{this.unlocked=c.state==='running';if(AUDIO_DIAGNOSTICS)console.info('[pull-audio]',this.diagnostics)}
     for(const bus of BUSES){const g=c.createGain();g.gain.value=this.volumes[bus];g.connect(this.master);this.buses.set(bus,g)}
     this.filter=c.createBiquadFilter();this.filter.type='lowpass';this.filter.frequency.value=18000;this.filter.connect(this.buses.get('ambience')!)
     this.musicFilter=c.createBiquadFilter();this.musicFilter.type='lowpass';this.musicFilter.frequency.value=18000;this.musicFilter.connect(this.buses.get('music')!)
    }
-   await this.context.resume();this.unlocked=this.context.state==='running';if(!this.unlocked)throw Error(`AudioContext ${this.context.state}`);this.error='';this.tick()
-  }catch(e){this.error=String(e)}
+   await this.context.resume();this.unlocked=this.context.state==='running';if(!this.unlocked)throw Error(`AudioContext ${this.context.state}`);this.error='';this.tick();if(AUDIO_DIAGNOSTICS)console.info('[pull-audio] unlock',this.diagnostics)
+  }catch(e){this.error=e instanceof Error?`${e.name}: ${e.message}`:String(e);if(AUDIO_DIAGNOSTICS)console.error('[pull-audio] unlock failed',this.diagnostics)}
  }
  applyPlan(plan:AudioPlan){this.plan=plan;this.tick()}
  private stop(loop:Loop){try{loop.source.stop()}catch{/* Already stopped by its scheduled end. */}loop.source.disconnect();loop.gain.disconnect();this.loops=this.loops.filter(l=>l!==loop)}
@@ -79,7 +81,7 @@ export class AudioManager {
   const c=this.context;if(!c)return null;const b=await this.buffer(id,c);if(this.context!==c)return null
   const source=c.createBufferSource(),gain=c.createGain();source.buffer=b;source.loop=true;source.loopEnd=Math.min(b.duration,assets[id].frames/assets[id].sampleRate);gain.gain.value=0;source.connect(gain)
   const indoor=id.startsWith('amb_indoor');gain.connect(bus==='music'?this.musicFilter!:indoor?this.buses.get('ambience')!:this.filter!)
-  const start=Math.max(c.currentTime+.05,at),loop={id,source,gain,start,end:Infinity,level};source.start(start,0);this.loops.push(loop);return loop
+  const start=Math.max(c.currentTime+.05,at),loop={id,source,gain,start,end:Infinity,level};source.start(start,0);this.loops.push(loop);if(AUDIO_DIAGNOSTICS)console.info('[pull-audio] source started',{id,start,state:c.state,source:this.lastSource});return loop
  }
  private tick(){
   const c=this.context,p=this.plan;if(!c||c.state!=='running'||!p)return
@@ -141,8 +143,8 @@ export class AudioManager {
   }catch(e){if(this.context===c)this.error=String(e)}finally{if(this.context===c)this.pending.set(key,Math.max(0,(this.pending.get(key)??1)-1))}
  }
  variant(prefix:string,_count:number,group:string,_pitch:number){void this.play(aliases[prefix]??prefix.replace('footstep_','step_'),'character',group)}
- suspend(){if(this.context?.state==='running')void this.context.suspend().catch(e=>{this.error=String(e)})}
- get diagnostics(){const now=this.context?.currentTime??0;return{state:this.context?.state??'locked',unlocked:this.unlocked,source:this.lastSource,load:this.lastLoad,muted:this.muted,volume:this.masterVolume,peak:this.peak,loops:this.loops.length,voices:this.voices.size,cached:this.cache.size,decodedMiB:this.decoded/1048576,downloadedMiB:this.downloaded/1048576,music:this.current?.id??'—',target:this.plan?.music??'—',startsIn:Math.max(0,(this.current?.start??now)-now),seconds:Math.max(0,now-(this.current?.start??now)),cutoff:this.filter?.frequency.value??18000,cue:this.lastCue,played:this.played,error:this.error,ambience:this.loops.filter(l=>l.id.startsWith('amb_')).map(l=>l.id).join(', ')}}
+ suspend(){if(this.context?.state==='running')void this.context.suspend().catch(e=>{this.error=e instanceof Error?`${e.name}: ${e.message}`:String(e)})}
+ get diagnostics(){const now=this.context?.currentTime??0;return{state:this.context?.state??'locked',unlocked:this.unlocked,source:this.lastSource,load:this.lastLoad,muted:this.muted,volume:this.masterVolume,peak:this.peak,loops:this.loops.length,voices:this.voices.size,cached:this.cache.size,decodedMiB:this.decoded/1048576,downloadedMiB:this.downloaded/1048576,music:this.current?.id??'—',target:this.plan?.music??'—',startsIn:Math.max(0,(this.current?.start??now)-now),seconds:Math.max(0,now-(this.current?.start??now)),cutoff:this.filter?.frequency.value??18000,cue:this.lastCue,played:this.played,error:this.error,visibility:typeof document==='undefined'?'unknown':document.visibilityState,platform:typeof location==='undefined'?'server':location.protocol==='capacitor:'?'capacitor':'web',ambience:this.loops.filter(l=>l.id.startsWith('amb_')).map(l=>l.id).join(', ')}}
  dispose(){this.generation++;this.abort.abort();this.abort=new AbortController();for(const l of [...this.loops])this.stop(l);for(const s of this.voices.keys())s.stop();const c=this.context;this.context=null;if(c)void c.close().catch(()=>{});this.cache.clear();this.voices.clear();this.buses.clear();this.pending.clear();this.cooldowns.clear();this.failures.clear();this.ambienceLoading.clear();this.loading=false;this.current=null;this.transition=null;this.decoded=0;this.downloaded=0;this.encoded.clear();this.prefetching=false;this.hot=false;this.peak=0;this.unlocked=false;this.lastSource='—';this.lastLoad='idle';this.analyser=null;this.master=null;this.filter=null;this.musicFilter=null}
 }
 export const audio=new AudioManager()

@@ -1,3 +1,4 @@
+import { NIGHT_TUNING, nightValue } from '../graphics/nightTuning.ts'
 import { useEffect,useMemo,useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Color,ConeGeometry,Group,InstancedMesh,MeshStandardMaterial,Object3D,PointLight,SphereGeometry } from 'three'
@@ -34,13 +35,13 @@ export default function WinterTree(){
   for(const m of [needles.current,bulbs.current,ornaments.current,ice.current])if(m){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;m.computeBoundingSphere()}
   return()=>{for(const g of [r.trunk,r.needle,r.bulb,r.ornament,r.ice])g.dispose();for(const m of [r.wood,r.green,r.glow,r.metal,r.frost])m.dispose()}
  },[r])
- useFrame(({clock})=>{if(needles.current)needles.current.count=quality==='PERFORMANCE'?1200:2400;if(group.current)group.current.visible=worldTime.realWorld.season==='winter';updateArtMaterial(r.wood,clock.elapsedTime);updateArtMaterial(r.green,clock.elapsedTime);shine(r.glow,.2+env.night*1.9);if(light.current)light.current.intensity=env.night*32})
+ useFrame(({clock})=>{if(needles.current)needles.current.count=quality==='PERFORMANCE'?1200:2400;if(group.current)group.current.visible=worldTime.realWorld.season==='winter';updateArtMaterial(r.wood,clock.elapsedTime);updateArtMaterial(r.green,clock.elapsedTime);shine(r.glow,.2+env.night*3.4);if(light.current)light.current.intensity=env.night*nightValue(520,NIGHT_TUNING.treeLightIntensity,env.night)})
  return <group ref={group} name="WinterIlluminationTree" position={[WINTER_TREE.x,riverbedHeight(WINTER_TREE.x,WINTER_TREE.z),WINTER_TREE.z]}>
   <mesh geometry={r.trunk} material={r.wood} castShadow/>
   <instancedMesh ref={needles} args={[r.needle,r.green,2400]} receiveShadow/>
   <instancedMesh ref={bulbs} args={[r.bulb,r.glow,220]}/>
   <instancedMesh ref={ornaments} args={[r.ornament,r.metal,32]} receiveShadow/>
   <instancedMesh ref={ice} args={[r.ice,r.frost,18]}/>
-  <pointLight ref={light} position={[0,2,0]} color="#f3dfcf" intensity={0} distance={15} decay={2}/>
+  <pointLight ref={light} position={[0,2,0]} color="#f3dfcf" intensity={0} distance={19} decay={2}/>
  </group>
 }

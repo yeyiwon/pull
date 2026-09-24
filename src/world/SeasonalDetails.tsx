@@ -31,9 +31,10 @@ export default function SeasonalDetails({player}:{player:RefObject<Player>}) {
     const airborneLeaf=family===0||family===1||family===4
     const tree=TREES[i%TREES.length], phase=wrap(i*.713-t*(.16+layer*.045),8)/8
     const drift=Math.sin(t*.18+a)*env.wind*2
-    const x=airborneLeaf?tree[0]+Math.sin(a)*3+Math.sin(t*.32+a)*1.2+drift+phase*env.wind*4:weatherCoordinate((i*.61803398875%1)*48-24+drift,p.x)
-    const z=airborneLeaf?tree[1]+Math.cos(a*1.3)*3+Math.sin(t*.23+a)*1.1:weatherCoordinate((i*.754877666%1)*48-24+Math.sin(t*.11+a)*env.wind,p.z)
-    const y=airborneLeaf?.35+phase*(6*tree[2])+Math.sin(t*.8+a)*.18:wrap(i*.713-t*fall,11)+.15
+    const openSky=airborneLeaf&&i%4===0
+    const x=airborneLeaf?(openSky?Math.sin(i*12.9898)*58:tree[0]+Math.sin(a)*3)+Math.sin(t*.32+a)*1.2+drift+phase*env.wind*4:weatherCoordinate((i*.61803398875%1)*48-24+drift,p.x)
+    const z=airborneLeaf?(openSky?Math.cos(i*7.233)*70:tree[1]+Math.cos(a*1.3)*3)+Math.sin(t*.23+a)*1.1:weatherCoordinate((i*.754877666%1)*48-24+Math.sin(t*.11+a)*env.wind,p.z)
+    const y=airborneLeaf?(openSky?2.5+phase*8:.35+phase*(6*tree[2]))+Math.sin(t*.8+a)*.18:wrap(i*.713-t*fall,11)+.15
     o.position.set(x+env.wind*(11-y)*.3,y,z)
     o.rotation.set(family===3?0:Math.sin(t*.4+a)*.8,family===3?0:a+t*.13,family===3?-env.wind*.2:Math.sin(t*.3+a)*.6)
     const sheltered=Math.abs(homeLocalX(x,z))<4&&Math.abs(homeLocalZ(x,z))<3.5&&y<5.8

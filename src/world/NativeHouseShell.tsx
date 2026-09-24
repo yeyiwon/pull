@@ -13,12 +13,12 @@ export default function NativeHouseShell(){
   const wall=artMaterial('#d9ccb6','plaster'),wood=artMaterial('#776453','bark'),roof=artMaterial('#52606b'),glass=artMaterial('#adccd1'),floor=artMaterial('#ad987b')
   for(const m of [wall,wood,roof,floor])m.transparent=true
   glass.transparent=true;glass.opacity=.2;glass.roughness=.24;glass.side=DoubleSide
-  const windowGlow=artMaterial('#b89e7b');windowGlow.emissive.set('#ffd8a0');
+  const windowGlow=artMaterial('#b89e7b');windowGlow.emissive.set('#ffd8a0');windowGlow.toneMapped=false
   const shape=new Shape();shape.moveTo(-4.6,8.05);shape.lineTo(0,10.35);shape.lineTo(4.6,8.05);shape.closePath()
   return {windowGlow,wall,wood,roof,glass,floor,gable:new ShapeGeometry(shape)}
  },[])
  useEffect(()=>()=>{for(const m of [r.windowGlow,r.wall,r.wood,r.roof,r.glass,r.floor])m.dispose();r.gable.dispose()},[r])
- useFrame(({clock})=>{glow(r.windowGlow,env.night*.7);for(const m of [r.wall,r.wood,r.roof,r.floor])updateArtMaterial(m,clock.elapsedTime);fade(r.wall,1-homeState.cutaway*.82);fade(r.wood,1-homeState.cutaway*.8);fade(r.roof,1-homeState.cutaway*.98);fade(r.floor,1-homeState.cutaway*.98)})
+ useFrame(({clock})=>{glow(r.windowGlow,env.night*2.9);for(const m of [r.wall,r.wood,r.roof,r.floor])updateArtMaterial(m,clock.elapsedTime);fade(r.wall,1-homeState.cutaway*.82);fade(r.wood,1-homeState.cutaway*.8);fade(r.roof,1-homeState.cutaway*.98);fade(r.floor,1-homeState.cutaway*.98)})
  const box=(key:string,p:[number,number,number],size:[number,number,number],material=r.wall)=><mesh key={key} position={p} material={material} castShadow receiveShadow><boxGeometry args={size}/></mesh>
  function windowAt(x:number,y:number,z:number,width:number,height:number,turn=0){return <group key={`${x}-${y}-${z}`} position={[x,y,z]} rotation={[0,turn,0]}>
   {[-1,1].map(side=>box(`jamb${side}`,[side*width/2,0,0],[.12,height+.22,.24],r.wood))}

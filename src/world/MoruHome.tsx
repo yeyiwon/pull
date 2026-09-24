@@ -1,3 +1,4 @@
+import { NIGHT_TUNING, nightValue, nightCorrection } from '../graphics/nightTuning.ts'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
@@ -15,8 +16,9 @@ function dirty(geometry: BufferGeometry) { geometry.attributes.position.needsUpd
 const PATH = Array.from({length: 9}, (_, i) => i)
 
 export default function MoruHome({detail}:{detail?:ReactNode}) {
-  const door = useRef<Group>(null), lamp = useRef<PointLight>(null)
+  const door = useRef<Group>(null), lamp = useRef<PointLight>(null), entrance = useRef<PointLight>(null)
   const time = useRef(0)
+  const windowMaterial = useRef<MeshStandardMaterial>(null)
   const r = useMemo(() => {
     const smoke = new BufferGeometry(); smoke.setAttribute('position',new Float32BufferAttribute(new Float32Array(24),3))
     const shape=new Shape();shape.moveTo(-4.1,4.5);shape.lineTo(0,5.75);shape.lineTo(4.1,4.5);shape.closePath()
@@ -34,8 +36,10 @@ export default function MoruHome({detail}:{detail?:ReactNode}) {
     opacity(r.wall,1-homeState.cutaway*.87);opacity(r.roof,1-homeState.cutaway*.98);opacity(r.snow,env.snow*(1-homeState.cutaway))
     setWeather(r.roof,r.wall,env.wetness)
     const festive = worldTime.realWorld.month===12 ? 1.25 : 1
-    glow(r.bulbs,.12+env.night*(1+env.snow*.8)*festive)
-    if(lamp.current) lamp.current.intensity=(8+env.night*8)*(1+env.warmth*.25)
+    glow(r.bulbs,.12+env.night*(2.9+env.snow*.8)*festive)
+    if(lamp.current) lamp.current.intensity=(6+env.night*nightValue(520,NIGHT_TUNING.interiorLightIntensity,env.night))*(1+env.warmth*.25)
+    if(windowMaterial.current) windowMaterial.current.emissiveIntensity=NIGHT_TUNING.windowEmissive*nightCorrection(env.night)
+    if(entrance.current) entrance.current.intensity=env.night*nightValue(820,NIGHT_TUNING.houseLightIntensity,env.night)
     const pos=r.smoke.attributes.position
     for(let i=0;i<8;i++){const a=(time.current*.09+i/8)%1;pos.setXYZ(i,-2.5+Math.sin(a*3+time.current*.08)*a*(.5+env.wind*2),6+a*3,-1.5+a*(.4+env.wind))}
     dirty(r.smoke)
@@ -45,13 +49,13 @@ export default function MoruHome({detail}:{detail?:ReactNode}) {
     <mesh position={[0,-.015,0]} receiveShadow><boxGeometry args={[8,.09,7]}/><meshStandardMaterial color="#aa9981" roughness={.85}/></mesh>
     {/* A real hollow shell. Camera cutaway reveals the same room after walking in. */}
     {[[-4,2.3,0,.25,4.6,7],[4,2.3,0,.25,4.6,7],[0,2.3,-3.5,8,4.6,.25],[-1.7,.45,3.5,4.6,.9,.2],[3.55,2.3,3.5,.9,4.6,.2],[1.8,4.05,3.5,2.5,1.1,.2]].map(([x,y,z,w,h,d],i)=><mesh key={i} position={[x,y,z]} material={r.wall} castShadow receiveShadow><boxGeometry args={[w,h,d]}/></mesh>)}
-    <mesh position={[-1.7,2.7,3.53]}><boxGeometry args={[4.5,3.3,.035]}/><meshStandardMaterial color="#c4e2df" transparent opacity={.15} roughness={.1} metalness={.1} depthWrite={false}/></mesh>
+    <mesh position={[-1.7,2.7,3.53]}><boxGeometry args={[4.5,3.3,.035]}/><meshStandardMaterial ref={windowMaterial} userData={{managedGlow:true}} emissive="#ffd8a0" emissiveIntensity={0} color="#c4e2df" transparent opacity={.15} roughness={.1} metalness={.1} depthWrite={false}/></mesh>
     {[-3.95,-1.7,.55].map(x=><mesh key={x} position={[x,2.7,3.6]}><boxGeometry args={[.085,3.5,.1]}/><meshStandardMaterial color="#756d59"/></mesh>)}
     <mesh position={[-1.7,2.8,3.6]}><boxGeometry args={[4.6,.075,.1]}/><meshStandardMaterial color="#756d59"/></mesh>
     <group ref={door} position={[DOOR.x-DOOR.width/2,0,DOOR.z+.06]}>
       <mesh position={[DOOR.width/2,1.72,0]} castShadow><boxGeometry args={[DOOR.width,3.44,.14]}/><meshStandardMaterial color="#688d89" roughness={.65}/></mesh>
       <mesh position={[DOOR.width-.2,1.6,.11]}><sphereGeometry args={[.07,10,8]}/><meshStandardMaterial color="#eed6a2" metalness={.7} roughness={.25}/></mesh>
-      <mesh position={[DOOR.width/2,2.35,.085]}><circleGeometry args={[.5,32]}/><meshStandardMaterial color="#f9d5a0" emissive="#bf9663" emissiveIntensity={.25}/></mesh>
+      <mesh position={[DOOR.width/2,2.35,.085]}><circleGeometry args={[.5,32]}/><meshStandardMaterial color="#f9d5a0" emissive="#bf9663" emissiveIntensity={1.1} toneMapped={false}/></mesh>
     </group>
     {[-1,1].map(side=><group key={side} position={[side*2.15,4.93,0]} rotation={[0,0,-side*.34]}>
       <mesh material={r.roof} castShadow><boxGeometry args={[4.65,.2,8]}/></mesh>
@@ -73,7 +77,7 @@ export default function MoruHome({detail}:{detail?:ReactNode}) {
     <mesh position={[-.9,.28,-.9]}><cylinderGeometry args={[.09,.2,.58,12]}/><meshStandardMaterial color="#82735f"/></mesh>
     <mesh position={[2.8,1.25,-2.4]}><cylinderGeometry args={[.045,.07,2.5,10]}/><meshStandardMaterial color="#8f846e"/></mesh>
     <mesh position={[2.8,2.6,-2.4]} material={r.bulbs}><coneGeometry args={[.65,.55,24,1,true]}/></mesh>
-    <pointLight position={[-1.7,2.4,4.1]} intensity={2.6} color="#ffd8a8" distance={9} decay={2}/>
+    <pointLight ref={entrance} position={[1.8,2.7,4.3]} intensity={0} color="#ffd2a0" distance={19} decay={2}/>
     <pointLight ref={lamp} position={[2.8,2.55,-2.4]} color="#ffdab0" distance={12} decay={2}/>
     <mesh position={[.4,.038,.1]} rotation={[-Math.PI/2,0,0]}><circleGeometry args={[2,48]}/><meshStandardMaterial color="#b7a499" roughness={1}/></mesh>
     {PATH.map(i=><group key={i} position={[DOOR.x+Math.sin(i*.5)*.35,0,5.5+i*.85]}>

@@ -9,7 +9,7 @@ import { prepareBodyAnimation } from '../characters/bodyAnimation.ts'
 import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react'
 import type { RefObject } from 'react'
 import { useFrame, useLoader, useThree } from '@react-three/fiber'
-import { AnimationClip, AnimationUtils, Box3, Group, Mesh, PointLight, SkinnedMesh, Vector3 } from 'three'
+import { AnimationClip, AnimationUtils, Box3, Group, Mesh, PointLight, Quaternion, SkinnedMesh, Vector3 } from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { clone } from 'three/addons/utils/SkeletonUtils.js'
 import { createLocomotion, movePlayer } from './locomotion.ts'
@@ -19,6 +19,7 @@ import { MORU_ACTIONS, UNAVAILABLE_MORU_ACTIONS } from '../characters/actions.ts
 import { moruAnimations } from '../characters/assets.ts'
 import { characters } from '../characters/registry.ts'
 import { worldInterface } from '../ui/interface.ts'
+import { conversationActive } from '../conversation/session.ts'
 
 function Character({ player, onReady }: { player: RefObject<Player>; onReady: () => void }) {
   const {gl}=useThree()
@@ -29,6 +30,7 @@ function Character({ player, onReady }: { player: RefObject<Player>; onReady: ()
   const root = useRef<Group>(null)
   const faceFill = useRef<PointLight>(null)
   const fillDirection = useRef(new Vector3())
+  const lookRotation = useRef(new Quaternion())
   const model = useMemo(() => {
     const scene = clone(walkingAsset.scene)
     const materials=prepareMoruRendering(scene)
@@ -115,6 +117,7 @@ function Character({ player, onReady }: { player: RefObject<Player>; onReady: ()
 
   useFrame(({camera}, delta) => {
     const dt = Math.min(delta, 0.05)
+    const p=player.current
     const night=environmentState.night
     // Three.js materials are mutable render resources, not React state.
     // oxlint-disable-next-line react/immutability
@@ -133,6 +136,11 @@ function Character({ player, onReady }: { player: RefObject<Player>; onReady: ()
     controller?.update(player.current, firstPose?Math.max(dt,.001):dt)
     if (characters.MORU && animation.current) characters.MORU.clip = animation.current.activeClip
     if (root.current) {
+      if(conversationActive()&&p.groundState==='IDLE'){
+        fillDirection.current.copy(camera.position).sub(p.position)
+        lookRotation.current.setFromAxisAngle(p.up,Math.atan2(fillDirection.current.x,fillDirection.current.z))
+        p.rotation.slerp(lookRotation.current,1-Math.exp(-5*dt))
+      }
       root.current.position.copy(player.current.position)
       root.current.quaternion.copy(player.current.rotation)
       root.current.updateMatrixWorld(true)

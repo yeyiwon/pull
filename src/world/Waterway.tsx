@@ -1,7 +1,8 @@
+import { NIGHT_TUNING, nightValue } from '../graphics/nightTuning.ts'
 import { useEffect, useMemo, useRef } from 'react'
 import type { RefObject } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { BufferGeometry, Float32BufferAttribute, ShaderMaterial, UniformsLib, UniformsUtils, Vector2, Vector3, MeshStandardMaterial, Color } from 'three'
+import { BufferGeometry, Float32BufferAttribute, ShaderMaterial, UniformsLib, UniformsUtils, Vector2, Vector3, MeshStandardMaterial, Color, PointLight } from 'three'
 import { graphicsState, QUALITY, useQuality } from '../graphics/quality.ts'
 import { woodDetail } from '../graphics/materialDetail.ts'
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
@@ -80,6 +81,7 @@ void main(){
 export default function Waterway({player}:{player:RefObject<Player>}){
  const quality=useQuality()
  const material=useRef<ShaderMaterial>(null)
+ const bridgeLights=useRef<(PointLight|null)[]>([])
  const r=useMemo(()=>{
   const geometry=new BufferGeometry(),position:number[]=[],uv:number[]=[],indices:number[]=[]
   for(let i=0;i<=300;i++){const z=-170+i*340/300,x=streamCenter(z),w=streamWidth(z);position.push(x-w,WATER_Y,z,x+w,WATER_Y,z);uv.push(0,i/300,1,i/300);if(i<300){const a=i*2;indices.push(a,a+2,a+1,a+1,a+2,a+3)}}
@@ -101,6 +103,7 @@ export default function Waterway({player}:{player:RefObject<Player>}){
   const p=player.current;u.uMoru.value.set(p.position.x,p.position.z)
   const wet=p.waterDepth>.05&&p.position.y<WATER_Y+.05
   u.uWade.value+=(Number(wet)*(p.groundState==='IDLE'?.1:1)-u.uWade.value)*(1-Math.exp(-delta*5))
+  for(const light of bridgeLights.current)if(light)light.intensity=env.night*nightValue(520,NIGHT_TUNING.bridgeLightIntensity,env.night)
  })
  const x=streamCenter(BRIDGE.z)
  return <>
@@ -108,7 +111,8 @@ export default function Waterway({player}:{player:RefObject<Player>}){
   <group position={[x,0,BRIDGE.z]}>
    {[-1.35,1.35].map(z=><mesh key={z} geometry={r.beam} material={r.beamMaterial} position={[0,0,z]} castShadow receiveShadow/>)}
    {Array.from({length:25},(_,i)=>{const a=(i/24*2-1)*BRIDGE.halfLength,y=.42*Math.cos(a/BRIDGE.halfLength*Math.PI/2);return <mesh key={i} position={[a,y-.045,0]} rotation={[0,0,-.42*Math.PI/(2*BRIDGE.halfLength)*Math.sin(a/BRIDGE.halfLength*Math.PI/2)]} castShadow receiveShadow material={r.wood[i%3===0?0:1]} geometry={r.plank}/>})}
-   {[-1,1].map(side=><group key={side}>{[-.75,0,.75].map(a=><group key={a} position={[a*BRIDGE.halfLength,.42*Math.cos(a*Math.PI/2),side*1.6]}><mesh position={[0,.5,0]} castShadow><cylinderGeometry args={[.055,.08,1,8]}/><meshStandardMaterial color="#778b83"/></mesh><mesh position={[0,1.03,0]}><sphereGeometry args={[.075,8,6]}/><meshStandardMaterial color="#ffe9b9" emissive="#dbcba1" emissiveIntensity={.3}/></mesh></group>)}</group>)}
+   {[-1,1].map(side=><group key={side}>{[-.75,0,.75].map(a=><group key={a} position={[a*BRIDGE.halfLength,.42*Math.cos(a*Math.PI/2),side*1.6]}><mesh position={[0,.5,0]} castShadow><cylinderGeometry args={[.055,.08,1,8]}/><meshStandardMaterial color="#778b83"/></mesh><mesh position={[0,1.03,0]}><sphereGeometry args={[.075,8,6]}/><meshStandardMaterial color="#ffe9b9" emissive="#dbcba1" emissiveIntensity={.55} toneMapped={false}/></mesh></group>)}</group>)}
+   {[-1,1].map((side,i)=><pointLight key={`bridge-light-${side}`} ref={light=>{bridgeLights.current[i]=light}} position={[0,1.35,side*1.35]} color="#ffd9a4" intensity={0} distance={12} decay={2}/>)}
   </group>
  </>
 }

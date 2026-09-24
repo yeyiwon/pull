@@ -1,7 +1,7 @@
 import {test} from 'node:test'
 import assert from 'node:assert/strict'
 import {createPlayer} from '../src/world/locomotion.ts'
-import {LAKE_BENCH as b, nearBench, requestBench, isSeated, updateBench} from '../src/world/bench.ts'
+import {LAKE_BENCH as b, WORLD_SEATS, nearestSeat, nearBench, requestBench, isSeated, updateBench} from '../src/world/bench.ts'
 test('bench requires nearby grounded idle user, holds until exit and preserves movement priority',()=>{
  const p=createPlayer();assert.equal(requestBench(p),false)
  p.position.set(b.x+1,b.y,b.z);assert.ok(nearBench(p))
@@ -16,6 +16,16 @@ test('bench requires nearby grounded idle user, holds until exit and preserves m
 test('missing sitting animation does not capture player',()=>{
  const p=createPlayer();p.position.set(b.x+1,b.y,b.z);requestBench(p)
  updateBench(p,.01,()=>false,()=>{});assert.equal(isSeated(p),false)
+})
+test('every registered chair can be selected from its approach point',()=>{
+ const p=createPlayer()
+ for(const seat of WORLD_SEATS){
+  p.position.set(seat.x+Math.sin(seat.yaw)*1.2,seat.y,seat.z+Math.cos(seat.yaw)*1.2);p.isGrounded=true
+  assert.equal(nearestSeat(p)?.id,seat.id)
+ }
+ assert.equal(WORLD_SEATS.filter(seat=>seat.kind==='IRON_BENCH').length,4)
+ assert.ok(WORLD_SEATS.some(seat=>seat.kind==='SOFA'))
+ assert.ok(WORLD_SEATS.some(seat=>seat.kind==='CHAIR'))
 })
 
 test('bench collider blocks walking through from the promenade',async()=>{

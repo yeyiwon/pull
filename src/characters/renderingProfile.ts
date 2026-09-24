@@ -1,11 +1,12 @@
+import { NIGHT_TUNING } from '../graphics/nightTuning.ts'
 import { MeshStandardMaterial, PMREMGenerator, SRGBColorSpace, Scene, Mesh, SphereGeometry, ShaderMaterial, BackSide } from 'three'
 import type { Texture, WebGLRenderer, Object3D, Material } from 'three'
 
 // Shared across outfits: neutral broad light supplements the world's directional key.
 // Materials stay PBR and texture-driven; this is not an emissive/unlit face override.
 export const MORU_RENDERING_PROFILE = {
- environmentDay: 1.3, environmentNight: .75,
- fillDay: 4, fillNight: 5, fillDistance: 2.8,
+ environmentDay: 1.3, environmentNight: .75*NIGHT_TUNING.moruBrightness,
+ fillDay: 4, fillNight: 5*NIGHT_TUNING.moruBrightness, fillDistance: 2.8,
  roughnessFactor: 1.12, pmremSize: 128,
 } as const
 export function createMoruEnvironment(renderer:WebGLRenderer){

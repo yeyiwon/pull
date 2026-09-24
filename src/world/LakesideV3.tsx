@@ -68,14 +68,14 @@ export default function LakesideV3({player}:{player:RefObject<Player>}){
    }
    selected.current[slot]=best
    const light=lamps.current[slot]
-   if(light&&best>=0){const station=r.stations[best];light.position.set(station.x,lampLightHeight(riverbedHeight(station.x,station.z)),station.z);light.color.copy(lampColor.current);light.intensity=env.night*(bestDistance<50*50?65:0)
+   if(light&&best>=0){const station=r.stations[best];light.position.set(station.x,lampLightHeight(riverbedHeight(station.x,station.z)),station.z);light.color.copy(lampColor.current);light.intensity=env.night*(bestDistance<50*50?950:0)
     const ring=lightRings.current[slot];if(ring){ring.position.set(station.x,.22,station.z);ring.visible=light.intensity>0}
    }
   }
  })
  return <group name="ReconstructedLakeside">
   {r.paths.map((geometry,i)=><mesh key={i} geometry={geometry} material={r.material} receiveShadow/>)}
-  {Array.from({length:4},(_,i)=><pointLight key={i} ref={light=>{lamps.current[i]=light}} color="#ffe9cc" intensity={0} distance={27} decay={2}/>)}
+  {Array.from({length:4},(_,i)=><pointLight key={i} ref={light=>{lamps.current[i]=light}} color="#ffe9cc" intensity={0} distance={36} decay={2}/>)}
   {debug&&<group name="LakesideDebugGuides">
    {guides?.map((line,i)=><primitive key={i} object={line}/>)}
    {r.stations.map((point,i)=><mesh key={i} position={[point.x,.3,point.z]}><sphereGeometry args={[.38,8,6]}/><meshBasicMaterial color="#ffe4af" depthTest={false}/></mesh>)}

@@ -3,7 +3,7 @@ import { conversationActive } from '../conversation/session.ts'
 import { useEffect, useRef } from 'react'
 import type { RefObject } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { MathUtils, Vector3, PerspectiveCamera } from 'three'
+import { MathUtils, Quaternion, Vector3, PerspectiveCamera } from 'three'
 import { cinematicComposition, idleFramingWeight, skyTargetHeight } from './cinematicFraming.ts'
 import { surfaceHeight } from './terrain.ts'
 import { homeState } from './homeSpace.ts'
@@ -22,6 +22,9 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
   const previewPosition = useRef(new Vector3())
   const previewTarget = useRef(new Vector3())
   const wardrobeBlend = useRef(0)
+  const wardrobeWasOpen = useRef(false)
+  const previewTurn = useRef(new Quaternion())
+  const cameraFloor = useRef(Number.NaN)
   const aspect=size.width/size.height
   const distance = MathUtils.clamp(5.2/aspect,8.3,11.5)
   const framing=useRef({distance:10.5,reduced:false,idle:0,time:0})
@@ -54,8 +57,13 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
     function move(event: PointerEvent) {
       if(conversationActive()){stop();return}
       if (event.pointerId !== state.pointer) return
-      state.desiredYaw -= (event.clientX - state.x) * 0.005
-      state.desiredPitch = MathUtils.clamp(state.desiredPitch + (event.clientY - state.y) * 0.004, -.55, 1.1)
+      if(worldInterface.getSnapshot()==='appearance'){
+        previewTurn.current.setFromAxisAngle(player.current.up,-(event.clientX-state.x)*.009)
+        player.current.rotation.premultiply(previewTurn.current)
+      }else{
+        state.desiredYaw -= (event.clientX - state.x) * 0.005
+        state.desiredPitch = MathUtils.clamp(state.desiredPitch + (event.clientY - state.y) * 0.004, -.55, 1.1)
+      }
       state.x = event.clientX; state.y = event.clientY
     }
     function stop() {
@@ -107,7 +115,9 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
       focus.current.y + Math.sin(Math.max(0,viewPitch)) * followDistance,
       focus.current.z + Math.cos(yaw) * Math.cos(Math.max(0,viewPitch)) * followDistance,
     )
-    camera.position.setY(Math.max(camera.position.y,surfaceHeight(camera.position.x,camera.position.z)+.45))
+    const nextFloor=surfaceHeight(camera.position.x,camera.position.z)+.45
+    cameraFloor.current=Number.isFinite(cameraFloor.current)?MathUtils.damp(cameraFloor.current,nextFloor,8,dt):nextFloor
+    camera.position.setY(Math.max(camera.position.y,cameraFloor.current))
     const composition=cinematicComposition(aspect),outside=1-homeState.cutaway
     desiredFocus.current.copy(focus.current).y += (composition.skyLift+Math.sin(Math.max(0,-viewPitch))*followDistance)*outside
     // A fixed off-centre composition; idle movement is bounded and never rotates orbit yaw.
@@ -124,6 +134,11 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
     }
     // Preview the existing live body, rather than loading a second GPU model.
     const wardrobe=worldInterface.getSnapshot()==='appearance'
+    if(wardrobe&&!wardrobeWasOpen.current){
+      const dx=camera.position.x-p.position.x,dz=camera.position.z-p.position.z
+      p.rotation.setFromAxisAngle(p.up,Math.atan2(dx,dz))
+    }
+    wardrobeWasOpen.current=wardrobe
     wardrobeBlend.current=MathUtils.damp(wardrobeBlend.current,wardrobe?1:0,f.reduced?100:7,dt)
     const preview=wardrobeBlend.current
     if(preview>.001 && camera instanceof PerspectiveCamera){
@@ -133,8 +148,7 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
       const landscape=size.width>size.height
       const previewDistance=1.55/(Math.tan(MathUtils.degToRad(camera.fov/2))*visibleFraction)*(landscape ? .8 : 1)
       previewTarget.current.set(p.position.x,p.position.y+1.45,p.position.z)
-      // Wardrobe preview is an orbit around the live Moru. Pointer dragging now
-      // reveals the back and sides instead of keeping the camera front-locked.
+      // The preview camera stays fixed; dragging turns the live Moru itself.
       facing.current.set(Math.sin(yaw),0,Math.cos(yaw)).normalize()
       previewPosition.current.copy(previewTarget.current).addScaledVector(facing.current,previewDistance)
       previewPosition.current.y+=.12

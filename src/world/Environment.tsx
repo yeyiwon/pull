@@ -1,3 +1,4 @@
+import { NIGHT_TUNING } from '../graphics/nightTuning.ts'
 import { useEffect, useMemo, useRef } from 'react'
 import type { RefObject } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
@@ -119,7 +120,12 @@ function Environment({ player, art = {} }: { player: RefObject<Player>; art?: En
       tint.a.set(from.fog).lerp(tint.b.set(to.fog), blend); scene.fog.color.lerp(tint.a, smooth); setFogRange(scene.fog, env.haze)
     }
     if (hemisphere.current) {
-      hemisphere.current.intensity += (MathUtils.lerp(from.ambient, to.ambient, blend) * .74 - hemisphere.current.intensity) * smooth
+      // Preserve a low cool material floor at night without lifting the sky shader.
+      const ambient=Math.max(
+        MathUtils.lerp(from.ambient,to.ambient,blend)*MathUtils.lerp(.74,.78,env.night),
+        env.night*NIGHT_TUNING.ambientFill,
+      )
+      hemisphere.current.intensity += (ambient - hemisphere.current.intensity) * smooth
       hemisphere.current.color.copy(sky.uHorizon.value).lerp(tint.a.set('#bbccec'), env.night * .65)
       hemisphere.current.groundColor.copy(env.grass).multiplyScalar(.32).lerp(tint.a.set('#222b41'),env.night)
     }
@@ -127,7 +133,12 @@ function Environment({ player, art = {} }: { player: RefObject<Player>; art?: En
     for (const { material, base } of glowMaterials.current) updateGlow(material, base * glow, smooth)
     if (light.current) {
       tint.a.set(from.light).lerp(tint.b.set(to.light), blend); light.current.color.lerp(tint.a, smooth)
-      light.current.intensity += (MathUtils.lerp(from.intensity, to.intensity, blend) * env.sunlight * (1-env.rain*.4) - light.current.intensity) * smooth
+      // Moonlight only separates silhouettes; local fixtures remain the brightest lights.
+      const celestial=Math.max(
+        MathUtils.lerp(from.intensity,to.intensity,blend)*env.sunlight*(1-env.rain*.4)*MathUtils.lerp(1,.72,env.night),
+        env.night*NIGHT_TUNING.moonIntensity,
+      )
+      light.current.intensity += (celestial - light.current.intensity) * smooth
     }
     const t = sky.uTime.value
     if (islands.current) for (let i = 0; i < islands.current.children.length; i++) {
@@ -152,7 +163,7 @@ function Environment({ player, art = {} }: { player: RefObject<Player>; art?: En
       <fog attach="fog" args={['#c7dce9', 75, 290]} />
       <mesh ref={skyDome} renderOrder={-1} frustumCulled={false}>
         <sphereGeometry args={[450, 48, 24]} />
-        <shaderMaterial ref={skyMaterial} uniforms={resources.sky} vertexShader={skyVertex} fragmentShader={skyFragment} side={BackSide} depthWrite={false} />
+        <shaderMaterial ref={skyMaterial} onUpdate={material=>{material.needsUpdate=true}} uniforms={resources.sky} vertexShader={skyVertex} fragmentShader={skyFragment} side={BackSide} depthWrite={false} />
       </mesh>
       <hemisphereLight ref={hemisphere} args={['#e6f2ff', '#648d98', 1.35]} />
       <directionalLight ref={light} intensity={1.25} color="#fff0d7" castShadow shadow-mapSize={[preset.shadow, preset.shadow]} shadow-radius={3}

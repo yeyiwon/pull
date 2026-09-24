@@ -8,6 +8,7 @@ import type { Player } from '../world/locomotion.ts'
 import { worldInterface } from './interface.ts'
 import WorldClock from '../world/WorldClock.tsx'
 import AudioControls from '../audio/AudioControls.tsx'
+import { audio } from '../audio/AudioManager.ts'
 import GraphicsControls from '../graphics/GraphicsControls.tsx'
 import ActionControls from '../characters/ActionControls.tsx'
 import BrainInspector from '../world/brain/BrainInspector.tsx'
@@ -40,7 +41,8 @@ export default function WorldInterface({player,ready,theme,onThemeChange}:{playe
   return()=>window.clearTimeout(timer)
  },[closing,requestedPanel])
  const conversation=useSyncExternalStore(conversationSession.subscribe,conversationSession.getSnapshot)
- const [musicSlot,setMusicSlot]=useState<HTMLElement|null>(null),[muted,setMuted]=useState(false)
+ const [musicSlot,setMusicSlot]=useState<HTMLElement|null>(null),[muted,setMuted]=useState(false),[soundUnlocked,setSoundUnlocked]=useState(audio.unlocked)
+ useEffect(()=>{const id=window.setInterval(()=>setSoundUnlocked(audio.unlocked),250);return()=>window.clearInterval(id)},[])
  const sheet=useRef<HTMLDivElement>(null),body=useRef<HTMLDivElement>(null),swipe=useRef(0)
  const close=()=>worldInterface.open(null)
  useEffect(()=>{if(conversation.phase!=='closed')worldInterface.open(null)},[conversation.phase])
@@ -67,7 +69,7 @@ export default function WorldInterface({player,ready,theme,onThemeChange}:{playe
  return <>
   {ready&&!panel&&conversation.phase==='closed'&&<button className="moru-gesture-entry" aria-label="모루 몸짓" onClick={()=>{moruAttention();openPanel('moru')}}><GestureGlyph/></button>}
   <header className="pull-header"><span className="pull-wordmark">PULL<span className="arc-mark" aria-hidden="true"/></span><WorldClock player={player} mode="status"/>
-   <nav aria-label="세계 메뉴"><button aria-label={muted?'소리 켜기':'소리 끄기'} aria-pressed={muted} data-muted={muted} title={muted?'소리 켜기':'소리 끄기'} onClick={()=>setMuted(value=>!value)}>♪</button><button aria-label="메뉴 열기" aria-expanded={requestedPanel!==null} onClick={()=>openPanel(panel?null:'menu')}><span className="menu-lines" aria-hidden="true"/></button></nav>
+   <nav aria-label="세계 메뉴"><button aria-label={!soundUnlocked?'Tap to enable sound':muted?'소리 켜기':'소리 끄기'} aria-pressed={soundUnlocked&&!muted} data-muted={!soundUnlocked||muted} title={!soundUnlocked?'Tap to enable sound':muted?'소리 켜기':'소리 끄기'} onClick={()=>{if(!audio.unlocked){setMuted(false);audio.setMaster(.8);void audio.unlock()}else setMuted(value=>!value)}}>♪</button><button aria-label="메뉴 열기" aria-expanded={requestedPanel!==null} onClick={()=>openPanel(panel?null:'menu')}><span className="menu-lines" aria-hidden="true"/></button></nav>
   </header>
   <AudioControls mode={panel==='music'?'panel':'hidden'} slot={musicSlot} muted={muted} onMute={setMuted}/>
   {!panel&&conversation.phase==='closed'&&<button className="touch-jump" aria-label="점프" disabled={!ready} onPointerDown={event=>{event.preventDefault();jump(player.current)}}><GestureGlyph kind="jump"/></button>}

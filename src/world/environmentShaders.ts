@@ -1,3 +1,4 @@
+import { NIGHT_TUNING } from '../graphics/nightTuning.ts'
 export const skyVertex = `
 varying vec3 vDirection;
 void main() {
@@ -58,6 +59,15 @@ void main() {
   float cloudOpacity=1.-exp(-cloud*(1.65+uRain*2.));
   color=mix(color,mix(cloudLit,uHorizon,.5),highCloud*.15*(1.-uRain));
   color=mix(color,cloudColor,cloudOpacity);
+  // Night owns a genuinely dark sky independently of the world-lighting floor.
+  // Cloud structure remains visible, but cannot lift the frame back toward blue dusk.
+  vec3 midnightGradient=mix(vec3(.018,.026,.052),vec3(.003,.006,.016),height);
+  color=mix(color,color*.28+midnightGradient*.72,uNight*.82);
+  // uTop/uHorizon are already linear colors converted from sRGB by THREE.Color.
+  // Do not replace them with a bright hardcoded linear RGB floor at midnight.
+  float fullNight=smoothstep(.8,1.,uNight);
+  vec3 authoredNight=mix(uHorizon,uTop,height);
+  color=mix(color,authoredNight+cloudColor*cloudOpacity*${NIGHT_TUNING.skyBrightness},fullNight);
   vec3 moonDir=uMoonDirection;
   float angular=length(d-moonDir),moonRadius=.066*uMoonSize;
   float moonDisc=1.-smoothstep(moonRadius,moonRadius+max(.0007,fwidth(angular)),angular);
@@ -101,7 +111,7 @@ void main() {
   vec2 starDelta=fract(grid)-offset;
   float star=exp(-dot(starDelta,starDelta)/max(.0003,starRadius*starRadius));
   float twinkle = .88 + .12 * sin(uTime * (.4 + seed) + seed * 80.0);
-  color += mix(vec3(.55,.67,1.),vec3(1.,.83,.65),hash(cell+12.)) * (1.+step(.994,seed)*1.9) * star * step(1.0-.11*uStars, seed) * twinkle * uNight * smoothstep(.03, .25, d.y) * (1.0 - cloudOpacity) * (1.0 - moonDisc);
+  color += mix(vec3(.62,.74,1.),vec3(1.,.88,.72),hash(cell+12.)) * (1.25+step(.994,seed)*2.2) * star * step(1.0-.12*uStars, seed) * twinkle * uNight * smoothstep(.03, .25, d.y) * (1.0 - cloudOpacity*.88) * (1.0 - moonDisc);
   float milky=exp(-square((d.y-.45-d.x*.23)*7.));
   color+=vec3(.017,.019,.035)*milky*fbm(uv*25.)*uNight*(1.-cloud)*(1.-moonDisc)*step(.5,uQuality);
   float curtain = exp(-square((d.y - .3 - sin(uv.x * 23.0 + uTime * .015) * .07) * 13.0));

@@ -1,3 +1,4 @@
+import { NIGHT_TUNING, nightCorrection } from './nightTuning.ts'
 import { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import type { WebGLRenderer } from 'three'
@@ -12,9 +13,9 @@ import { worldTime } from '../world/worldTime.ts'
 import { environmentState as env } from '../world/environmentState.ts'
 function setInfoReset(gl:WebGLRenderer,value:boolean){gl.info.autoReset=value}
 const gradeShader = {
- uniforms: { tDiffuse: {value:null}, uTint:{value:new Vector3(1,1,1)}, uAmount:{value:.35} },
+ uniforms: { tDiffuse: {value:null}, uTint:{value:new Vector3(1,1,1)}, uAmount:{value:.35},uNight:{value:0} },
  vertexShader:'varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
- fragmentShader:'uniform sampler2D tDiffuse; uniform vec3 uTint; uniform float uAmount; varying vec2 vUv; void main(){vec4 c=texture2D(tDiffuse,vUv);c.rgb*=mix(vec3(1.),uTint,uAmount);gl_FragColor=c;}',
+ fragmentShader:'uniform sampler2D tDiffuse;uniform vec3 uTint;uniform float uAmount;uniform float uNight;varying vec2 vUv;void main(){vec4 c=texture2D(tDiffuse,vUv);c.rgb*=mix(vec3(1.),uTint,uAmount);float l=dot(c.rgb,vec3(.2126,.7152,.0722));float shadow=1.-smoothstep(.08,.42,l);c.rgb+=vec3(.005,.008,.018)*shadow*uNight;gl_FragColor=c;}',
 }
 const TINTS={spring:[1.025,1.01,1.02],summer:[.98,1.015,1.035],autumn:[1.035,1.005,.98],winter:[.985,1.012,1.04]} as const
 export default function DreamRenderer(){
@@ -24,7 +25,7 @@ export default function DreamRenderer(){
  useEffect(()=>{setDpr(Math.min(window.devicePixelRatio,preset.dpr))},[setDpr,preset.dpr])
  useEffect(()=>{
   if(quality==='PERFORMANCE')return
-  const composer=new EffectComposer(gl),render=new RenderPass(scene,camera),bloom=new UnrealBloomPass(new Vector2(1,1),preset.bloom,.35,1.15),grade=new ShaderPass(gradeShader),output=new OutputPass()
+  const composer=new EffectComposer(gl),render=new RenderPass(scene,camera),bloom=new UnrealBloomPass(new Vector2(1,1),preset.bloom,.32,.95),grade=new ShaderPass(gradeShader),output=new OutputPass()
   composer.addPass(render);composer.addPass(bloom);composer.addPass(grade);composer.addPass(output)
   resources.current={composer,bloom,grade,output,render}
   return()=>{resources.current=null;composer.dispose();bloom.dispose();grade.dispose();output.dispose();render.dispose()}
@@ -34,8 +35,10 @@ export default function DreamRenderer(){
   gl.info.reset()
   const r=resources.current
   if(r){
-   r.bloom.enabled=graphicsState.bloom;r.bloom.strength=preset.bloom*(.65+env.night*.35)
+   r.bloom.enabled=graphicsState.bloom;r.bloom.strength=preset.bloom*(.62+env.night*NIGHT_TUNING.bloomIntensity)
    const tint=TINTS[worldTime.realWorld.season];r.grade.uniforms.uTint.value.set(...tint)
+   // Night readability comes from scene lights, not a full-screen lift of the sky.
+   r.grade.uniforms.uNight.value=env.night*(1-nightCorrection(env.night))
    r.composer.render(delta)
   }else gl.render(scene,camera)
   const m=meter.current;m.elapsed+=delta;m.frames++

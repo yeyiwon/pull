@@ -30,7 +30,7 @@ export default function HomeGarden(){
   updateArtMaterial(r.leaf,t);updateArtMaterial(r.flower,t)
   r.leaf.color.set(winter?'#9f9989':season==='autumn'?'#a49765':'#8a9c71')
   if(flowers.current)flowers.current.visible=!winter
-  for(const light of [left.current,right.current])if(light){light.intensity=env.night*24;light.color.set(LAMP_SEASONS[season].light)}
+  for(const light of [left.current,right.current])if(light){light.intensity=env.night*420;light.color.set(LAMP_SEASONS[season].light)}
   if(flies.current){flies.current.visible=!winter&&env.night>.1;for(let i=0;i<18;i++){
    const [x,z]=BEDS[i%4],a=i*2.399;r.o.position.set(x+Math.sin(a+t*.18)*.8,.4+(i%4)*.2+Math.sin(a+t*.32)*.15,z+Math.cos(a+t*.13)*.65);r.o.rotation.set(0,0,0);r.o.scale.setScalar(.012*(.3+.7*Math.pow((1+Math.sin(t*.7+a))/2,2))*env.night*(1-env.rain*.7));r.o.updateMatrix();flies.current.setMatrixAt(i,r.o.matrix)
   }flies.current.instanceMatrix.needsUpdate=true}
@@ -39,7 +39,7 @@ export default function HomeGarden(){
   <instancedMesh ref={grass} args={[r.blade,r.leaf,320]} receiveShadow/>
   <instancedMesh ref={flowers} args={[r.petal,r.flower,120]} receiveShadow/>
   <instancedMesh ref={flies} args={[undefined,undefined,18]} frustumCulled={false}><sphereGeometry args={[1,6,4]}/><meshBasicMaterial color="#e3ebaa" toneMapped={false}/></instancedMesh>
-  <pointLight ref={left} position={[-5,3.7/HOME.scale,5.4]} distance={11} decay={2}/>
-  <pointLight ref={right} position={[5,3.7/HOME.scale,5.4]} distance={11} decay={2}/>
+  <pointLight ref={left} position={[-5,3.7/HOME.scale,5.4]} distance={15} decay={2}/>
+  <pointLight ref={right} position={[5,3.7/HOME.scale,5.4]} distance={15} decay={2}/>
  </group>
 }

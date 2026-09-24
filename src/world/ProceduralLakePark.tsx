@@ -1,8 +1,9 @@
-import { LAKE_BENCH } from './bench.ts'
+import { NIGHT_TUNING, nightValue } from '../graphics/nightTuning.ts'
+import { WORLD_SEATS } from './bench.ts'
 import { useEffect,useMemo,useRef } from 'react'
 import type { RefObject } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { BufferGeometry,Color,CatmullRomCurve3,Float32BufferAttribute,InstancedMesh,MeshStandardMaterial,Object3D,PointLight,Vector3 } from 'three'
+import { AdditiveBlending,BufferGeometry,Color,CatmullRomCurve3,DoubleSide,Float32BufferAttribute,InstancedMesh,MeshStandardMaterial,Object3D,PointLight,ShaderMaterial,Vector3 } from 'three'
 import { artMaterial,updateArtMaterial } from '../graphics/artMaterial.ts'
 import { environmentState as env } from './environmentState.ts'
 import { worldTime } from './worldTime.ts'
@@ -32,7 +33,7 @@ function ribbon(curve:CatmullRomCurve3){
  g.setAttribute('position',new Float32BufferAttribute(vertices,3));g.setAttribute('color',new Float32BufferAttribute(colors,3));g.setIndex(indices);g.computeVertexNormals();return g
 }
 export default function ProceduralLakePark({player}:{player:RefObject<Player>}){
- const lamps=useRef<InstancedMesh>(null),caps=useRef<InstancedMesh>(null),bulbs=useRef<InstancedMesh>(null),festive=useRef<InstancedMesh>(null)
+ const lamps=useRef<InstancedMesh>(null),caps=useRef<InstancedMesh>(null),bulbs=useRef<InstancedMesh>(null),festive=useRef<InstancedMesh>(null),pools=useRef<InstancedMesh>(null)
  const frames=useRef<InstancedMesh>(null),bases=useRef<InstancedMesh>(null),finials=useRef<InstancedMesh>(null)
  const lights=useRef<(PointLight|null)[]>([])
  const r=useMemo(()=>{
@@ -41,7 +42,8 @@ export default function ProceduralLakePark({player}:{player:RefObject<Player>}){
   const east=new CatmullRomCurve3([new Vector3(porch.x,.045,porch.z),new Vector3(17,.045,-9),new Vector3(27,.045,10),...points.map(z=>bank(z,1))])
   const west=new CatmullRomCurve3([new Vector3(-13,.045,5),new Vector3(-8,.045,17),...points.map(z=>bank(z,-1))])
   const stations=[35,46,59,72,83].flatMap((z,i)=>[-1,1].map(side=>{const p=bank(z+(side>0?1:0),side);p.x+=side*3.2;return {x:p.x,z:p.z,height:4.5+(i%2)*.25}}))
-  return {paths:[ribbon(east),ribbon(west)],stations,object:new Object3D(),path:Object.assign(artMaterial('#ffffff','plaster'),{vertexColors:true}),benchMetal:new MeshStandardMaterial({color:'#151a1b',roughness:.46,metalness:.7}),metal:new MeshStandardMaterial({color:'#34403e',roughness:.57,metalness:.35}),glow:new MeshStandardMaterial({color:'#fff2db',emissive:'#d7b5ef',emissiveIntensity:.4,toneMapped:false,userData:{managedGlow:true}})}
+  const pool=new ShaderMaterial({transparent:true,depthWrite:false,side:DoubleSide,blending:AdditiveBlending,uniforms:{uColor:{value:new Color('#ffe3ba')},uOpacity:{value:0}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*instanceMatrix*vec4(position,1.);}',fragmentShader:'varying vec2 vUv;uniform vec3 uColor;uniform float uOpacity;void main(){float d=length(vUv-.5)*2.;float a=(1.-smoothstep(.08,1.,d))*uOpacity;gl_FragColor=vec4(uColor,a);}'} )
+  return {paths:[ribbon(east),ribbon(west)],stations,object:new Object3D(),pool,path:Object.assign(artMaterial('#ffffff','plaster'),{vertexColors:true}),benchMetal:new MeshStandardMaterial({color:'#151a1b',roughness:.46,metalness:.7}),metal:new MeshStandardMaterial({color:'#34403e',roughness:.57,metalness:.35}),glow:new MeshStandardMaterial({color:'#fff2db',emissive:'#d7b5ef',emissiveIntensity:.4,toneMapped:false,userData:{managedGlow:true}})}
  },[])
  useEffect(()=>{
   const o=r.object
@@ -54,18 +56,27 @@ export default function ProceduralLakePark({player}:{player:RefObject<Player>}){
    o.position.y=p.height-.7;o.scale.set(.38,.13,.38);o.updateMatrix();bases.current?.setMatrixAt(i*2+1,o.matrix)
    o.position.y=p.height+.51;o.scale.set(.08,.22,.08);o.updateMatrix();finials.current?.setMatrixAt(i,o.matrix)
    for(let n=0;n<12;n++){const a=n*.95;o.position.set(p.x+Math.cos(a)*.13,.8+n*.2,p.z+Math.sin(a)*.13);o.scale.setScalar(.042);o.updateMatrix();festive.current?.setMatrixAt(i*12+n,o.matrix)}
+   o.position.set(p.x,.075,p.z);o.rotation.set(-Math.PI/2,0,0);o.scale.set(6.4,3.8,1);o.updateMatrix();pools.current?.setMatrixAt(i,o.matrix);o.rotation.set(0,0,0)
   })
-  for(const mesh of [lamps.current,caps.current,bulbs.current,festive.current,frames.current,bases.current,finials.current])if(mesh){mesh.instanceMatrix.needsUpdate=true;mesh.computeBoundingSphere()}
-  return()=>{r.paths.forEach(g=>g.dispose());r.path.dispose();r.metal.dispose();r.benchMetal.dispose();r.glow.dispose()}
+  for(const mesh of [lamps.current,caps.current,bulbs.current,festive.current,pools.current,frames.current,bases.current,finials.current])if(mesh){mesh.instanceMatrix.needsUpdate=true;mesh.computeBoundingSphere()}
+  return()=>{r.paths.forEach(g=>g.dispose());r.path.dispose();r.metal.dispose();r.benchMetal.dispose();r.glow.dispose();r.pool.dispose()}
  },[r])
  useFrame(({clock})=>{
   updateArtMaterial(r.path,clock.elapsedTime)
   const winter=worldTime.realWorld.season==='winter',color=LAMP_COLORS[worldTime.realWorld.season]
-  r.glow.emissive.set(color);setGlow(r.glow,.12+env.night*(winter?2.9:2.3))
+  r.glow.emissive.set(color);setGlow(r.glow,.12+env.night*(winter?4.8:4.2))
+  // Shader uniforms are mutable render resources, not React state.
+  // oxlint-disable-next-line react/immutability
+  r.pool.uniforms.uColor.value.set(color);r.pool.uniforms.uOpacity.value=env.night*.4
   if(festive.current)festive.current.visible=winter
-  let first=-1,second=-1,d1=Infinity,d2=Infinity
-  for(let i=0;i<r.stations.length;i++){const p=r.stations[i],d=(p.x-player.current.position.x)**2+(p.z-player.current.position.z)**2;if(d<d1){second=first;d2=d1;first=i;d1=d}else if(d<d2){second=i;d2=d}}
-  for(let i=0;i<2;i++){const light=lights.current[i],p=r.stations[i===0?first:second];if(light&&p){light.position.set(p.x,p.height-.4,p.z);light.color.set(color);light.intensity=env.night*42}}
+  const nearest=r.stations
+   .map((station,index)=>({index,distance:(station.x-player.current.position.x)**2+(station.z-player.current.position.z)**2}))
+   .sort((a,b)=>a.distance-b.distance)
+   .slice(0,4)
+  for(let i=0;i<4;i++){
+   const light=lights.current[i],p=r.stations[nearest[i]?.index]
+   if(light&&p){light.position.set(p.x,p.height-.3,p.z);light.color.set(color);light.intensity=env.night*nightValue(950,NIGHT_TUNING.lampIntensity,env.night)}
+  }
  })
  return <group name="ProceduralLakePark">
   {r.paths.map((g,i)=><mesh key={i} geometry={g} material={r.path} receiveShadow/>)}
@@ -73,11 +84,12 @@ export default function ProceduralLakePark({player}:{player:RefObject<Player>}){
   <instancedMesh ref={caps} args={[undefined,r.metal,10]}><coneGeometry args={[1,1,4]}/></instancedMesh>
   <instancedMesh ref={bulbs} args={[undefined,r.glow,10]}><cylinderGeometry args={[.85,1,1,4]}/></instancedMesh>
   <instancedMesh ref={festive} args={[undefined,r.glow,120]}><sphereGeometry args={[1,5,3]}/></instancedMesh>
+  <instancedMesh ref={pools} args={[undefined,r.pool,10]} renderOrder={2}><planeGeometry args={[1,1]}/></instancedMesh>
   <instancedMesh ref={frames} args={[undefined,r.metal,40]}><cylinderGeometry args={[1,1,1,6]}/></instancedMesh>
   <instancedMesh ref={bases} args={[undefined,r.metal,20]}><cylinderGeometry args={[.8,1,1,8]}/></instancedMesh>
   <instancedMesh ref={finials} args={[undefined,r.metal,10]}><sphereGeometry args={[1,8,6]}/></instancedMesh>
-  <group name="LakesideBench" position={[LAKE_BENCH.x,LAKE_BENCH.y,LAKE_BENCH.z]} rotation={[0,LAKE_BENCH.yaw,0]}>
-   {Array.from({length:7},(_,i)=><mesh key={'seat'+i} position={[0,LAKE_BENCH.seatHeight-.045,-.35+i*.115]} material={r.benchMetal} castShadow receiveShadow><boxGeometry args={[2.85,.09,.085]}/></mesh>)}
+  {WORLD_SEATS.filter(seat=>seat.kind==='IRON_BENCH').map(seat=><group key={seat.id} name={`LakesideBench:${seat.id}`} position={[seat.x,seat.y,seat.z]} rotation={[0,seat.yaw,0]}>
+   {Array.from({length:7},(_,i)=><mesh key={'seat'+i} position={[0,seat.seatHeight-.045,-.35+i*.115]} material={r.benchMetal} castShadow receiveShadow><boxGeometry args={[2.85,.09,.085]}/></mesh>)}
    {Array.from({length:13},(_,i)=><mesh key={'back'+i} position={[-1.26+i*.21,1.45,-.46]} material={r.benchMetal} castShadow><cylinderGeometry args={[.025,.025,.78,6]}/></mesh>)}
    <mesh position={[0,1.86,-.46]} material={r.benchMetal} castShadow><boxGeometry args={[2.85,.09,.09]}/></mesh>
    <mesh position={[0,1.12,-.46]} material={r.benchMetal} castShadow><boxGeometry args={[2.85,.07,.09]}/></mesh>
@@ -86,7 +98,7 @@ export default function ProceduralLakePark({player}:{player:RefObject<Player>}){
     <mesh position={[x,1.29,-.08]} rotation={[0,Math.PI/2,0]} material={r.benchMetal} castShadow><torusGeometry args={[.39,.04,6,16,Math.PI]}/></mesh>
     <mesh position={[x,1.25,-.47]} material={r.benchMetal} castShadow><cylinderGeometry args={[.045,.055,1.2,8]}/></mesh>
    </group>)}
-  </group>
-  {[0,1].map(i=><pointLight key={i} ref={light=>{lights.current[i]=light}} intensity={0} distance={16} decay={2}/>)}
+  </group>)}
+  {Array.from({length:4},(_,i)=><pointLight key={i} ref={light=>{lights.current[i]=light}} intensity={0} distance={NIGHT_TUNING.lampDistance} decay={NIGHT_TUNING.lampDecay}/>)}
  </group>
 }

@@ -1,8 +1,8 @@
 import { createRealWorldContext, phaseAt } from './realWorld.ts'
 import type { Season } from './realWorld.ts'
 export const TIME_PROFILES = [
-  { hour: 0, top: '#080f2c', horizon: '#222b4e', light: '#b8c9ff', fog: '#172840', intensity: .65, ambient: .55, glow: 1.9 },
-  { hour: 4, top: '#080f2c', horizon: '#222b4e', light: '#b8c9ff', fog: '#172840', intensity: .65, ambient: .55, glow: 1.9 },
+  { hour: 0, top: '#02040d', horizon: '#080d1a', light: '#8297c8', fog: '#070c16', intensity: .22, ambient: .16, glow: 3 },
+  { hour: 4, top: '#02040d', horizon: '#080d1a', light: '#8297c8', fog: '#070c16', intensity: .22, ambient: .16, glow: 3 },
   { hour: 5, top: '#7864ba', horizon: '#e3a5c1', light: '#f4d0df', fog: '#baafcc', intensity: .85, ambient: 1, glow: 1.5 },
   { hour: 7, top: '#70bddd', horizon: '#ffe3c8', light: '#fff1ce', fog: '#c4dce3', intensity: 1.15, ambient: 1.25, glow: .85 },
   { hour: 11, top: '#3787ce', horizon: '#a8dfed', light: '#fff5df', fog: '#b8dbe8', intensity: 1.45, ambient: 1.35, glow: .65 },
@@ -11,8 +11,8 @@ export const TIME_PROFILES = [
   { hour: 18, top: '#62698d', horizon: '#e7a582', light: '#ffc48d', fog: '#b5a3ac', intensity: 1.05, ambient: .85, glow: 1.2 },
   { hour: 19, top: '#343d69', horizon: '#bd91a0', light: '#d2b8f5', fog: '#898aa6', intensity: .8, ambient: .95, glow: 1.55 },
   { hour: 20, top: '#152348', horizon: '#687995', light: '#aabfe6', fog: '#34465e', intensity: .65, ambient: .65, glow: 1.7 },
-  { hour: 21, top: '#080f2c', horizon: '#222b4e', light: '#b8c9ff', fog: '#172840', intensity: .65, ambient: .55, glow: 1.9 },
-  { hour: 24, top: '#080f2c', horizon: '#222b4e', light: '#b8c9ff', fog: '#172840', intensity: .65, ambient: .55, glow: 1.9 },
+  { hour: 21, top: '#060a1b', horizon: '#11182b', light: '#91a6d4', fog: '#0c1424', intensity: .34, ambient: .25, glow: 2.4 },
+  { hour: 24, top: '#02040d', horizon: '#080d1a', light: '#8297c8', fog: '#070c16', intensity: .22, ambient: .16, glow: 3 },
 ] as const
 export function sampleTime(hour: number) {
   const h = ((hour % 24) + 24) % 24

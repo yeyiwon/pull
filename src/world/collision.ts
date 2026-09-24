@@ -1,4 +1,4 @@
-import { LAKE_BENCH } from './bench.ts'
+import { WORLD_SEATS } from './bench.ts'
 import { DOOR, homeState, homeWorldPoint } from './homeSpace.ts'
 import type { Vector3 } from 'three'
 import { CRYSTALS, FLOWERS, RIDGES, ROCKS, TREES, MUSHROOMS, HOME } from './worldLayout.ts'
@@ -11,7 +11,8 @@ export const HOME_DOOR = wall(DOOR.x, DOOR.z, DOOR.width / 2, .1)
 export const HOME_WALLS = [wall(-4,0,.15,3.5), wall(4,0,.15,3.5), wall(0,-3.5,4,.15), wall(-1.7,3.5,2.3,.15), wall(3.55,3.5,.45,.15), HOME_DOOR]
 export const WORLD_OBSTACLES: readonly Obstacle[] = [
   ...HOME_WALLS,
-  {x:LAKE_BENCH.x,z:LAKE_BENCH.z,rx:.52,rz:1.48,angle:0,bottom:LAKE_BENCH.y,top:LAKE_BENCH.y+1.98,box:true},
+  ...WORLD_SEATS.filter(seat=>seat.kind==='IRON_BENCH').map(seat=>({x:seat.x,z:seat.z,rx:.52,rz:1.48,angle:seat.yaw-Math.PI/2,bottom:seat.y,top:seat.y+1.98,box:true})),
+  ...WORLD_SEATS.filter(seat=>seat.kind==='CHAIR').map(seat=>({x:seat.x,z:seat.z,rx:.5,rz:.48,angle:seat.yaw,bottom:seat.y,top:seat.y+1.5,box:true})),
   {...wall(-2.5,.5,1.1,.65),top:1.7},{...wall(-.9,-.9,.55,.55),top:.8},
   ...TREES.map(([x, z, s]) => ({ x, z, rx: s * .65, rz: s * .65, angle: 0, bottom: 0, top: 7 * s })),
   ...MUSHROOMS.map(([x, z, s]) => ({ x, z, rx: s * .5, rz: s * .5, angle: 0, bottom: 0, top: 3 * s })),
