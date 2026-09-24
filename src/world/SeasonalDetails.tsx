@@ -25,7 +25,9 @@ export default function SeasonalDetails({player}:{player:RefObject<Player>}) {
   const spring=worldTime.realWorld.season==='spring'?env.bloom:0
   for(let family=0;family<5;family++){
    const mesh=family===0?petal.current:family===1?leaf.current:family===2?snow.current:family===3?rain.current:maple.current;if(!mesh)continue
-   const count=family===2?snowfallCount(Math.max(env.snowAmount,env.shower*env.snow),QUALITY[quality].particles):Math.floor((family===3?72:LEAF_CAPACITY)*QUALITY[quality].particles);mesh.count=count
+   const active=family===0?worldTime.realWorld.season==='spring'&&spring>0:family===1||family===4?worldTime.realWorld.season==='autumn'&&env.leafFall>0:family===2?Math.max(env.snowAmount,env.shower*env.snow)>0:env.rain>0
+   const count=active?(family===2?snowfallCount(Math.max(env.snowAmount,env.shower*env.snow),QUALITY[quality].particles):Math.floor((family===3?72:LEAF_CAPACITY)*QUALITY[quality].particles)):0;mesh.count=count
+   if(count===0)continue
    for(let i=0;i<count;i++){
     const a=i*2.399,layer=i%3,fall=family===3?9:family===2?.6+layer*.2:.3
     const airborneLeaf=family===0||family===1||family===4
@@ -44,13 +46,13 @@ export default function SeasonalDetails({player}:{player:RefObject<Player>}) {
    }
    mesh.instanceMatrix.needsUpdate=true
   }
-  if(fallen.current){for(let i=0;i<32;i++){
+  if(fallen.current){fallen.current.count=Math.max(spring,env.leafFall)>0?32:0;for(let i=0;i<fallen.current.count;i++){
    const a=i*2.399,x=HOME.x+Math.sin(a)*(4+i%4),z=HOME.z+5+Math.cos(a)*4
    o.position.set(x,surfaceHeight(x,z)+.025,z);o.rotation.set(-Math.PI/2,0,a)
    o.scale.setScalar(Number(!(Math.abs(homeLocalX(x,z))<4&&Math.abs(homeLocalZ(x,z))<3.5))*.13*Math.max(spring,env.leafFall)*Math.max(0,Math.min(1,env.richness*32-i)));o.updateMatrix();fallen.current.setMatrixAt(i,o.matrix)
   }fallen.current.instanceMatrix.needsUpdate=true}
   if(light.current)light.current.emissiveIntensity=1.7+Math.sin(t*.7)*.3
-  if(flies.current){flies.current.count=Math.floor(72*QUALITY[quality].particles);for(let i=0;i<flies.current.count;i++){
+  if(flies.current){flies.current.count=env.fireflies>0?Math.floor(72*QUALITY[quality].particles):0;for(let i=0;i<flies.current.count;i++){
    const a=i*2.399,cluster=i%3,centerX=cluster===0?HOME.x-7:cluster===1?HOME.x+12:HOME.x-18,centerZ=cluster===0?HOME.z+7:cluster===1?HOME.z+20:HOME.z+28
    o.position.set(centerX+Math.sin(a)*10+Math.sin(t*.3+a)*1.5,.7+(i%7)*.34+Math.sin(t*.4+a)*.35,centerZ+Math.cos(a)*10)
    o.rotation.set(0,0,0);o.scale.setScalar(.035*env.fireflies*(.7+Math.sin(t+a)*.3));o.updateMatrix();flies.current.setMatrixAt(i,o.matrix)

@@ -44,19 +44,22 @@ export default function FantasyGrove() {
   time.current+=delta;updateArtMaterial(r.wood,time.current);updateArtMaterial(r.leaves,time.current);updateArtMaterial(r.grass,time.current);updateArtMaterial(r.cap,time.current)
   r.grass.color.copy(env.grass).multiplyScalar(1.12)
   const season=worldTime.realWorld.season
-  if(snowCaps.current)snowCaps.current.visible=env.snow>.02
+  const replacedAll=rendererMode==='V2_FULL'||rendererMode==='V3_FULL'
+  if(foliage.current)foliage.current.count=replacedAll?0:TREES.length*20
+  if(snowCaps.current)snowCaps.current.visible=!replacedAll&&env.snow>.02
   if(red.current)red.current.visible=rendererMode==='V1'||rendererMode==='V2_SLICE'&&season==='winter'&&env.night>.2
   if(green.current)green.current.visible=rendererMode==='V1'||rendererMode==='V2_SLICE'&&season==='winter'&&env.night>.2
   if(grass.current)grass.current.count=rendererMode==='V2_FULL'||rendererMode==='V3_FULL'?0:quality==='PERFORMANCE'?(TREES.length*24):(TREES.length*48)
   if(canopy.current)canopy.current.rotation.z=Math.sin(time.current*.23)*.003
   if(foliage.current && (Math.abs(lastSnow.current-env.snow)>.002||lastSeason.current!==season||lastRenderer.current!==rendererMode)){
    lastSnow.current=env.snow;lastSeason.current=season;lastRenderer.current=rendererMode
+   if(replacedAll)return
    for(let i=0;i<(TREES.length*20);i++){
     const tree=Math.floor(i/20),n=i%20,[x,z,s,family]=TREES[tree],a=n*2.399+family*.7
     const radius=(family===2?.25:.6)+(n%5)*(family===2?.22:.48),y=(family===2?4.2:5.3)+(n%4)*(family===2?1.1:.56)-Math.max(0,radius-1)*.35
     r.object.position.set(x+(Math.cos(a)*radius+.2)*s,y*s,z+Math.sin(a)*radius*s)
     r.object.rotation.set(n*.13,a,n*.07)
-    const winter=family===2?1:Math.max(.68,1-env.snow*.32),replaced=rendererMode==='V2_FULL'||rendererMode==='V3_FULL'||rendererMode==='V2_SLICE'&&V2_SLICE_TREE_INDICES.has(tree)
+    const winter=family===2?1:Math.max(.68,1-env.snow*.32),replaced=rendererMode==='V2_SLICE'&&V2_SLICE_TREE_INDICES.has(tree)
     r.object.scale.set((1.3+n%3*.22)*s*winter,(.85+n%3*.16)*s*winter,(1.2+n%4*.14)*s*winter);if(replaced)r.object.scale.setScalar(0)
     r.object.updateMatrix();foliage.current.setMatrixAt(i,r.object.matrix)
     const palette=season==='spring'?(family===2?['#6d9872','#88aa78']:['#f3c5d8','#efb2cf','#ffe0e5']):season==='autumn'?['#bd733b','#d5a349','#b34d40','#8e9b63']:season==='winter'?['#708a7b','#7a8b83']:['#6e9c67','#8baa6b','#507f5c']
