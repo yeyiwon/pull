@@ -11,6 +11,7 @@ import TouchControls from './world/TouchControls.tsx'
 import ConversationInput from './conversation/ConversationInput.tsx'
 import { conversationSession } from './conversation/session.ts'
 import { cloudSync } from './cloud/sync.ts'
+import { canEnterWorld } from './cloud/access.ts'
 import './App.css'
 import './ui/renaissance.css'
 
@@ -37,7 +38,7 @@ function App() {
 
   return (
     <main data-theme={theme} className="experiment" aria-label="PULL — A living world">
-      {account.authenticated&&<>
+      {canEnterWorld(account)&&<>
       <Canvas
         camera={{ position: [1.6, 3.28, 10.5], fov: 48, near: 0.1, far: 600 }}
         shadows={{ type: PCFShadowMap }}

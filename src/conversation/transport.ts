@@ -7,6 +7,7 @@ export function conversationPayload(c:Context) {
  const {season,timeOfDay,weather,location,indoor,nearWater,activeEvents=[],eventLocation=null,currentAutonomousGoal=null,currentAgentSkill=null,autonomyState='QUIET'}=c.world
  const {energy,curiosity,comfort,attention,affection,sleepiness}=c.moru
  return {
+  ...(c.user?{user:{displayName:c.user.displayName}}:{}),
   ...(c.continuity&&continuityQuestion(c.userMessage)?{continuity:parseContinuity(c.continuity)}:{}),
   ...(c.research&&/궁금|관심|연구|탐구|발견|뭐.*생각|뭐.*하|뭐해|없을 때|없는 동안|뭐했|뭐 했/.test(c.userMessage)?{research:parseResearchSummary(c.research)}:{}),
   ...(c.intelligence?{intelligence:c.intelligence}:{}),
