@@ -44,7 +44,7 @@ export default function LivingWorldEvents(){
  // Three.js instance buffers and temporary transforms are intentionally mutated per frame.
  // Three.js owns these mutable render resources; React state is not used for frame data.
  // oxlint-disable react/immutability
- useFrame((frame,delta)=>{
+ useFrame((_,delta)=>{
   tickWorldEvents(delta,{season:worldTime.realWorld.season,night:env.night>.72,now:worldTime.realWorld.date.getTime()})
   const state=worldEvents.getSnapshot(),active=state.active.some(event=>event.id==='FIREWORKS')
   if(active&&eventRevision.current!==state.revision){clock.current=0;eventRevision.current=state.revision;anchored.current=false}
