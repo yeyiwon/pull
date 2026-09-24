@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { authCallbackDiagnostics,createAuthCallbackHandler,sanitizedCallbackUrl } from '../src/cloud/authCallback.ts'
+import { resolveAuthRedirect } from '../src/cloud/authRedirect.ts'
 import { accountDestination,canEnterWorld } from '../src/cloud/access.ts'
 import { SUPABASE_AUTH_OPTIONS } from '../src/cloud/authConfig.ts'
 import { isDevelopmentGuest } from '../src/cloud/developmentAccess.ts'
@@ -44,4 +45,16 @@ test('Supabase session persistence is stable and URL auto-detection is disabled 
  assert.equal(SUPABASE_AUTH_OPTIONS.detectSessionInUrl,false)
  assert.equal(sanitizedCallbackUrl('https://pull.example/?code=secret&tab=world'),'/?tab=world')
  assert.equal(sanitizedCallbackUrl('https://pull.example/#code=secret&tab=world'),'/#tab=world')
+})
+
+test('Auth redirect targets the correct callback for Production, localhost, and iOS',()=>{
+ assert.equal(resolveAuthRedirect({native:false,development:false,origin:'https://pull-omega-steel.vercel.app'}),'https://pull-omega-steel.vercel.app/auth/callback')
+ assert.equal(resolveAuthRedirect({native:false,development:true,origin:'http://127.0.0.1:5173'}),'http://127.0.0.1:5173/auth/callback')
+ assert.equal(resolveAuthRedirect({native:true,development:false,origin:'capacitor://localhost'}),'com.yeiwon.pull://auth/callback')
+})
+
+test('Production mode can never select a localhost or untrusted redirect',()=>{
+ assert.equal(resolveAuthRedirect({native:false,development:false,origin:'http://127.0.0.1:5173'}),'https://pull-omega-steel.vercel.app/auth/callback')
+ assert.equal(resolveAuthRedirect({native:false,development:false,origin:'https://preview.example'}),'https://pull-omega-steel.vercel.app/auth/callback')
+ assert.equal(resolveAuthRedirect({native:false,development:false,origin:'not a URL'}),'https://pull-omega-steel.vercel.app/auth/callback')
 })

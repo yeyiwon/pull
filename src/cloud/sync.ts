@@ -12,6 +12,7 @@ import { SupabaseProfileAdapter,type ProfileInput,type PullProfile } from './pro
 import { setAccountIdentityContext } from './profileContext.ts'
 import { authCooldownRemaining,classifyAuthRequestError,SafeAuthRequestError,startAuthCooldown } from './authRequest.ts'
 import { authCallbackDiagnostics,createAuthCallbackHandler } from './authCallback.ts'
+import { resolveAuthRedirect } from './authRedirect.ts'
 import { isDevelopmentGuest } from './developmentAccess.ts'
 
 export type AccountSnapshot={phase:SyncPhase;configured:boolean;initialized:boolean;email:string|null;authenticated:boolean;developmentGuest:boolean;profile:PullProfile|null;profileRequired:boolean;message:string;lastSync:string|null}
@@ -79,7 +80,7 @@ async function initialize(){
 void initialize()
 export const cloudSync={
  subscribe(fn:()=>void){listeners.add(fn);return()=>listeners.delete(fn)},getSnapshot:()=>state,
- async requestAuthLink(intent:AuthIntent,email:string){if(!supabase)throw new SafeAuthRequestError('generic');if(authCooldownRemaining()>0)throw new SafeAuthRequestError('cooldown');ensureGuestBackup();const redirectTo=Capacitor.isNativePlatform()?'com.yeiwon.pull://auth/callback':window.location.origin;try{const {error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:redirectTo,shouldCreateUser:intent==='signup'}});if(error)throw error;startAuthCooldown();emit({message:'이메일의 인증 링크를 확인해 주세요.'})}catch(error){throw classifyAuthRequestError(error)}},
+ async requestAuthLink(intent:AuthIntent,email:string){if(!supabase)throw new SafeAuthRequestError('generic');if(authCooldownRemaining()>0)throw new SafeAuthRequestError('cooldown');ensureGuestBackup();const redirectTo=resolveAuthRedirect({native:Capacitor.isNativePlatform(),development:import.meta.env.DEV,origin:window.location.origin});try{const {error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:redirectTo,shouldCreateUser:intent==='signup'}});if(error)throw error;startAuthCooldown();emit({message:'이메일의 인증 링크를 확인해 주세요.'})}catch(error){throw classifyAuthRequestError(error)}},
  async saveProfile(input:ProfileInput){if(!supabase||!currentUser)throw Error('Account session unavailable');const saved=await new SupabaseProfileAdapter(supabase).save(currentUser,input);setAccountIdentityContext(saved.displayName);emit({initialized:false,profile:saved,profileRequired:false,phase:'LOCAL',message:'프로필이 저장됐어요.'});ensureGuestBackup();await syncNow();emit({initialized:true});return saved},
  async logout(){if(!supabase)return;await syncNow();await supabase.auth.signOut();currentUser=null;setAccountIdentityContext(null);restoreGuest();emit({authenticated:false,email:null,profile:null,profileRequired:false,phase:'LOCAL',message:'이 기기에 저장됨'})},
  syncNow,
