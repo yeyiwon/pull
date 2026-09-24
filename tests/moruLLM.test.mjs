@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import {createConversationHandler,validateContext,promptContext,responseSchema} from '../server/moruConversation.ts'
 import {conversationPayload} from '../src/conversation/transport.ts'
 import {ServerConversationProvider} from '../src/conversation/provider.ts'
+import {backendEndpointCategory,resolveBackendEndpoint} from '../src/api/backend.ts'
 import {createMoruMind} from '../src/world/brain/mind.ts'
 const context={userMessage:'뭐 하고 있어?',world:{season:'winter',timeOfDay:'NIGHT',weather:'snow',location:'water',indoor:false,nearWater:true,skyEvent:null},moru:{energy:.5,curiosity:.8,comfort:.7,attention:.6,affection:.5,sleepiness:.3,target:'USER'},recentConversation:[],recentEvents:[{key:'private-date',at:100,event:'snow'}]}
 const req=(payload=conversationPayload(context),extra={})=>new Request('http://localhost/api/moru-conversation',{method:'POST',headers:{'Content-Type':'application/json',Origin:'http://localhost'},body:JSON.stringify(payload),...extra})
@@ -20,6 +21,17 @@ test('invalid optional values are dropped while valid speech survives both bound
 test('malformed JSON, overlong speech, provider failure and refusal fall back',async()=>{for(const fake of [async()=>envelope('{'),async()=>envelope({...valid,speech:'가'.repeat(121)}),async()=>{throw Error('do not expose provider details')},async()=>Response.json({status:'incomplete'}),async()=>new Response('',{status:429})]){const r=await(await createConversationHandler(real,fake)(req())).json();assert.equal(r.provider,'FALLBACK');assert.ok(r.response.speech.length<=120);assert.equal(JSON.stringify(r).includes('provider details'),false)}})
 test('provider timeout aborts outbound fetch and returns local speech',async()=>{let aborted=false;const h=createConversationHandler(real,(_u,{signal})=>new Promise((_ok,fail)=>{signal.addEventListener('abort',()=>{aborted=true;fail(Error('timeout'))})}),5);const r=await(await h(req())).json();assert.equal(aborted,true);assert.equal(r.provider,'FALLBACK')})
 test('method, origin, oversized body, invalid context fail before outbound fetch',async()=>{let calls=0;const h=createConversationHandler(real,async()=>{calls++;return envelope(valid)});for(const [request,status]of [[new Request('http://localhost/api/moru-conversation'),405],[req(undefined,{headers:{Origin:'https://elsewhere','Content-Type':'application/json'}}),403],[req({junk:'x'.repeat(13000)}),413],[req({world:{}}),400]])assert.equal((await h(request)).status,status);assert.equal(calls,0)})
+test('Capacitor iOS uses the production backend and receives narrowly scoped CORS',async()=>{
+ assert.equal(resolveBackendEndpoint('/api/moru-conversation',false),'/api/moru-conversation')
+ assert.equal(resolveBackendEndpoint('/api/moru-conversation',true),'https://pull-omega-steel.vercel.app/api/moru-conversation')
+ assert.equal(backendEndpointCategory(true),'PULL_PRODUCTION')
+ const h=createConversationHandler({...real,MORU_PROVIDER:'MOCK'},async()=>{throw Error('must not call')})
+ const preflight=await h(new Request('https://pull-omega-steel.vercel.app/api/moru-conversation',{method:'OPTIONS',headers:{Origin:'capacitor://localhost','Access-Control-Request-Method':'POST','Access-Control-Request-Headers':'content-type'}}))
+ assert.equal(preflight.status,204);assert.equal(preflight.headers.get('access-control-allow-origin'),'capacitor://localhost');assert.equal(preflight.headers.get('access-control-allow-headers'),'Content-Type')
+ const response=await h(new Request('https://pull-omega-steel.vercel.app/api/moru-conversation',{method:'POST',headers:{Origin:'capacitor://localhost','Content-Type':'application/json'},body:JSON.stringify(conversationPayload(context))}))
+ assert.equal(response.status,200);assert.equal(response.headers.get('access-control-allow-origin'),'capacitor://localhost')
+ const denied=await h(new Request('https://pull-omega-steel.vercel.app/api/moru-conversation',{method:'OPTIONS',headers:{Origin:'https://elsewhere'}}));assert.equal(denied.status,403);assert.equal(denied.headers.get('access-control-allow-origin'),null)
+})
 test('instance request cap bounds repeated direct requests',async()=>{const h=createConversationHandler(real,async()=>envelope(valid));for(let i=0;i<12;i++)assert.equal((await h(req())).status,200);assert.equal((await h(req())).status,429)})
 test('client offline/HTML/invalid response fallback and cancellation',async()=>{
  for(const fake of [async()=>{throw Error('offline')},async()=>new Response('<html>'),async()=>Response.json({response:{speech:'x'.repeat(121)}})]){const p=new ServerConversationProvider(fake);const r=await p.respond(context,new AbortController().signal);assert.ok(r.speech);assert.equal(p.lastProvider,'FALLBACK')}

@@ -16,6 +16,8 @@ export function chooseVariant(count: number, previous: number, random = Math.ran
   return previous >= 0 && pick >= previous ? pick + 1 : pick
 }
 
+export function resolveAudioAssetUrl(path:string,base=typeof location==='undefined'?'http://localhost/':location.href){return new URL(path,base).href}
+
 
 export class AudioManager {
  context:AudioContext|null=null
@@ -38,7 +40,7 @@ export class AudioManager {
  private transition:{incoming:Loop;outgoing:Loop|null;end:number}|null=null
  private ambienceLoading=new Set<string>()
  volumes:Record<AudioBus,number>={music:1,ambience:1,character:1,world:.65,ui:.7}
- muted=false;masterVolume=.8;error='';lastCue='—';played=0;downloaded=0
+ muted=false;masterVolume=.8;error='';lastCue='—';played=0;downloaded=0;unlocked=false;lastSource='—';lastLoad='idle'
  private decoded=0
  private encoded=new Map<string,ArrayBuffer>()
  private prefetching=false
@@ -53,8 +55,9 @@ export class AudioManager {
   const hit=this.cache.get(id);if(hit){this.cache.delete(id);this.cache.set(id,hit);return hit.promise}
   const asset=assets[id];if(!asset)throw new Error(`Unknown audio asset: ${id}`)
   const entry={bytes:0,promise:Promise.resolve(null as unknown as AudioBuffer)},generation=this.generation
-  entry.promise=(this.encoded.has(id)?Promise.resolve(this.encoded.get(id)!.slice(0)):fetch(asset.url,{signal:this.abort.signal}).then(r=>{if(!r.ok)throw new Error(`${id}: HTTP ${r.status}`);return r.arrayBuffer()}).then(b=>{this.downloaded+=b.byteLength;return b})).then(b=>ctx.decodeAudioData(b)).then(b=>{if(generation!==this.generation)throw new Error('Audio session ended');entry.bytes=b.length*b.numberOfChannels*4;this.decoded+=entry.bytes;this.trim(id);return b})
-  this.cache.set(id,entry);entry.promise.catch(()=>{if(this.cache.get(id)===entry)this.cache.delete(id);if(this.context===ctx)this.failures.set(id,ctx.currentTime+10)});return entry.promise
+  const source=resolveAudioAssetUrl(asset.url);this.lastSource=source;this.lastLoad='loading'
+  entry.promise=(this.encoded.has(id)?Promise.resolve(this.encoded.get(id)!.slice(0)):fetch(source,{signal:this.abort.signal}).then(r=>{if(!r.ok)throw new Error(`${id}: HTTP ${r.status}`);return r.arrayBuffer()}).then(b=>{this.downloaded+=b.byteLength;return b})).then(b=>ctx.decodeAudioData(b)).then(b=>{if(generation!==this.generation)throw new Error('Audio session ended');entry.bytes=b.length*b.numberOfChannels*4;this.decoded+=entry.bytes;this.trim(id);this.lastLoad='loaded';return b})
+  this.cache.set(id,entry);entry.promise.catch(e=>{this.lastLoad='failed';this.error=String(e);if(this.cache.get(id)===entry)this.cache.delete(id);if(this.context===ctx)this.failures.set(id,ctx.currentTime+10)});return entry.promise
  }
  private trim(keep=''){
   // 80 MiB decoded cache budget; active source buffers are released when their nodes end.
@@ -67,7 +70,7 @@ export class AudioManager {
     this.filter=c.createBiquadFilter();this.filter.type='lowpass';this.filter.frequency.value=18000;this.filter.connect(this.buses.get('ambience')!)
     this.musicFilter=c.createBiquadFilter();this.musicFilter.type='lowpass';this.musicFilter.frequency.value=18000;this.musicFilter.connect(this.buses.get('music')!)
    }
-   await this.context.resume();this.tick()
+   await this.context.resume();this.unlocked=this.context.state==='running';if(!this.unlocked)throw Error(`AudioContext ${this.context.state}`);this.error='';this.tick()
   }catch(e){this.error=String(e)}
  }
  applyPlan(plan:AudioPlan){this.plan=plan;this.tick()}
@@ -117,7 +120,7 @@ export class AudioManager {
   // Near-future is compressed only, one track; it does not occupy decoded PCM memory.
   if(this.current?.id===p.music&&c.currentTime>this.current.start+10&&!this.prefetching&&!this.encoded.has(p.next)&&!this.cache.has(p.next)){
    this.prefetching=true;const id=p.next,generation=this.generation
-   void fetch(assets[id].url,{signal:this.abort.signal}).then(r=>{if(!r.ok)throw new Error(`Prefetch HTTP ${r.status}`);return r.arrayBuffer()}).then(bytes=>{if(generation===this.generation){this.downloaded+=bytes.byteLength;this.encoded.clear();this.encoded.set(id,bytes)}}).catch(()=>{/* Optional prefetch never interrupts the current music. */}).finally(()=>{if(generation===this.generation)this.prefetching=false})
+   void fetch(resolveAudioAssetUrl(assets[id].url),{signal:this.abort.signal}).then(r=>{if(!r.ok)throw new Error(`Prefetch HTTP ${r.status}`);return r.arrayBuffer()}).then(bytes=>{if(generation===this.generation){this.downloaded+=bytes.byteLength;this.encoded.clear();this.encoded.set(id,bytes)}}).catch(()=>{/* Optional prefetch never interrupts the current music. */}).finally(()=>{if(generation===this.generation)this.prefetching=false})
   }
  }
  worldEvent(event:keyof typeof WORLD_AUDIO_CUES){void this.play(WORLD_AUDIO_CUES[event],'world',event)}
@@ -139,8 +142,8 @@ export class AudioManager {
  }
  variant(prefix:string,_count:number,group:string,_pitch:number){void this.play(aliases[prefix]??prefix.replace('footstep_','step_'),'character',group)}
  suspend(){if(this.context?.state==='running')void this.context.suspend().catch(e=>{this.error=String(e)})}
- get diagnostics(){const now=this.context?.currentTime??0;return{state:this.context?.state??'locked',peak:this.peak,loops:this.loops.length,voices:this.voices.size,cached:this.cache.size,decodedMiB:this.decoded/1048576,downloadedMiB:this.downloaded/1048576,music:this.current?.id??'—',target:this.plan?.music??'—',startsIn:Math.max(0,(this.current?.start??now)-now),seconds:Math.max(0,now-(this.current?.start??now)),cutoff:this.filter?.frequency.value??18000,cue:this.lastCue,played:this.played,error:this.error,ambience:this.loops.filter(l=>l.id.startsWith('amb_')).map(l=>l.id).join(', ')}}
- dispose(){this.generation++;this.abort.abort();this.abort=new AbortController();for(const l of [...this.loops])this.stop(l);for(const s of this.voices.keys())s.stop();const c=this.context;this.context=null;if(c)void c.close().catch(()=>{});this.cache.clear();this.voices.clear();this.buses.clear();this.pending.clear();this.cooldowns.clear();this.failures.clear();this.ambienceLoading.clear();this.loading=false;this.current=null;this.transition=null;this.decoded=0;this.downloaded=0;this.encoded.clear();this.prefetching=false;this.hot=false;this.peak=0;this.analyser=null;this.master=null;this.filter=null;this.musicFilter=null}
+ get diagnostics(){const now=this.context?.currentTime??0;return{state:this.context?.state??'locked',unlocked:this.unlocked,source:this.lastSource,load:this.lastLoad,muted:this.muted,volume:this.masterVolume,peak:this.peak,loops:this.loops.length,voices:this.voices.size,cached:this.cache.size,decodedMiB:this.decoded/1048576,downloadedMiB:this.downloaded/1048576,music:this.current?.id??'—',target:this.plan?.music??'—',startsIn:Math.max(0,(this.current?.start??now)-now),seconds:Math.max(0,now-(this.current?.start??now)),cutoff:this.filter?.frequency.value??18000,cue:this.lastCue,played:this.played,error:this.error,ambience:this.loops.filter(l=>l.id.startsWith('amb_')).map(l=>l.id).join(', ')}}
+ dispose(){this.generation++;this.abort.abort();this.abort=new AbortController();for(const l of [...this.loops])this.stop(l);for(const s of this.voices.keys())s.stop();const c=this.context;this.context=null;if(c)void c.close().catch(()=>{});this.cache.clear();this.voices.clear();this.buses.clear();this.pending.clear();this.cooldowns.clear();this.failures.clear();this.ambienceLoading.clear();this.loading=false;this.current=null;this.transition=null;this.decoded=0;this.downloaded=0;this.encoded.clear();this.prefetching=false;this.hot=false;this.peak=0;this.unlocked=false;this.lastSource='—';this.lastLoad='idle';this.analyser=null;this.master=null;this.filter=null;this.musicFilter=null}
 }
 export const audio=new AudioManager()
 

@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync, statSync, readdirSync } from 'node:fs'
-import { AudioManager,chooseVariant } from '../src/audio/AudioManager.ts'
+import { AudioManager,chooseVariant,resolveAudioAssetUrl } from '../src/audio/AudioManager.ts'
 import { audioPlan,timeSlot,nextPhrase } from '../src/audio/AudioDirector.ts'
 import { catalog } from '../src/audio/catalog.ts'
 import { footSurface } from '../src/audio/worldAudio.ts'
@@ -33,6 +33,10 @@ test('no-repeat families; water/bridge/house/snow surface priority',()=>{
  assert.equal(footSurface(streamCenter(3),3,0),'water');assert.equal(footSurface(streamCenter(BRIDGE.z),BRIDGE.z,1),'wood')
  const p=homeWorldPoint(1,0);assert.equal(footSurface(p.x,p.z,1),'wood');assert.equal(footSurface(-20,0,1),'snow')
 })
+test('bundled audio paths resolve inside both web and Capacitor origins',()=>{
+ assert.equal(resolveAudioAssetUrl('/audio/v05/pull_daily_001.m4a','https://pull.example/world'),'https://pull.example/audio/v05/pull_daily_001.m4a')
+ assert.equal(resolveAudioAssetUrl('/audio/v05/pull_daily_001.m4a','capacitor://localhost/world'),'capacitor://localhost/audio/v05/pull_daily_001.m4a')
+})
 test('audio observers do not drain Brain events',()=>{const p=createPlayer(),events=[];p.eventListeners.add(e=>events.push(e));p.jumpRequested=true;for(let i=0;i<90;i++)movePlayer(p,1/60);assert.deepEqual(events,['JUMP','LAND']);assert.deepEqual(p.events,events)})
 class Param{value=0;setTargetAtTime(v){this.value=v}setValueAtTime(v){this.value=v}setValueCurveAtTime(v,start,duration){this.curve={v,start,duration}}cancelScheduledValues(){}}
 class Node{gain=new Param();frequency=new Param();Q=new Param();playbackRate=new Param();threshold=new Param();knee=new Param();ratio=new Param();attack=new Param();release=new Param();connect(){}disconnect(){this.disconnected=true}start(...args){this.startArgs=args}stop(){this.stopped=true;this.onended?.()}getFloatTimeDomainData(array){array.fill(.1)}}
@@ -40,7 +44,7 @@ class Context{currentTime=0;state='suspended';destination=new Node();sources=[];
 const flush=()=>new Promise(resolve=>setImmediate(resolve))
 test('lazy unlock, no resume restart, stale destination cancellation, bounded voices/cache and dispose',async()=>{
  const oldContext=globalThis.AudioContext,oldFetch=globalThis.fetch,requests=[]
- globalThis.AudioContext=Context;globalThis.fetch=async url=>{const id=Object.keys(catalog.assets).find(k=>catalog.assets[k].url===url);assert.ok(id);requests.push(id);return{ok:true,arrayBuffer:async()=>new TextEncoder().encode(id).buffer}}
+ globalThis.AudioContext=Context;globalThis.fetch=async url=>{const path=new URL(url).pathname,id=Object.keys(catalog.assets).find(k=>catalog.assets[k].url===path);assert.ok(id);requests.push(id);return{ok:true,arrayBuffer:async()=>new TextEncoder().encode(id).buffer}}
  const audio=new AudioManager(),plan=audioPlan(state)
  try{
   audio.applyPlan(plan);assert.equal(requests.length,0);await Promise.all([audio.unlock(),audio.unlock()]);await flush();const c=audio.context

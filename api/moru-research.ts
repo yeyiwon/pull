@@ -1,3 +1,5 @@
 import { createResearchHandler } from '../server/moruResearch.ts'
-export const POST=createResearchHandler(process.env)
+const handler=createResearchHandler(process.env)
+export const POST=handler
+export const OPTIONS=handler
 export const maxDuration=15

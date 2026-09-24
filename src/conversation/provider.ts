@@ -1,8 +1,9 @@
 import { MockConversationAdapter, parseResponse } from './model.ts'
 import type { Context, MoruConversationProvider } from './model.ts'
 import { conversationPayload } from './transport.ts'
+import { backendEndpointCategory, resolveBackendEndpoint } from '../api/backend.ts'
 type TraceStage='conversation_submit'|'provider_selected'|'request_serialize'|'fetch_started'|'fetch_response'|'response_parse'|'response_validate'|'fallback'
-type TraceEntry={stage:TraceStage;timestamp:string;elapsedMs:number;url?:string;status?:number;mode?:string;failureStage?:TraceStage;errorType?:string;description?:string;rejectedFields?:string[]}
+type TraceEntry={stage:TraceStage;timestamp:string;elapsedMs:number;url?:string;endpointCategory?:string;status?:number;mode?:string;failureStage?:TraceStage;errorType?:string;description?:string;rejectedFields?:string[]}
 export class ServerConversationProvider implements MoruConversationProvider {
  mode:'AUTO'|'MOCK'|'REAL'='AUTO'
  lastProvider='MOCK'
@@ -21,10 +22,11 @@ export class ServerConversationProvider implements MoruConversationProvider {
    this.trace(stage)
    const body=JSON.stringify(payload)
    stage='fetch_started'
-   this.trace(stage,{url:typeof location==='undefined'?'/api/moru-conversation':new URL('/api/moru-conversation',location.origin).href})
+   const endpoint=resolveBackendEndpoint('/api/moru-conversation')
+   this.trace(stage,{url:endpoint,endpointCategory:backendEndpointCategory()})
    // Control probe changes only fetch invocation, not the actual conversation adapter.
    const options={method:'POST',headers:{'Content-Type':'application/json',...(probe?{'X-Moru-Routing-Probe':'1'}:{})},body,signal}
-   const result=control?await fetch('/api/moru-conversation',options):await this.requestFetch('/api/moru-conversation',options)
+   const result=control?await fetch(endpoint,options):await this.requestFetch(endpoint,options)
    stage='fetch_response';this.trace(stage,{status:result.status})
    if(!result.ok)throw Error('HTTP response failed')
    stage='response_parse';this.trace(stage)

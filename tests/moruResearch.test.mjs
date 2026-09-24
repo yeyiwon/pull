@@ -123,3 +123,10 @@ test('server rejects method/origin/oversize before provider; client preserves in
  const p=new ServerResearchProvider(async(url)=>{assert.equal(url,'/api/moru-research');return Response.json(reply)})
  assert.deepEqual(await p.explore(c,new AbortController().signal),reply)
 })
+test('research endpoint accepts only the Capacitor iOS origin',async()=>{
+ const h=createResearchHandler({...real,MORU_RESEARCH_PROVIDER:undefined},async()=>{throw Error('must not call')})
+ const preflight=await h(new Request('https://pull-omega-steel.vercel.app/api/moru-research',{method:'OPTIONS',headers:{Origin:'capacitor://localhost','Access-Control-Request-Method':'POST','Access-Control-Request-Headers':'content-type'}}))
+ assert.equal(preflight.status,204);assert.equal(preflight.headers.get('access-control-allow-origin'),'capacitor://localhost')
+ const response=await h(new Request('https://pull-omega-steel.vercel.app/api/moru-research',{method:'POST',headers:{Origin:'capacitor://localhost','Content-Type':'application/json'},body:JSON.stringify(c)}))
+ assert.equal(response.status,200);assert.equal(response.headers.get('access-control-allow-origin'),'capacitor://localhost')
+})

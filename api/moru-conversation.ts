@@ -1,3 +1,5 @@
 import { createConversationHandler } from '../server/moruConversation.ts'
-export const POST=createConversationHandler(process.env)
+const handler=createConversationHandler(process.env)
+export const POST=handler
+export const OPTIONS=handler
 export const maxDuration=15

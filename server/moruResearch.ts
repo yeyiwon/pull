@@ -4,6 +4,7 @@ import type { ConversationDiagnostic } from './conversationDiagnostics.ts'
 import type { Settings } from './moruConversation.ts'
 import { MockResearchProvider, object, short, texts, parseResearch, researchSchema } from '../src/research/model.ts'
 import type { ResearchContext } from '../src/research/model.ts'
+import { apiResponseHeaders, corsPreflight, isAllowedRequestOrigin } from './cors.ts'
 export type ResearchSettings=Settings&{MORU_RESEARCH_PROVIDER?:string}
 export function parseResearchContext(raw:unknown):ResearchContext{
  const c=object(raw),p=object(c.previous)
@@ -20,9 +21,10 @@ export function createResearchHandler(settings:ResearchSettings,requestFetch:typ
  return async(request:Request):Promise<Response>=>{
   const selectedProvider=settings.MORU_RESEARCH_PROVIDER==='REAL'&&process.env.NODE_ENV!=='production'?'REAL':'MOCK'
   const diagnostic=startDiagnostic(settings,sink?d=>sink({...d,callType:'AUTONOMOUS_RESEARCH',selectedProvider,attempts:used?1:0}):undefined),d=diagnostic?.data
-  const json=(body:unknown,status=200)=>{diagnostic?.finish(status);return Response.json(body,{status,headers:{'Cache-Control':'no-store'}})}
+  const json=(body:unknown,status=200)=>{diagnostic?.finish(status);return Response.json(body,{status,headers:apiResponseHeaders(request)})}
+  const preflight=corsPreflight(request);if(preflight)return preflight
   if(request.method!=='POST')return json({error:'method'},405)
-  if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin)return json({error:'origin'},403)
+  if(!isAllowedRequestOrigin(request))return json({error:'origin'},403)
   if(!request.headers.get('content-type')?.startsWith('application/json'))return json({error:'content_type'},415)
   let c:ResearchContext
   try{

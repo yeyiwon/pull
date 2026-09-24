@@ -6,6 +6,7 @@ import { MORU_ACTIONS } from '../src/characters/actions.ts'
 import { MockConversationAdapter, parseResponse } from '../src/conversation/model.ts'
 import type { Context } from '../src/conversation/model.ts'
 import { conversationPayload, WORLD_EVENT_LABELS } from '../src/conversation/transport.ts'
+import { apiResponseHeaders, corsPreflight, isAllowedRequestOrigin } from './cors.ts'
 const actions=MORU_ACTIONS.filter(a=>a.category==='gesture').map(a=>a.id)
 const nullableEnum=(values:readonly string[])=>({type:['string','null'],enum:[...values,null]})
 export const responseSchema={type:'object',additionalProperties:false,required:['speech','emotion','attention','action','emote'],properties:{
@@ -42,14 +43,15 @@ export function createConversationHandler(settings:Settings,requestFetch:typeof 
  return async function handle(request:Request):Promise<Response>{
   const diagnostic=startDiagnostic(settings,diagnosticSink)
   const d=diagnostic?.data
-  const json=(body:unknown,status=200)=>{if(d&&status>=400&&!d.message){d.errorType='local_request_rejected';d.message='Local request rejected before provider invocation.'}diagnostic?.finish(status);return Response.json(body,{status,headers:{'Cache-Control':'no-store'}})}
+  const json=(body:unknown,status=200)=>{if(d&&status>=400&&!d.message){d.errorType='local_request_rejected';d.message='Local request rejected before provider invocation.'}diagnostic?.finish(status);return Response.json(body,{status,headers:apiResponseHeaders(request)})}
+  const preflight=corsPreflight(request);if(preflight)return preflight
   if(request.method!=='POST')return json({error:'method'},405)
   // Development-only empty-body probe cannot enter provider code or use a key.
   if(d&&request.headers.get('x-moru-routing-probe')==='1'){
    d.stage='complete';d.message='Non-provider routing probe reached handler.'
    return json({probe:'moru-local-route',reachedHandler:true})
   }
-  const origin=request.headers.get('origin');if(origin&&origin!==new URL(request.url).origin)return json({error:'origin'},403)
+  if(!isAllowedRequestOrigin(request))return json({error:'origin'},403)
   if(!request.headers.get('content-type')?.startsWith('application/json'))return json({error:'content type'},415)
   let context:Context
   try{
