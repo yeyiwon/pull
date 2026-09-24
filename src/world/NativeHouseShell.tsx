@@ -4,6 +4,7 @@ import { DoubleSide,Shape,ShapeGeometry } from 'three'
 import { artMaterial,updateArtMaterial } from '../graphics/artMaterial.ts'
 import { homeState } from './homeSpace.ts'
 import { environmentState as env } from './environmentState.ts'
+import { artificialLightLevel,getRendererMode } from '../graphics/rendererV2.ts'
 
 function glow(material:ReturnType<typeof artMaterial>,value:number){material.emissiveIntensity=value}
 function fade(material:ReturnType<typeof artMaterial>,opacity:number){material.opacity=opacity}
@@ -18,7 +19,7 @@ export default function NativeHouseShell(){
   return {windowGlow,wall,wood,roof,glass,floor,gable:new ShapeGeometry(shape)}
  },[])
  useEffect(()=>()=>{for(const m of [r.windowGlow,r.wall,r.wood,r.roof,r.glass,r.floor])m.dispose();r.gable.dispose()},[r])
- useFrame(({clock})=>{glow(r.windowGlow,env.night*2.9);for(const m of [r.wall,r.wood,r.roof,r.floor])updateArtMaterial(m,clock.elapsedTime);fade(r.wall,1-homeState.cutaway*.82);fade(r.wood,1-homeState.cutaway*.8);fade(r.roof,1-homeState.cutaway*.98);fade(r.floor,1-homeState.cutaway*.98)})
+ useFrame(({clock})=>{const v2=getRendererMode()!=='V1';glow(r.windowGlow,v2?artificialLightLevel(env.night)*.58:env.night*2.9);for(const m of [r.wall,r.wood,r.roof,r.floor])updateArtMaterial(m,clock.elapsedTime);fade(r.wall,1-homeState.cutaway*.82);fade(r.wood,1-homeState.cutaway*.8);fade(r.roof,1-homeState.cutaway*.98);fade(r.floor,1-homeState.cutaway*.98)})
  const box=(key:string,p:[number,number,number],size:[number,number,number],material=r.wall)=><mesh key={key} position={p} material={material} castShadow receiveShadow><boxGeometry args={size}/></mesh>
  function windowAt(x:number,y:number,z:number,width:number,height:number,turn=0){return <group key={`${x}-${y}-${z}`} position={[x,y,z]} rotation={[0,turn,0]}>
   {[-1,1].map(side=>box(`jamb${side}`,[side*width/2,0,0],[.12,height+.22,.24],r.wood))}

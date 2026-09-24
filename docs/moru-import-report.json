@@ -1,0 +1,122 @@
+[
+  {
+    "source": "Meshy_AI_Quiet_Observer_Creatu_biped_Animation_Bubble_Dance_withSkin.glb",
+    "file": "moru-bubble-dance.glb",
+    "duplicateSkipped": true,
+    "sha256": "cde011d59272f531db7257841a653224e38b574a4e7755601578d6d9cc480fd7",
+    "clip": "Bubble_Dance",
+    "runtimeBytes": 180200
+  },
+  {
+    "source": "Meshy_AI_Quiet_Observer_Creatu_biped_Animation_FunnyDancing_03_withSkin.glb",
+    "file": "moru-funnydancing-03.glb",
+    "duplicateSkipped": false,
+    "sha256": "463e7971b043902f5f98565f4fbb60b2c989438a26158495ea73631a7ba24b4f",
+    "clip": "FunnyDancing_03",
+    "runtimeBytes": 179572
+  },
+  {
+    "source": "Meshy_AI_Quiet_Observer_Creatu_biped_Animation_Hop_with_Arms_Raised_withSkin.glb",
+    "file": "moru-raised.glb",
+    "duplicateSkipped": true,
+    "sha256": "2cc57ebfc096e6ad7585613c83c028cd80b6e4be8f3960e156380bb631bcb0ff",
+    "clip": "Hop_with_Arms_Raised",
+    "runtimeBytes": 69220
+  },
+  {
+    "source": "Meshy_AI_Quiet_Observer_Creatu_biped_Animation_Listening_Gesture_withSkin.glb",
+    "file": "moru-listen.glb",
+    "duplicateSkipped": true,
+    "sha256": "00e80884bf2b89e3da6a636de69bf309e7d2a21ba2328de719dacc40264d0ee4",
+    "clip": "Listening_Gesture",
+    "runtimeBytes": 204872
+  },
+  {
+    "source": "Meshy_AI_Quiet_Observer_Creatu_biped_Animation_Love_You_Pop_Dance_withSkin.glb",
+    "file": "moru-love-you-pop-dance.glb",
+    "duplicateSkipped": false,
+    "sha256": "9d625a0159bd8328ce39389053ef2007c7a6d9674c954bc76c91f2fcf532d165",
+    "clip": "Love_You_Pop_Dance",
+    "runtimeBytes": 217844
+  },
+  {
+    "source": "Meshy_AI_Quiet_Observer_Creatu_biped_Animation_Pod_Baby_Groove_withSkin.glb",
+    "file": "moru-pod-baby-groove.glb",
+    "duplicateSkipped": false,
+    "sha256": "33628804c0cc10cd31181080c8da34eafe45929a174f56baa747481d71d772cd",
+    "clip": "Pod_Baby_Groove",
+    "runtimeBytes": 282724
+  },
+  {
+    "source": "Meshy_AI_Quiet_Observer_Creatu_biped_Animation_Regular_Jump_withSkin.glb",
+    "file": "moru-regular-jump.glb",
+    "duplicateSkipped": false,
+    "sha256": "b92fb775d2a3ce76c36224e28ec2ea52b5147b6123dd394b7f913984c04b05ee",
+    "clip": "Regular_Jump",
+    "runtimeBytes": 60068
+  },
+  {
+    "source": "Meshy_AI_Quiet_Observer_Creatu_biped_Animation_Running_withSkin.glb",
+    "file": "moru-run.glb",
+    "duplicateSkipped": true,
+    "sha256": "8c5e66e4f2b64c701a904bc4f8a3b67270a3b905c82f5df4d3b20a8eba79acdd",
+    "clip": "Running",
+    "runtimeBytes": 35388
+  },
+  {
+    "source": "Meshy_AI_Quiet_Observer_Creatu_biped_Animation_Short_Breathe_and_Look_Around_withSkin.glb",
+    "file": "moru-idle.glb",
+    "duplicateSkipped": true,
+    "sha256": "4b50e78aaee07f190687c1f609f993ece0ab4fbe4a78438546f438c600995331",
+    "clip": "Short_Breathe_and_Look_Around",
+    "runtimeBytes": 176344
+  },
+  {
+    "source": "Meshy_AI_Quiet_Observer_Creatu_biped_Animation_Skip_Forward_inplace_withSkin.glb",
+    "file": "moru-skip-forward-inplace.glb",
+    "duplicateSkipped": false,
+    "sha256": "05dc24ac8165ac4b046d0a6424c1b1ad643e1123123b1b383b9f688c118a54be",
+    "clip": "Skip_Forward_inplace",
+    "runtimeBytes": 78948
+  },
+  {
+    "source": "Meshy_AI_Quiet_Observer_Creatu_biped_Animation_Superlove_Pop_Dance_withSkin.glb",
+    "file": "moru-superlove-pop-dance.glb",
+    "duplicateSkipped": false,
+    "sha256": "f9bb6eded7a14c1a2a356f055189a3c05604271dddc8f60729a4d8cf9e273a55",
+    "clip": "Superlove_Pop_Dance",
+    "runtimeBytes": 188648
+  },
+  {
+    "source": "Meshy_AI_Quiet_Observer_Creatu_biped_Animation_Walking_withSkin.glb",
+    "file": "moru-walk.glb",
+    "duplicateSkipped": true,
+    "sha256": "45c3050ff5f8ddc3c46703cc09bf3c9649b7510678eb9bba1a1452ae272ac5b4",
+    "clip": "Walking",
+    "runtimeBytes": 43196
+  },
+  {
+    "source": "Meshy_AI_Quiet_Observer_Creatu_biped_Animation_Wave_One_Hand_withSkin.glb",
+    "file": "moru-wave-one-hand.glb",
+    "duplicateSkipped": true,
+    "sha256": "b611a3d6b8d20a294b39c964d035f6b0678c0c98885669b22e4867094fa98d89",
+    "clip": "Wave_One_Hand",
+    "runtimeBytes": 103016
+  },
+  {
+    "source": "Meshy_AI_Quiet_Observer_Creatu_biped_Animation_You_Groove_withSkin.glb",
+    "file": "moru-you-groove.glb",
+    "duplicateSkipped": false,
+    "sha256": "b8036b7bb37ee9ce103fef31a94ff3d45d1c8915f5cb04ee32b6bb764df89b57",
+    "clip": "You_Groove",
+    "runtimeBytes": 285972
+  },
+  {
+    "source": "Meshy_AI_Quiet_Observer_Creatu_biped_Animation_penguin_walk_withSkin.glb",
+    "file": "moru-penguin-walk.glb",
+    "duplicateSkipped": false,
+    "sha256": "1c57c3fc679c07aefc374db2d8d75e42de5c7a94415f037ada67fc5f46326907",
+    "clip": "penguin_walk",
+    "runtimeBytes": 62668
+  }
+]

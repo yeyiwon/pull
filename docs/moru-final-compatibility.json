@@ -1,0 +1,446 @@
+[
+  {
+    "appearance": "spring",
+    "status": "RETARGET_REQUIRED",
+    "hierarchyMatches": true,
+    "inverseBindMatches": false,
+    "differences": [
+      {
+        "bone": "mixamorig:Hips",
+        "translationDeltaMeters": 0.042219925801057885,
+        "rotationDeltaDegrees": 0.7577177010272541
+      },
+      {
+        "bone": "mixamorig:Spine",
+        "translationDeltaMeters": 0.0024239420890808105,
+        "rotationDeltaDegrees": 0.0
+      },
+      {
+        "bone": "mixamorig:Spine1",
+        "translationDeltaMeters": 0.0024243593215942383,
+        "rotationDeltaDegrees": 0.0
+      },
+      {
+        "bone": "mixamorig:Spine2",
+        "translationDeltaMeters": 0.002497792243974882,
+        "rotationDeltaDegrees": 6.613302226726412e-06
+      },
+      {
+        "bone": "mixamorig:Neck",
+        "translationDeltaMeters": 0.0015785694122325443,
+        "rotationDeltaDegrees": 3.4150945850063755e-06
+      },
+      {
+        "bone": "mixamorig:Head",
+        "translationDeltaMeters": 0.0052511692047275335,
+        "rotationDeltaDegrees": 1.9487434389317684
+      },
+      {
+        "bone": "mixamorig:HeadTop_End",
+        "translationDeltaMeters": 0.005736708641090423,
+        "rotationDeltaDegrees": 1.1952831047522321e-05
+      },
+      {
+        "bone": "headfront",
+        "translationDeltaMeters": 0.00792537448425925,
+        "rotationDeltaDegrees": 1.540799128763893
+      },
+      {
+        "bone": "mixamorig:LeftShoulder",
+        "translationDeltaMeters": 0.003669919295310311,
+        "rotationDeltaDegrees": 8.408573709687767
+      },
+      {
+        "bone": "mixamorig:LeftArm",
+        "translationDeltaMeters": 0.010969251394970849,
+        "rotationDeltaDegrees": 7.894033699267798
+      },
+      {
+        "bone": "mixamorig:LeftForeArm",
+        "translationDeltaMeters": 0.0024250745780640386,
+        "rotationDeltaDegrees": 10.165780581743727
+      },
+      {
+        "bone": "mixamorig:LeftHand",
+        "translationDeltaMeters": 0.01363131403936066,
+        "rotationDeltaDegrees": 6.290322481880126
+      },
+      {
+        "bone": "mixamorig:LeftHandMiddle4",
+        "translationDeltaMeters": 0.012269452214530586,
+        "rotationDeltaDegrees": 4.907527754957194e-05
+      },
+      {
+        "bone": "mixamorig:RightShoulder",
+        "translationDeltaMeters": 0.007900730903822682,
+        "rotationDeltaDegrees": 7.217404146498552
+      },
+      {
+        "bone": "mixamorig:RightArm",
+        "translationDeltaMeters": 0.008542716504073346,
+        "rotationDeltaDegrees": 7.0232984444656354
+      },
+      {
+        "bone": "mixamorig:RightForeArm",
+        "translationDeltaMeters": 0.004466652870277646,
+        "rotationDeltaDegrees": 7.740661624808946
+      },
+      {
+        "bone": "mixamorig:RightHand",
+        "translationDeltaMeters": 0.004044890403994587,
+        "rotationDeltaDegrees": 10.308187565604682
+      },
+      {
+        "bone": "mixamorig:RightHandMiddle4",
+        "translationDeltaMeters": 0.025052711367624842,
+        "rotationDeltaDegrees": 3.61016043548253e-05
+      },
+      {
+        "bone": "mixamorig:LeftUpLeg",
+        "translationDeltaMeters": 0.004075843833203722,
+        "rotationDeltaDegrees": 0.5723110235636615
+      },
+      {
+        "bone": "mixamorig:LeftLeg",
+        "translationDeltaMeters": 0.011726349592256201,
+        "rotationDeltaDegrees": 2.7920897298783673
+      },
+      {
+        "bone": "mixamorig:LeftFoot",
+        "translationDeltaMeters": 0.022384554147721034,
+        "rotationDeltaDegrees": 23.006389587095008
+      },
+      {
+        "bone": "mixamorig:LeftToeBase",
+        "translationDeltaMeters": 0.004923924803874748,
+        "rotationDeltaDegrees": 29.63516646072141
+      },
+      {
+        "bone": "mixamorig:LeftToe_End",
+        "translationDeltaMeters": 0.0028360858560611585,
+        "rotationDeltaDegrees": 33.36224138429789
+      },
+      {
+        "bone": "mixamorig:RightUpLeg",
+        "translationDeltaMeters": 0.005264731004797457,
+        "rotationDeltaDegrees": 0.7659074030692941
+      },
+      {
+        "bone": "mixamorig:RightLeg",
+        "translationDeltaMeters": 0.006057232618409807,
+        "rotationDeltaDegrees": 2.555121177925797
+      },
+      {
+        "bone": "mixamorig:RightFoot",
+        "translationDeltaMeters": 0.015341579914121965,
+        "rotationDeltaDegrees": 11.740774886378187
+      },
+      {
+        "bone": "mixamorig:RightToeBase",
+        "translationDeltaMeters": 0.011981636285784176,
+        "rotationDeltaDegrees": 11.913094452847938
+      },
+      {
+        "bone": "mixamorig:RightToe_End",
+        "translationDeltaMeters": 0.014254257082946937,
+        "rotationDeltaDegrees": 10.626084920024796
+      }
+    ]
+  },
+  {
+    "appearance": "winter",
+    "status": "RETARGET_REQUIRED",
+    "hierarchyMatches": true,
+    "inverseBindMatches": false,
+    "differences": [
+      {
+        "bone": "mixamorig:Hips",
+        "translationDeltaMeters": 0.04974363341238667,
+        "rotationDeltaDegrees": 2.0781194001640424
+      },
+      {
+        "bone": "mixamorig:Spine",
+        "translationDeltaMeters": 0.018128454685224962,
+        "rotationDeltaDegrees": 1.7160637906838783e-05
+      },
+      {
+        "bone": "mixamorig:Spine1",
+        "translationDeltaMeters": 0.01812803745269938,
+        "rotationDeltaDegrees": 1.2194326777763644e-05
+      },
+      {
+        "bone": "mixamorig:Spine2",
+        "translationDeltaMeters": 0.018677711486820122,
+        "rotationDeltaDegrees": 6.809419716253333
+      },
+      {
+        "bone": "mixamorig:Neck",
+        "translationDeltaMeters": 0.00474381446842118,
+        "rotationDeltaDegrees": 12.093340941306142
+      },
+      {
+        "bone": "mixamorig:Head",
+        "translationDeltaMeters": 0.00711154937757766,
+        "rotationDeltaDegrees": 7.019565762499707
+      },
+      {
+        "bone": "mixamorig:HeadTop_End",
+        "translationDeltaMeters": 0.03127980232240257,
+        "rotationDeltaDegrees": 1.1706354451251833e-05
+      },
+      {
+        "bone": "headfront",
+        "translationDeltaMeters": 0.1025058119153905,
+        "rotationDeltaDegrees": 1.6634782081040003
+      },
+      {
+        "bone": "mixamorig:LeftShoulder",
+        "translationDeltaMeters": 0.0008507443902134759,
+        "rotationDeltaDegrees": 14.339738822392368
+      },
+      {
+        "bone": "mixamorig:LeftArm",
+        "translationDeltaMeters": 0.004265964032911116,
+        "rotationDeltaDegrees": 23.588119446077673
+      },
+      {
+        "bone": "mixamorig:LeftForeArm",
+        "translationDeltaMeters": 0.008892893792197482,
+        "rotationDeltaDegrees": 28.640909715771592
+      },
+      {
+        "bone": "mixamorig:LeftHand",
+        "translationDeltaMeters": 0.006624907255591688,
+        "rotationDeltaDegrees": 33.20233630001079
+      },
+      {
+        "bone": "mixamorig:LeftHandMiddle4",
+        "translationDeltaMeters": 0.004600465298471226,
+        "rotationDeltaDegrees": 4.859764791087485e-05
+      },
+      {
+        "bone": "mixamorig:RightShoulder",
+        "translationDeltaMeters": 0.0057225217245367044,
+        "rotationDeltaDegrees": 15.910577764093077
+      },
+      {
+        "bone": "mixamorig:RightArm",
+        "translationDeltaMeters": 0.010648116472062843,
+        "rotationDeltaDegrees": 24.56915783209197
+      },
+      {
+        "bone": "mixamorig:RightForeArm",
+        "translationDeltaMeters": 0.005433559418051533,
+        "rotationDeltaDegrees": 8.316401306471843
+      },
+      {
+        "bone": "mixamorig:RightHand",
+        "translationDeltaMeters": 0.023052334785557748,
+        "rotationDeltaDegrees": 20.050172278546793
+      },
+      {
+        "bone": "mixamorig:RightHandMiddle4",
+        "translationDeltaMeters": 0.013317584992688883,
+        "rotationDeltaDegrees": 2.2972699315936532e-05
+      },
+      {
+        "bone": "mixamorig:LeftUpLeg",
+        "translationDeltaMeters": 0.009696345373683352,
+        "rotationDeltaDegrees": 3.649819070663854
+      },
+      {
+        "bone": "mixamorig:LeftLeg",
+        "translationDeltaMeters": 0.007199823856373035,
+        "rotationDeltaDegrees": 6.237319231549241
+      },
+      {
+        "bone": "mixamorig:LeftFoot",
+        "translationDeltaMeters": 0.0413222610950598,
+        "rotationDeltaDegrees": 23.272073758134642
+      },
+      {
+        "bone": "mixamorig:LeftToeBase",
+        "translationDeltaMeters": 0.0250610560178945,
+        "rotationDeltaDegrees": 33.98270193329547
+      },
+      {
+        "bone": "mixamorig:LeftToe_End",
+        "translationDeltaMeters": 0.027769625186925162,
+        "rotationDeltaDegrees": 13.313279015526206
+      },
+      {
+        "bone": "mixamorig:RightUpLeg",
+        "translationDeltaMeters": 0.0020343793378690715,
+        "rotationDeltaDegrees": 4.151679067416484
+      },
+      {
+        "bone": "mixamorig:RightLeg",
+        "translationDeltaMeters": 0.00802946090699625,
+        "rotationDeltaDegrees": 5.369658616516934
+      },
+      {
+        "bone": "mixamorig:RightFoot",
+        "translationDeltaMeters": 0.0430693924427136,
+        "rotationDeltaDegrees": 14.75547714101187
+      },
+      {
+        "bone": "mixamorig:RightToeBase",
+        "translationDeltaMeters": 0.04226713627578289,
+        "rotationDeltaDegrees": 14.773015840554617
+      },
+      {
+        "bone": "mixamorig:RightToe_End",
+        "translationDeltaMeters": 0.0419440940022495,
+        "rotationDeltaDegrees": 34.437063153645376
+      }
+    ]
+  },
+  {
+    "appearance": "halloween",
+    "status": "RETARGET_REQUIRED",
+    "hierarchyMatches": true,
+    "inverseBindMatches": false,
+    "differences": [
+      {
+        "bone": "mixamorig:Hips",
+        "translationDeltaMeters": 0.030708174437975282,
+        "rotationDeltaDegrees": 3.4308330116783283
+      },
+      {
+        "bone": "mixamorig:Spine",
+        "translationDeltaMeters": 0.022967815399170224,
+        "rotationDeltaDegrees": 8.706816964856284e-06
+      },
+      {
+        "bone": "mixamorig:Spine1",
+        "translationDeltaMeters": 0.022968292236335678,
+        "rotationDeltaDegrees": 5.663293681020316e-06
+      },
+      {
+        "bone": "mixamorig:Spine2",
+        "translationDeltaMeters": 0.0236638784408584,
+        "rotationDeltaDegrees": 0.2524290811078858
+      },
+      {
+        "bone": "mixamorig:Neck",
+        "translationDeltaMeters": 0.014644503593445771,
+        "rotationDeltaDegrees": 1.7329712313881676e-05
+      },
+      {
+        "bone": "mixamorig:Head",
+        "translationDeltaMeters": 4.482269851118239e-05,
+        "rotationDeltaDegrees": 3.6482735974943306
+      },
+      {
+        "bone": "mixamorig:HeadTop_End",
+        "translationDeltaMeters": 0.011511445045494888,
+        "rotationDeltaDegrees": 9.507220963046143e-06
+      },
+      {
+        "bone": "headfront",
+        "translationDeltaMeters": 0.009192757513755598,
+        "rotationDeltaDegrees": 3.655778678601569
+      },
+      {
+        "bone": "mixamorig:LeftShoulder",
+        "translationDeltaMeters": 0.005074084347978723,
+        "rotationDeltaDegrees": 2.564471644552057
+      },
+      {
+        "bone": "mixamorig:LeftArm",
+        "translationDeltaMeters": 0.016064196825027466,
+        "rotationDeltaDegrees": 5.469050173204404
+      },
+      {
+        "bone": "mixamorig:LeftForeArm",
+        "translationDeltaMeters": 0.009183526039316964,
+        "rotationDeltaDegrees": 7.794482302213934
+      },
+      {
+        "bone": "mixamorig:LeftHand",
+        "translationDeltaMeters": 0.00477311015315169,
+        "rotationDeltaDegrees": 7.582290181514877
+      },
+      {
+        "bone": "mixamorig:LeftHandMiddle4",
+        "translationDeltaMeters": 0.004851892592810993,
+        "rotationDeltaDegrees": 5.4212945854141716e-05
+      },
+      {
+        "bone": "mixamorig:RightShoulder",
+        "translationDeltaMeters": 0.005493714748962011,
+        "rotationDeltaDegrees": 4.041093830852578
+      },
+      {
+        "bone": "mixamorig:RightArm",
+        "translationDeltaMeters": 0.012591943145417669,
+        "rotationDeltaDegrees": 6.0055513044389635
+      },
+      {
+        "bone": "mixamorig:RightForeArm",
+        "translationDeltaMeters": 0.00861942768179359,
+        "rotationDeltaDegrees": 7.472313040923584
+      },
+      {
+        "bone": "mixamorig:RightHand",
+        "translationDeltaMeters": 0.007671922445586666,
+        "rotationDeltaDegrees": 12.095077036547176
+      },
+      {
+        "bone": "mixamorig:RightHandMiddle4",
+        "translationDeltaMeters": 0.012978285552337227,
+        "rotationDeltaDegrees": 2.8877244990729382e-05
+      },
+      {
+        "bone": "mixamorig:LeftUpLeg",
+        "translationDeltaMeters": 0.013800441936057303,
+        "rotationDeltaDegrees": 3.546900858634501
+      },
+      {
+        "bone": "mixamorig:LeftLeg",
+        "translationDeltaMeters": 0.023500442504887538,
+        "rotationDeltaDegrees": 3.932441213327579
+      },
+      {
+        "bone": "mixamorig:LeftFoot",
+        "translationDeltaMeters": 0.016767412424099203,
+        "rotationDeltaDegrees": 9.356463486808744
+      },
+      {
+        "bone": "mixamorig:LeftToeBase",
+        "translationDeltaMeters": 0.017501167953020716,
+        "rotationDeltaDegrees": 11.170784779521611
+      },
+      {
+        "bone": "mixamorig:LeftToe_End",
+        "translationDeltaMeters": 0.01889573037624359,
+        "rotationDeltaDegrees": 22.454697277111546
+      },
+      {
+        "bone": "mixamorig:RightUpLeg",
+        "translationDeltaMeters": 0.0068529737268925705,
+        "rotationDeltaDegrees": 3.3442197078838407
+      },
+      {
+        "bone": "mixamorig:RightLeg",
+        "translationDeltaMeters": 0.026465296745304488,
+        "rotationDeltaDegrees": 4.791240139074087
+      },
+      {
+        "bone": "mixamorig:RightFoot",
+        "translationDeltaMeters": 0.013547152280814698,
+        "rotationDeltaDegrees": 12.375933278725077
+      },
+      {
+        "bone": "mixamorig:RightToeBase",
+        "translationDeltaMeters": 0.030268281698230596,
+        "rotationDeltaDegrees": 8.116417987032069
+      },
+      {
+        "bone": "mixamorig:RightToe_End",
+        "translationDeltaMeters": 0.02602912485600051,
+        "rotationDeltaDegrees": 4.462698429111128
+      }
+    ]
+  }
+]

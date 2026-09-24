@@ -4,7 +4,7 @@ export type AttentionTarget = typeof ATTENTION_TARGETS[number]
 export type InternalState = {energy:number;curiosity:number;comfort:number;attention:number;affection:number;sleepiness:number}
 export type Observation = {
  date:string;hour:number;timeOfDay:string;season:string;weather:string;wind:number
- location:'home'|'water'|'field';indoor:boolean;nearWater:boolean;skyEvent:string|null
+ location:'home'|'water'|'field';indoor:boolean;nearWater:boolean;skyEvent:string|null;activeEvents?:string[];eventLocation?:string|null
  userMoving:boolean;userIdleDuration:number;userInteracted:boolean;userReturned:boolean
  actionBusy:boolean;grounded:boolean;recentMoruActions:string[];recentSpeech:string[]
 }

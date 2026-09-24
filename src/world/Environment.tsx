@@ -27,10 +27,12 @@ import { RIDGES, ROCKS } from './worldLayout.ts'
 import type { EnvironmentArtSlots } from './artSlots.ts'
 import type { Player } from './locomotion.ts'
 import { skyVertex, skyFragment } from './environmentShaders.ts'
+import { getRendererMode,useRendererMode } from '../graphics/rendererV2.ts'
 
 function setFogRange(fog: Fog, haze: number) { fog.near = 38 / haze; fog.far = 285 / haze }
 function setUniform(uniform: { value: number }, value: number) { uniform.value = value }
 function updateGlow(material: MeshStandardMaterial, target: number, smooth: number) { material.emissiveIntensity += (target - material.emissiveIntensity) * smooth }
+function v2NightShadowRadius(night:number,v2:boolean){return v2?MathUtils.lerp(3,8,night):3}
 
 // Deterministic broad folds give silhouettes structure without external maps.
 function landform() {
@@ -47,7 +49,7 @@ function landform() {
 
 function Environment({ player, art = {} }: { player: RefObject<Player>; art?: EnvironmentArtSlots }) {
   const { scene } = useThree()
-  const quality=useQuality(), preset=QUALITY[quality]
+  const quality=useQuality(), preset=QUALITY[quality],rendererMode=useRendererMode()
   const hemisphere = useRef<HemisphereLight>(null)
   const glowMaterials = useRef<{ material: MeshStandardMaterial; base: number }[]>([])
   const tint = useMemo(() => ({ a: new Color(), b: new Color(), sun: new Vector3() }), [])
@@ -121,13 +123,14 @@ function Environment({ player, art = {} }: { player: RefObject<Player>; art?: En
     }
     if (hemisphere.current) {
       // Preserve a low cool material floor at night without lifting the sky shader.
+      const v2=getRendererMode()!=='V1'
       const ambient=Math.max(
         MathUtils.lerp(from.ambient,to.ambient,blend)*MathUtils.lerp(.74,.78,env.night),
-        env.night*NIGHT_TUNING.ambientFill,
+        env.night*(v2?.42:NIGHT_TUNING.ambientFill),
       )
       hemisphere.current.intensity += (ambient - hemisphere.current.intensity) * smooth
       hemisphere.current.color.copy(sky.uHorizon.value).lerp(tint.a.set('#bbccec'), env.night * .65)
-      hemisphere.current.groundColor.copy(env.grass).multiplyScalar(.32).lerp(tint.a.set('#222b41'),env.night)
+      hemisphere.current.groundColor.copy(env.grass).multiplyScalar(v2?.46:.32).lerp(tint.a.set(v2?'#303955':'#222b41'),env.night)
     }
     const glow = MathUtils.lerp(from.glow, to.glow, blend)
     for (const { material, base } of glowMaterials.current) updateGlow(material, base * glow, smooth)
@@ -139,6 +142,7 @@ function Environment({ player, art = {} }: { player: RefObject<Player>; art?: En
         env.night*NIGHT_TUNING.moonIntensity,
       )
       light.current.intensity += (celestial - light.current.intensity) * smooth
+      light.current.shadow.radius=v2NightShadowRadius(env.night,getRendererMode()!=='V1')
     }
     const t = sky.uTime.value
     if (islands.current) for (let i = 0; i < islands.current.children.length; i++) {
@@ -179,12 +183,12 @@ function Environment({ player, art = {} }: { player: RefObject<Player>; art?: En
       <HeroMeadow />
 
       {/* Far ridges overlap the middle islands, leaving a valley toward the aperture. */}
-      {RIDGES.map(([x, y, z, sx, sy, sz], i) => (
+      {rendererMode!=='V3_FULL'&&RIDGES.map(([x, y, z, sx, sy, sz], i) => (
         <mesh key={i} geometry={resources.rock} position={[x, y, z]} scale={[sx, sy, sz]} rotation={[0, i * 0.3, 0]}>
           <meshStandardMaterial color={i < 5 ? '#a4a9e1' : '#7e8ccb'} roughness={0.93} />
         </mesh>
       ))}
-      <group ref={islands}>
+      {rendererMode!=='V3_FULL'&&<group ref={islands}>
         {[
           [-36, 19, -85, 13, 4, 9], [64, 27, -133, 18, 6, 11], [-92, 24, 42, 18, 7, 12],
         ].map(([x, y, z, sx, sy, sz], i) => (
@@ -202,7 +206,7 @@ function Environment({ player, art = {} }: { player: RefObject<Player>; art?: En
             {i < 2 && <group position={[x, y + sy, z]}><Flower scale={i === 0 ? 1.7 : 2.2} /></group>}
           </group>
         ))}
-      </group>
+      </group>}
       {art.landmark ?? <WorldHalo />}
       <ContactDepth />
       {ROCKS.map(([x, y, z, sx, sy, sz], i) => (

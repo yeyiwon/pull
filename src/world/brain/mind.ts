@@ -9,7 +9,7 @@ import { validateIntent } from './conversation.ts'
 import { waitIntent } from './types.ts'
 import type { Observation, InternalState, Intent, Execution, ConversationAdapter, LongMemoryPort, MeaningfulMemory, AttentionTarget } from './types.ts'
 
-type Event = {key:string;category:LineCategory;attention:AttentionTarget;importance:number;at:number}
+type Event = {key:string;category:LineCategory;attention:AttentionTarget;importance:number;at:number;memoryEvent?:string}
 export const brainDebug = {state:{energy:.7,curiosity:.6,comfort:.6,attention:.3,affection:.3,sleepiness:.1} as InternalState,attention:'NONE' as AttentionTarget,
  intent:'WAIT',observation:'waiting',decision:'not observed',cooldown:0,recentSpeech:[] as string[],recentActions:[] as string[],events:[] as MeaningfulMemory[],log:[] as string[],ticks:0,interests:emptyInterests()}
 export const brainCommands:{trigger:(()=>void)|null;converse:((text:string)=>Promise<Intent>)|null}={trigger:null,converse:null}
@@ -29,12 +29,12 @@ export function createMoruMind(options:{execute:(intent:Intent)=>Execution;rando
  let lastIntent=waitIntent('initial quiet'),generation=0,abort:AbortController|null=null,ticks=0
  function trace(text:string){if(options.debug){brainDebug.log.push(text);brainDebug.log=brainDebug.log.slice(-12)}}
  function remember(event:Event){seen.add(event.key);if(seen.size>256)seen.delete(seen.values().next().value!)
-  const item={key:event.key,at:now,event:event.category};short.push(item);if(short.length>32)short.shift()
+  const item={key:event.key,at:now,event:event.memoryEvent??event.category};short.push(item);if(short.length>32)short.shift()
   try{options.longMemory?.remember(item)}catch{/* Optional persistent memory. */}
  }
- function enqueue(category:LineCategory,target:AttentionTarget,importance:number,key:string){
+ function enqueue(category:LineCategory,target:AttentionTarget,importance:number,key:string,memoryEvent?:string){
   if(seen.has(key))return
-  const event={category,attention:target,importance,key,at:now}
+  const event={category,attention:target,importance,key,at:now,memoryEvent}
   if(!pending||pending.importance<importance)pending=event
  }
  function publish(reason:string){
@@ -95,7 +95,7 @@ export function createMoruMind(options:{execute:(intent:Intent)=>Execution;rando
   if(o.userReturned)enqueue('greeting','USER',.9,`return:${Math.floor(now/120)}`)
   if(o.userInteracted)enqueue('affectionate','USER',.6,`social:${Math.floor(now/90)}`)
   if(o.weather==='snow'||o.weather==='rain'||o.weather==='storm')enqueue(o.weather==='snow'?'snow':'rain',o.indoor?'HOME':'SKY',.92,`${o.date}:weather:${o.weather==='storm'?'rain':o.weather}`)
-  if(o.skyEvent&&!o.indoor)enqueue('curious','SKY',.95,`${o.date}:sky:${o.skyEvent}`)
+  if(o.skyEvent&&!o.indoor)enqueue('curious','SKY',.95,`${o.date}:sky:${o.skyEvent}`,o.activeEvents?.includes(o.skyEvent)?o.skyEvent:undefined)
   if(previous&&o.timeOfDay!==previous.timeOfDay)enqueue(o.hour>=21||o.hour<5?'night':o.hour<11?'morning':o.hour>=17?'sunset':'day',o.indoor?'HOME':'SKY',.7,`${o.date}:phase:${o.timeOfDay}`)
   if(o.wind>.6&&!o.indoor)enqueue('wind','WORLD',.6,`${o.date}:wind`)
   previous=o

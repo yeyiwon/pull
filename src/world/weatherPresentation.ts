@@ -2,7 +2,7 @@ import type { WeatherContext } from './realWorld.ts'
 import { livingWorld } from './livingWorld.ts'
 type Weather = WeatherContext['type']
 // Canonical weather remains owned by livingWorld; lab/menu values never overwrite it.
-export const weatherPreview:{type:Weather|null}={type:null}
+export const weatherPreview:{type:Weather|null;eventType:Weather|null}={type:null,eventType:null}
 export const WEATHER_LOOK:Record<Weather,{cloud:number;wind:number;haze:number;rain:number}>={
  clear:{cloud:0,wind:.16,haze:.86,rain:0},
  partlyCloudy:{cloud:.35,wind:.19,haze:.96,rain:0},
@@ -13,4 +13,4 @@ export const WEATHER_LOOK:Record<Weather,{cloud:number;wind:number;haze:number;r
  storm:{cloud:1,wind:.65,haze:1.6,rain:1},
 }
 export function canonicalWeather(){return livingWorld.weather?.type??'clear'}
-export function presentedWeather(){return weatherPreview.type??canonicalWeather()}
+export function presentedWeather(){return weatherPreview.eventType??weatherPreview.type??canonicalWeather()}

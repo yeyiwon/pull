@@ -50,8 +50,9 @@ export default function SeasonalDetails({player}:{player:RefObject<Player>}) {
    o.scale.setScalar(Number(!(Math.abs(homeLocalX(x,z))<4&&Math.abs(homeLocalZ(x,z))<3.5))*.13*Math.max(spring,env.leafFall)*Math.max(0,Math.min(1,env.richness*32-i)));o.updateMatrix();fallen.current.setMatrixAt(i,o.matrix)
   }fallen.current.instanceMatrix.needsUpdate=true}
   if(light.current)light.current.emissiveIntensity=1.7+Math.sin(t*.7)*.3
-  if(flies.current){flies.current.count=Math.floor(32*QUALITY[quality].particles);for(let i=0;i<flies.current.count;i++){
-   const a=i*2.399; o.position.set(HOME.x-7+Math.sin(a)*6+Math.sin(t*.3+a),.7+(i%5)*.3+Math.sin(t*.4+a)*.3,HOME.z+7+Math.cos(a)*6)
+  if(flies.current){flies.current.count=Math.floor(72*QUALITY[quality].particles);for(let i=0;i<flies.current.count;i++){
+   const a=i*2.399,cluster=i%3,centerX=cluster===0?HOME.x-7:cluster===1?HOME.x+12:HOME.x-18,centerZ=cluster===0?HOME.z+7:cluster===1?HOME.z+20:HOME.z+28
+   o.position.set(centerX+Math.sin(a)*10+Math.sin(t*.3+a)*1.5,.7+(i%7)*.34+Math.sin(t*.4+a)*.35,centerZ+Math.cos(a)*10)
    o.rotation.set(0,0,0);o.scale.setScalar(.035*env.fireflies*(.7+Math.sin(t+a)*.3));o.updateMatrix();flies.current.setMatrixAt(i,o.matrix)
   }flies.current.instanceMatrix.needsUpdate=true}
  })
@@ -62,6 +63,6 @@ export default function SeasonalDetails({player}:{player:RefObject<Player>}) {
   <instancedMesh ref={snow} args={[r.snow,undefined,SNOW_CAPACITY]} frustumCulled={false}><meshStandardMaterial color="#e8f6ff" emissive="#b8d4e8" emissiveIntensity={.16} side={DoubleSide} roughness={.6}/></instancedMesh>
   <instancedMesh ref={rain} args={[undefined,undefined,72]} frustumCulled={false}><cylinderGeometry args={[.008,.013,.65,4]}/><meshBasicMaterial color="#b9d6e8" transparent opacity={.4} depthWrite={false}/></instancedMesh>
   <instancedMesh ref={fallen} args={[r.leaf,undefined,32]} frustumCulled={false}><meshStandardMaterial color="#d2b799" side={DoubleSide} roughness={1}/></instancedMesh>
-  <instancedMesh ref={flies} args={[undefined,undefined,32]} frustumCulled={false}><sphereGeometry args={[1,6,4]}/><meshStandardMaterial ref={light} userData={{managedGlow:true}} color="#e8f4b3" emissive="#d8f4a0" toneMapped={false}/></instancedMesh>
+  <instancedMesh ref={flies} args={[undefined,undefined,72]} frustumCulled={false}><sphereGeometry args={[1,6,4]}/><meshStandardMaterial ref={light} userData={{managedGlow:true}} color="#e8f4b3" emissive="#d8f4a0" toneMapped={false}/></instancedMesh>
  </>
 }

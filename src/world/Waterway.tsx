@@ -12,13 +12,14 @@ import { worldTime } from './worldTime.ts'
 import { environmentState as env } from './environmentState.ts'
 import { BRIDGE, streamCenter, streamWidth, WATER_Y } from './terrain.ts'
 import type { Player } from './locomotion.ts'
+import { artificialLightLevel,getRendererMode,V2_LIGHTING_PRESETS } from '../graphics/rendererV2.ts'
 function wetWood(m:MeshStandardMaterial,base:Color,snow:Color,wet:number,amount:number){m.color.copy(base).multiplyScalar(1-wet*.25).lerp(snow,amount*.5);m.roughness=.8-wet*.45}
 const vertex = `varying vec2 vUv; varying vec3 vWorld;
 #include <fog_pars_vertex>
 void main(){vUv=uv;vec4 world=modelMatrix*vec4(position,1.);vWorld=world.xyz;vec4 mvPosition=viewMatrix*world;gl_Position=projectionMatrix*mvPosition;
 #include <fog_vertex>
 }`
-const fragment = `uniform float uTime,uNight,uWind,uRain,uSnow,uQuality,uPhase,uMoonSize;uniform vec3 uTop,uHorizon,uMoon,uSun;uniform vec2 uMoru;uniform float uWade;
+const fragment = `uniform float uTime,uNight,uWind,uRain,uSnow,uQuality,uPhase,uMoonSize,uFireworks;uniform vec3 uTop,uHorizon,uMoon,uSun,uFireworksColor;uniform vec2 uMoru;uniform float uWade;
 varying vec2 vUv;varying vec3 vWorld;
 #include <fog_pars_fragment>
 float square(float x){return x*x;}
@@ -64,6 +65,8 @@ void main(){
  color+=vec3(1.,.83,.56)*sunGlint*.75;
  float window=exp(-abs(p.x-11.5)*1.5)*exp(-abs(p.y+19.)*.3)*(max(0.,a)*.6+.4);
  color+=vec3(.35,.17,.045)*window*uNight;
+ float firePath=exp(-square((p.x-8.)*.045))*exp(-square((p.y-61.)*.018))*(.45+.55*broken);
+ color+=uFireworksColor*firePath*uFireworks*(.35+fresnel*.65);
  if(uQuality>1.5){float caustic=pow(max(0.,sin(refracted.x*4.+b)+cos(refracted.y*3.+a)-1.2),3.);color+=vec3(.04,.08,.07)*caustic*(1.-uNight)*exp(-depth*2.);}
  color+=vec3(.11,.18,.2)*abs(ring);
  float edgeDistance=min(vUv.x,1.-vUv.x);
@@ -90,7 +93,7 @@ export default function Waterway({player}:{player:RefObject<Player>}){
   const plank=new RoundedBoxGeometry(BRIDGE.halfLength*2/25+.015,.09,BRIDGE.halfWidth*2,2,.018)
   const beam=branch(Array.from({length:12},(_,i)=>{const x=(i/11*2-1)*BRIDGE.halfLength;return [x,.42*Math.cos(x/BRIDGE.halfLength*Math.PI/2)-.16,0]}),.12,.12)
   const beamMaterial=artMaterial('#677d72','bark')
-  return {geometry,wood,plank,beam,beamMaterial,base:[new Color('#a7ab96'),new Color('#909c8a')],snowColor:new Color('#b9cedb'),uniforms:UniformsUtils.merge([UniformsLib.fog,{uQuality:{value:1},uPhase:{value:.8},uMoonSize:{value:1},uSun:{value:new Vector3()},uTime:{value:0},uNight:{value:0},uWind:{value:.2},uRain:{value:0},uWet:{value:0},uSnow:{value:0},uTop:{value:env.skyTop},uHorizon:{value:env.skyHorizon},uMoon:{value:env.moonDirection},uMoru:{value:new Vector2()},uWade:{value:0}}])}
+  return {geometry,wood,plank,beam,beamMaterial,base:[new Color('#a7ab96'),new Color('#909c8a')],snowColor:new Color('#b9cedb'),uniforms:UniformsUtils.merge([UniformsLib.fog,{uQuality:{value:1},uPhase:{value:.8},uMoonSize:{value:1},uSun:{value:new Vector3()},uTime:{value:0},uNight:{value:0},uWind:{value:.2},uRain:{value:0},uWet:{value:0},uSnow:{value:0},uTop:{value:env.skyTop},uHorizon:{value:env.skyHorizon},uMoon:{value:env.moonDirection},uMoru:{value:new Vector2()},uWade:{value:0},uFireworks:{value:0},uFireworksColor:{value:env.fireworksColor}}])}
  },[])
  useEffect(()=>()=>{r.geometry.dispose();r.plank.dispose();r.beam.dispose();r.beamMaterial.dispose();r.wood.forEach(m=>m.dispose())},[r])
  useFrame((_,delta)=>{
@@ -98,12 +101,13 @@ export default function Waterway({player}:{player:RefObject<Player>}){
   u.uQuality.value=QUALITY[quality].water;u.uPhase.value=graphicsState.moonPhase*(1-env.crescent)+2.4*env.crescent;u.uMoonSize.value=env.moonSize;u.uSun.value.set(worldTime.current.sunX,worldTime.current.sunY,-.4).normalize();
   for(let i=0;i<2;i++){wetWood(r.wood[i],r.base[i],r.snowColor,env.wetness,env.snow)}
   updateArtMaterial(r.beamMaterial,u.uTime.value);
-  u.uTime.value+=delta;u.uNight.value=env.night;u.uWind.value=env.wind;u.uRain.value=env.rain;u.uSnow.value=env.snow
+  u.uTime.value+=delta;u.uNight.value=env.night;u.uFireworks.value=env.fireworksFlash;u.uFireworksColor.value.copy(env.fireworksColor);u.uWind.value=env.wind;u.uRain.value=env.rain;u.uSnow.value=env.snow
   u.uTop.value.copy(env.skyTop);u.uHorizon.value.copy(env.skyHorizon);u.uMoon.value.copy(env.moonDirection)
   const p=player.current;u.uMoru.value.set(p.position.x,p.position.z)
   const wet=p.waterDepth>.05&&p.position.y<WATER_Y+.05
   u.uWade.value+=(Number(wet)*(p.groundState==='IDLE'?.1:1)-u.uWade.value)*(1-Math.exp(-delta*5))
-  for(const light of bridgeLights.current)if(light)light.intensity=env.night*nightValue(520,NIGHT_TUNING.bridgeLightIntensity,env.night)
+  const v2=getRendererMode()!=='V1',preset=V2_LIGHTING_PRESETS.BRIDGE_WARM
+  for(const light of bridgeLights.current)if(light){light.intensity=artificialLightLevel(env.night)*nightValue(v2?preset.intensity:520,NIGHT_TUNING.bridgeLightIntensity,env.night);light.distance=v2?preset.distance:12;light.decay=v2?preset.decay:2;light.color.set(v2?preset.color:'#ffd9a4')}
  })
  const x=streamCenter(BRIDGE.z)
  return <>
@@ -111,7 +115,7 @@ export default function Waterway({player}:{player:RefObject<Player>}){
   <group position={[x,0,BRIDGE.z]}>
    {[-1.35,1.35].map(z=><mesh key={z} geometry={r.beam} material={r.beamMaterial} position={[0,0,z]} castShadow receiveShadow/>)}
    {Array.from({length:25},(_,i)=>{const a=(i/24*2-1)*BRIDGE.halfLength,y=.42*Math.cos(a/BRIDGE.halfLength*Math.PI/2);return <mesh key={i} position={[a,y-.045,0]} rotation={[0,0,-.42*Math.PI/(2*BRIDGE.halfLength)*Math.sin(a/BRIDGE.halfLength*Math.PI/2)]} castShadow receiveShadow material={r.wood[i%3===0?0:1]} geometry={r.plank}/>})}
-   {[-1,1].map(side=><group key={side}>{[-.75,0,.75].map(a=><group key={a} position={[a*BRIDGE.halfLength,.42*Math.cos(a*Math.PI/2),side*1.6]}><mesh position={[0,.5,0]} castShadow><cylinderGeometry args={[.055,.08,1,8]}/><meshStandardMaterial color="#778b83"/></mesh><mesh position={[0,1.03,0]}><sphereGeometry args={[.075,8,6]}/><meshStandardMaterial color="#ffe9b9" emissive="#dbcba1" emissiveIntensity={.55} toneMapped={false}/></mesh></group>)}</group>)}
+   {[-1,1].map(side=><group key={side}>{[-.75,0,.75].map(a=><group key={a} position={[a*BRIDGE.halfLength,.42*Math.cos(a*Math.PI/2),side*1.6]}><mesh position={[0,.5,0]} castShadow><cylinderGeometry args={[.055,.08,1,8]}/><meshStandardMaterial color="#778b83"/></mesh><mesh position={[0,1.03,0]}><sphereGeometry args={[.075,8,6]}/><meshStandardMaterial color="#ffe9b9" emissive="#dbcba1" emissiveIntensity={.41} toneMapped={false}/></mesh></group>)}</group>)}
    {[-1,1].map((side,i)=><pointLight key={`bridge-light-${side}`} ref={light=>{bridgeLights.current[i]=light}} position={[0,1.35,side*1.35]} color="#ffd9a4" intensity={0} distance={12} decay={2}/>)}
   </group>
  </>

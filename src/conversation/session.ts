@@ -6,7 +6,8 @@ import { buildContext, MockConversationAdapter, parseResponse } from './model.ts
 import type { Context, MoruConversationProvider, Response, Turn } from './model.ts'
 import type { AttentionTarget, InternalState, MeaningfulMemory, Observation } from '../world/brain/types.ts'
 export type ConversationPhase='closed'|'composing'|'thinking'|'speaking'
-type Port={snapshot:()=>{continuity?:Continuity;research?:ResearchSummary;observation:Observation;state:InternalState;attention:AttentionTarget;events:MeaningfulMemory[]}|null;hold:(value:boolean)=>void;listen:()=>void;speak:(response:Response)=>boolean;cancel:()=>void}
+import type { WorldPerception } from '../world/agentSkills.ts'
+type Port={snapshot:()=>{continuity?:Continuity;research?:ResearchSummary;observation:Observation;state:InternalState;attention:AttentionTarget;events:MeaningfulMemory[];perception?:WorldPerception}|null;hold:(value:boolean)=>void;listen:()=>void;speak:(response:Response,command:string)=>boolean;cancel:()=>void}
 export function createConversationSession(provider:MoruConversationProvider=new MockConversationAdapter(),timing={thinking:650,timeout:11000}){
  let port:Port|null=null,token=0,abort:AbortController|null=null,release:ReturnType<typeof setTimeout>|undefined
  let state={phase:'closed' as ConversationPhase,ready:false,notice:'',reply:'',revision:0}
@@ -26,7 +27,7 @@ export function createConversationSession(provider:MoruConversationProvider=new 
   const snap=port.snapshot();if(!snap||!snap.observation.grounded){update({notice:'땅에 내려오면 말 걸어줘.'});return false}
   if(state.phase==='closed')open()
   const id=++token,controller=new AbortController();abort=controller
-  const context=buildContext(clean,snap.observation,snap.state,snap.attention,turns,snap.events,snap.research,snap.continuity)
+  const context=buildContext(clean,snap.observation,snap.state,snap.attention,turns,snap.events,snap.research,snap.continuity,snap.perception)
   debug.context=context;debug.outcome='thinking';port.listen();update({phase:'thinking',notice:'듣고 있어…'})
   let raw:unknown
   let timeoutTimer:ReturnType<typeof setTimeout>|undefined
@@ -44,7 +45,7 @@ export function createConversationSession(provider:MoruConversationProvider=new 
   finally{clearTimeout(timeoutTimer);clearTimeout(thinkingTimer);controller.signal.removeEventListener('abort',rejectAbort)}
   if(token!==id||!port)return false
   debug.raw=raw;const parsed=parseResponse(raw,context);debug.parsed=parsed.response;debug.rejected=parsed.rejected
-  if(!parsed.response.speech||!port.speak(parsed.response)){update({phase:'composing',notice:'잠깐 뒤에 다시 말 걸어줘.'});return false}
+  if(!parsed.response.speech||!port.speak(parsed.response,clean)){update({phase:'composing',notice:'잠깐 뒤에 다시 말 걸어줘.'});return false}
   const turn={user:clean,moru:parsed.response.speech}
   turns.push(turn);if(turns.length>8)turns.shift()
   history.push(turn);if(history.length>60)history.shift()
@@ -55,7 +56,21 @@ export function createConversationSession(provider:MoruConversationProvider=new 
   release=setTimeout(()=>{if(token!==id)return;update({phase:'composing',notice:''})},speechDuration(parsed.response.speech)*1000)
   return true
  }
- return {subscribe(fn:()=>void){listeners.add(fn);return()=>{listeners.delete(fn)}},getSnapshot:()=>state,getHistory:()=>history.slice(),debug,turns,open,send,cancel,
+ async function reactToEvent(eventId:string){
+  if(!port||state.phase!=='closed')return false
+  const snap=port.snapshot();if(!snap||!snap.observation.grounded||!snap.observation.activeEvents?.includes(eventId))return false
+  const id=++token,controller=new AbortController();abort=controller
+  const context=buildContext(`WORLD_EVENT_STARTED:${eventId}`,snap.observation,snap.state,snap.attention,turns,snap.events,snap.research,snap.continuity,snap.perception)
+  let timer:ReturnType<typeof setTimeout>|undefined
+  try{
+   const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(Error('timeout'))},timing.timeout)})
+   const raw=await Promise.race([Promise.resolve().then(()=>provider.respond(context,controller.signal)),timeout])
+   if(token!==id||!port||state.phase!=='closed')return false
+   const parsed=parseResponse(raw,context).response
+   return !!parsed.speech&&port.speak({...parsed,plan:[]},'')
+  }catch{return false}finally{clearTimeout(timer);if(token===id)abort=null}
+ }
+ return {subscribe(fn:()=>void){listeners.add(fn);return()=>{listeners.delete(fn)}},getSnapshot:()=>state,getHistory:()=>history.slice(),debug,turns,open,send,reactToEvent,cancel,
   attach(next:Port){port=next;update({ready:true});return()=>{if(port===next){cancel();port=null;update({ready:false})}}},
  }
 }

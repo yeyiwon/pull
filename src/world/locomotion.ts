@@ -21,7 +21,8 @@ export function createPlayer() {
     direction: new Vector3(), desiredRotation: new Quaternion(), up: new Vector3(0, 1, 0),
     headPosition: new Vector3(), events: [] as MoruEvent[], eventListeners: new Set<(event: MoruEvent) => void>(), brainRequested: false, actionRequested: null as BodyAction | null,
     keys: new Set<string>(), state: 'IDLE' as MovementState, groundState: 'IDLE' as GroundState,
-    touchX: 0, touchZ: 0, cameraYaw: 0, verticalVelocity: 0, groundY: 0, waterDepth: 0, isGrounded: true, jumpRequested: false, listenRequested: false }
+    touchX: 0, touchZ: 0, cameraYaw: 0, verticalVelocity: 0, groundY: 0, waterDepth: 0, isGrounded: true, jumpRequested: false, listenRequested: false,
+    agentMovement: null as { direction: Vector3; run: boolean } | null, agentInterrupted: false }
 }
 export type Player = ReturnType<typeof createPlayer>
 
@@ -55,10 +56,14 @@ export function movePlayer(player: Player, delta: number) {
   const held = (a: string, b: string) => Number(player.keys.has(a) || player.keys.has(b))
   player.direction.set(held('KeyD', 'ArrowRight') - held('KeyA', 'ArrowLeft') + player.touchX, 0,
     held('KeyS', 'ArrowDown') - held('KeyW', 'ArrowUp') + player.touchZ)
+  const manualMoving = player.direction.lengthSq() > 0
+  if (manualMoving && player.agentMovement) { player.agentMovement = null; player.agentInterrupted = true }
+  if (!manualMoving && player.agentMovement) player.direction.copy(player.agentMovement.direction)
   const moving = player.direction.lengthSq() > 0
-  player.groundState = moving ? (player.keys.has('ShiftLeft') || player.keys.has('ShiftRight') || Math.hypot(player.touchX, player.touchZ) > .85 ? 'RUN' : 'WALK') : 'IDLE'
+  player.groundState = moving ? (player.agentMovement?.run || player.keys.has('ShiftLeft') || player.keys.has('ShiftRight') || Math.hypot(player.touchX, player.touchZ) > .85 ? 'RUN' : 'WALK') : 'IDLE'
   if (moving) {
-    player.direction.normalize().applyAxisAngle(player.up, player.cameraYaw)
+    player.direction.normalize()
+    if (manualMoving) player.direction.applyAxisAngle(player.up, player.cameraYaw)
     moveWithCollisions(player.position, player.direction, delta * (player.groundState === 'RUN' ? 4.6 : 2.1) * (player.waterDepth > .12 ? .72 : 1))
     player.desiredRotation.setFromAxisAngle(player.up, Math.atan2(player.direction.x, player.direction.z))
     player.rotation.slerp(player.desiredRotation, 1 - Math.exp(-10 * delta))

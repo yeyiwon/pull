@@ -2,6 +2,8 @@ import { WORLD_SEATS } from './bench.ts'
 import { DOOR, homeState, homeWorldPoint } from './homeSpace.ts'
 import type { Vector3 } from 'three'
 import { CRYSTALS, FLOWERS, RIDGES, ROCKS, TREES, MUSHROOMS, HOME } from './worldLayout.ts'
+import { surfaceHeight, waterDepth } from './terrain.ts'
+import { WORLD_V3_LANDMARKS } from './worldV3.ts'
 export type Obstacle = { x: number; z: number; rx: number; rz: number; angle: number; bottom: number; top: number; box?: boolean }
 const shapes = (items: readonly (readonly number[])[], turn: number): Obstacle[] => items.map(([x, y, z, sx, sy, sz], i) => ({
   x, z, rx: sx * 1.22, rz: sz * 1.22, angle: i * turn, bottom: y - sy * 1.2, top: y + sy * 1.2,
@@ -18,11 +20,22 @@ export const WORLD_OBSTACLES: readonly Obstacle[] = [
   ...MUSHROOMS.map(([x, z, s]) => ({ x, z, rx: s * .5, rz: s * .5, angle: 0, bottom: 0, top: 3 * s })),
   ...shapes(ROCKS, .7), ...shapes(RIDGES, .3).filter((_,i)=>i!==4&&i!==9),
   ...FLOWERS.map(([x, z, s]) => ({ x, z, rx: s * .85, rz: s * .85, angle: 0, bottom: 0, top: 6 * s })),
+  ...WORLD_V3_LANDMARKS.filter(landmark=>landmark.kind==='ancient-tree'||landmark.kind==='moon-shrine').map(landmark=>({x:landmark.visual[0],z:landmark.visual[1],rx:landmark.kind==='ancient-tree'?1.8:2.4,rz:landmark.kind==='ancient-tree'?1.8:2.4,angle:0,bottom:-.5,top:landmark.kind==='ancient-tree'?14:7})),
   ...CRYSTALS.map(([x, z, s]) => ({ x, z, rx: s * .9, rz: s * .9, angle: 0, bottom: 0, top: 3.8 * s })),
   // The current celestial Arc is visual only; preserve its non-blocking behavior.
 ]
 
 export const MORU_COLLISION={radius:.65,height:2.8}
+export function canOccupy(x:number,z:number,y=surfaceHeight(x,z),obstacles=WORLD_OBSTACLES,body=MORU_COLLISION){
+ if(x<=-90||x>=90||z<=-90||z>=90||waterDepth(x,z)>.12)return false
+ for(const o of obstacles){
+  if(o===HOME_DOOR&&homeState.doorOpen>.75)continue
+  if(y>=o.top||y+body.height<=o.bottom)continue
+  const cos=Math.cos(o.angle),sin=Math.sin(o.angle),dx=x-o.x,dz=z-o.z,localX=dx*cos-dz*sin,localZ=dx*sin+dz*cos,rx=o.rx+body.radius,rz=o.rz+body.radius
+  if(o.box?Math.abs(localX)<rx&&Math.abs(localZ)<rz:(localX/rx)**2+(localZ/rz)**2<1)return false
+ }
+ return true
+}
 export function moveWithCollisions(position: Vector3, direction: Vector3, distance: number, obstacles = WORLD_OBSTACLES, body = MORU_COLLISION) {
   // Small steps prevent tunneling, including at low frame rates. No mesh raycasts.
   const steps = Math.max(1, Math.ceil(Math.abs(distance) / .12))

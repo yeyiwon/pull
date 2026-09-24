@@ -118,7 +118,7 @@
 @keyframes scrim-in{from{opacity:0}to{opacity:1}}@keyframes scrim-out{from{opacity:1}to{opacity:0}}
 @keyframes content-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:720px){.pull-header{gap:12px;flex-wrap:wrap}.world-status-time{position:absolute;top:52px;left:0;right:0;gap:18px;font-size:11px}.world-status-time time{gap:18px}.status-season{font-size:12px}}
-@media(max-width:600px){.interface-sheet{width:auto;top:auto;bottom:calc(10px + env(safe-area-inset-bottom));max-height:calc(100dvh - 125px - env(safe-area-inset-top) - env(safe-area-inset-bottom));padding:12px 20px 22px}.interface-sheet h1{font-size:25px}.editorial-menu button{min-height:64px}.world-status-time{gap:14px}.world-status-time time{gap:14px}}
+@media(max-width:600px){.interface-sheet{width:auto;top:auto;bottom:calc(10px + env(safe-area-inset-bottom));max-height:calc(100dvh - 125px - env(safe-area-inset-top) - env(safe-area-inset-bottom));padding:12px 20px 22px}.sheet-fixed-header{touch-action:none;cursor:grab}.sheet-fixed-header:active{cursor:grabbing}.interface-sheet h1{font-size:25px}.editorial-menu button{min-height:64px}.world-status-time{gap:14px}.world-status-time time{gap:14px}}
 @media(max-height:500px) and (orientation:landscape){.interface-sheet{top:12px;bottom:auto;max-height:calc(100dvh - 24px);width:340px}.world-status-time{top:46px}}
 @media(prefers-reduced-motion:reduce){.interface-sheet,.sheet-content,.interface-scrim,.interface-layer[data-closing="true"] .interface-sheet,.interface-layer[data-closing="true"] .interface-scrim{animation:none}.moru-entry,.pull-header button,.moru-conversation button,.theme-picker button,.editorial-menu button{transition:none}}
 

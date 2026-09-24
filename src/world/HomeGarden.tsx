@@ -8,6 +8,7 @@ import { environmentState as env } from './environmentState.ts'
 import { worldTime } from './worldTime.ts'
 import { LAMP_SEASONS } from './lakesideDressing.ts'
 import { HOME } from './worldLayout.ts'
+import { artificialLightLevel,getRendererMode,V2_LIGHTING_PRESETS } from '../graphics/rendererV2.ts'
 const BEDS=[[-4.8,3.1],[-3.6,5.9],[4.9,2.8],[4.6,6.1]] as const
 export default function HomeGarden(){
  const grass=useRef<InstancedMesh>(null),flowers=useRef<InstancedMesh>(null),flies=useRef<InstancedMesh>(null)
@@ -30,7 +31,8 @@ export default function HomeGarden(){
   updateArtMaterial(r.leaf,t);updateArtMaterial(r.flower,t)
   r.leaf.color.set(winter?'#9f9989':season==='autumn'?'#a49765':'#8a9c71')
   if(flowers.current)flowers.current.visible=!winter
-  for(const light of [left.current,right.current])if(light){light.intensity=env.night*420;light.color.set(LAMP_SEASONS[season].light)}
+  const v2=getRendererMode()!=='V1',preset=V2_LIGHTING_PRESETS.HOUSE_WARM
+  for(const light of [left.current,right.current])if(light){light.intensity=artificialLightLevel(env.night)*(v2?preset.intensity:420);light.distance=v2?preset.distance:15;light.decay=v2?preset.decay:2;light.color.set(v2?preset.color:LAMP_SEASONS[season].light)}
   if(flies.current){flies.current.visible=!winter&&env.night>.1;for(let i=0;i<18;i++){
    const [x,z]=BEDS[i%4],a=i*2.399;r.o.position.set(x+Math.sin(a+t*.18)*.8,.4+(i%4)*.2+Math.sin(a+t*.32)*.15,z+Math.cos(a+t*.13)*.65);r.o.rotation.set(0,0,0);r.o.scale.setScalar(.012*(.3+.7*Math.pow((1+Math.sin(t*.7+a))/2,2))*env.night*(1-env.rain*.7));r.o.updateMatrix();flies.current.setMatrixAt(i,r.o.matrix)
   }flies.current.instanceMatrix.needsUpdate=true}

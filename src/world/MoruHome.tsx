@@ -9,6 +9,7 @@ import { HOME } from './worldLayout.ts'
 import { DOOR, homeState } from './homeSpace.ts'
 import { environmentState as env } from './environmentState.ts'
 import { worldTime } from './worldTime.ts'
+import { artificialLightLevel,getRendererMode } from '../graphics/rendererV2.ts'
 function opacity(material: MeshStandardMaterial, value: number) { material.opacity = value }
 function glow(material: MeshStandardMaterial, value: number) { material.emissiveIntensity = value }
 function setWeather(roof:MeshStandardMaterial,wall:MeshStandardMaterial,wet:number){roof.roughness=.65-wet*.3;roof.color.set('#344858').multiplyScalar(1-wet*.2);wall.roughness=.9-wet*.1}
@@ -36,10 +37,11 @@ export default function MoruHome({detail}:{detail?:ReactNode}) {
     opacity(r.wall,1-homeState.cutaway*.87);opacity(r.roof,1-homeState.cutaway*.98);opacity(r.snow,env.snow*(1-homeState.cutaway))
     setWeather(r.roof,r.wall,env.wetness)
     const festive = worldTime.realWorld.month===12 ? 1.25 : 1
-    glow(r.bulbs,.12+env.night*(2.9+env.snow*.8)*festive)
-    if(lamp.current) lamp.current.intensity=(6+env.night*nightValue(520,NIGHT_TUNING.interiorLightIntensity,env.night))*(1+env.warmth*.25)
-    if(windowMaterial.current) windowMaterial.current.emissiveIntensity=NIGHT_TUNING.windowEmissive*nightCorrection(env.night)
-    if(entrance.current) entrance.current.intensity=env.night*nightValue(820,NIGHT_TUNING.houseLightIntensity,env.night)
+    const v2=getRendererMode()!=='V1',houseLevel=artificialLightLevel(env.night)
+    glow(r.bulbs,v2?.06+houseLevel*(.93+env.snow*.18)*festive:.12+env.night*(2.9+env.snow*.8)*festive)
+    if(lamp.current) lamp.current.intensity=v2?houseLevel*26:(6+env.night*nightValue(520,NIGHT_TUNING.interiorLightIntensity,env.night))*(1+env.warmth*.25)
+    if(windowMaterial.current) windowMaterial.current.emissiveIntensity=v2?houseLevel*.53:NIGHT_TUNING.windowEmissive*nightCorrection(env.night)
+    if(entrance.current) entrance.current.intensity=v2?houseLevel*51:env.night*nightValue(820,NIGHT_TUNING.houseLightIntensity,env.night)
     const pos=r.smoke.attributes.position
     for(let i=0;i<8;i++){const a=(time.current*.09+i/8)%1;pos.setXYZ(i,-2.5+Math.sin(a*3+time.current*.08)*a*(.5+env.wind*2),6+a*3,-1.5+a*(.4+env.wind))}
     dirty(r.smoke)

@@ -6,6 +6,7 @@ import { appearanceAssets } from '../characters/appearanceAssets.ts'
 import { worldInterface } from '../ui/interface.ts'
 import { conversationActive } from '../conversation/session.ts'
 import { Component, Suspense, useEffect, useRef } from 'react'
+import { Raycaster } from 'three'
 import type { ReactNode, RefObject } from 'react'
 import { MOVE_KEYS } from './locomotion.ts'
 import { moru } from '../characters/expression.ts'
@@ -18,6 +19,15 @@ import LivingWorldBridge from './LivingWorldBridge.tsx'
 import DreamRenderer from '../graphics/DreamRenderer.tsx'
 import WorldAudio from '../audio/WorldAudio.tsx'
 import CameraRig from './CameraRig.tsx'
+import { normalizedPointer, pointerMoveGround, setDeicticPoint } from './worldPerception.ts'
+import { agentControl } from './agentControl.ts'
+import { tapDestination } from './tapDestination.ts'
+import TapRipple from './TapRipple.tsx'
+import RendererV2Slice from './RendererV2Slice.tsx'
+import WinterIllumination from './WinterIllumination.tsx'
+import WorldV3Landscape from './WorldV3Landscape.tsx'
+import WinterFootprints from './WinterFootprints.tsx'
+import LivingWorldEvents from './LivingWorldEvents.tsx'
 
 
 class CharacterBoundary extends Component<
@@ -34,7 +44,7 @@ class CharacterBoundary extends Component<
 }
 
 function World({ onReady, onError, player, bubble }: { onReady: () => void; onError: () => void; player: RefObject<Player>; bubble: RefObject<HTMLDivElement | null> }) {
-  const {gl}=useThree()
+  const {gl,camera}=useThree()
   const bodyId=useSyncExternalStore(bodySelection.subscribe,bodySelection.getSnapshot)
   // Outside Suspense: also evict an outfit abandoned before it finished loading.
   // Retain the selected entry during StrictMode's effect replay.
@@ -43,6 +53,20 @@ function World({ onReady, onError, player, bubble }: { onReady: () => void; onEr
   },[bodyId])
   useEffect(()=>()=>{gl.domElement.style.removeProperty('cursor')},[gl])
   const selection=useRef({x:0,y:0})
+  const groundSelection=useRef({x:0,y:0,cancelled:false}),raycaster=useRef(new Raycaster())
+  useEffect(()=>{
+    const canvas=gl.domElement,controlledPlayer=player.current
+    const down=(event:PointerEvent)=>{groundSelection.current={x:event.clientX,y:event.clientY,cancelled:false}}
+    const up=(event:PointerEvent)=>{
+      const gesture=groundSelection.current;if(gesture.cancelled||Math.hypot(event.clientX-gesture.x,event.clientY-gesture.y)>=6||conversationActive()||worldInterface.getSnapshot()!==null)return
+      const rect=canvas.getBoundingClientRect();raycaster.current.setFromCamera(normalizedPointer(event.clientX,event.clientY,rect),camera)
+      const point=pointerMoveGround(raycaster.current.ray);if(!point)return
+      const distance=Math.hypot(point.x-controlledPlayer.position.x,point.z-controlledPlayer.position.z)
+      setDeicticPoint(point);if(agentControl.moveTo(controlledPlayer,distance))tapDestination.show(point)
+    }
+    canvas.addEventListener('pointerdown',down);canvas.addEventListener('pointerup',up)
+    return()=>{canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointerup',up)}
+  },[gl,camera,player])
   useEffect(() => {
     const input = player.current
     function down(event: KeyboardEvent) {
@@ -80,14 +104,20 @@ function World({ onReady, onError, player, bubble }: { onReady: () => void; onEr
       <color attach="background" args={['#858093']} />
       <LivingWorldBridge />
       <Environment player={player} />
+      <RendererV2Slice />
+      <WinterIllumination />
+      <WorldV3Landscape />
+      <WinterFootprints player={player} />
+      <LivingWorldEvents />
       <CharacterBoundary key={bodyId} onError={onError}>
         <Suspense fallback={null}>
-          <group onPointerOver={()=>{gl.domElement.style.setProperty('cursor','pointer')}} onPointerOut={()=>{gl.domElement.style.removeProperty('cursor')}} onPointerDown={e=>{selection.current={x:e.clientX,y:e.clientY}}} onPointerUp={e=>{if(Math.hypot(e.clientX-selection.current.x,e.clientY-selection.current.y)<6&&!conversationActive()){moru.perform('listen','user',false);worldInterface.open('moru')}}}><Character player={player} onReady={onReady} /></group>
+          <group name="MoruCharacterInteractive" onPointerOver={()=>{gl.domElement.style.setProperty('cursor','pointer')}} onPointerOut={()=>{gl.domElement.style.removeProperty('cursor')}} onPointerDown={e=>{groundSelection.current.cancelled=true;selection.current={x:e.clientX,y:e.clientY}}} onPointerUp={e=>{groundSelection.current.cancelled=true;if(Math.hypot(e.clientX-selection.current.x,e.clientY-selection.current.y)<6&&!conversationActive()){moru.perform('listen','user',false);worldInterface.open('moru')}}}><Character player={player} onReady={onReady} /></group>
 
         </Suspense>
       </CharacterBoundary>
       <SpeechBubble player={player} element={bubble} />
       <MoruFeedback player={player} />
+      <TapRipple />
       <WorldAudio player={player} />
       <DreamRenderer />
       <CameraRig player={player} />

@@ -3,13 +3,14 @@ import { presentedWeather, WEATHER_LOOK } from './weatherPresentation.ts'
 import { worldTime } from './worldTime.ts'
 import { livingWorld, seasonalBlend, skyEventAt, fantasyEventAt } from './livingWorld.ts'
 import type { FantasyEvent } from './livingWorld.ts'
+import { eventIntensity } from './worldEvents.ts'
 
 // One smoothed interpretation shared by all renderers. No renderer reads the device clock.
 export const environmentState = {
   grass: new Color('#8c9c79'), foliage: new Color('#8fad83'), flower: new Color('#edb9cb'), skyTint: new Color('#c4cede'),
   skyTop: new Color('#080f2c'), skyHorizon: new Color('#222b4e'), moonDirection: new Vector3(0,.28,-.8).normalize(),
   wind: .2, cloudiness: 0, rain: 0, wetness: 0, weatherSnow: 0, snowAmount: .3, leafFall: 0,
-  meteorShower: 0, moonSize: 1, crescent: 0, rainbow: 0, lightning: 0, starRichness: 1, cloudGlow: 0, shower: 0,
+  meteorShower: 0, fireworksFlash:0, fireworksColor:new Color('#f2c878'), moonSize: 1, crescent: 0, rainbow: 0, lightning: 0, starRichness: 1, cloudGlow: 0, shower: 0,
   density: .8, bloom: .7, snow: 0, sunlight: 1, haze: 1, night: 0, aurora: 0, meteor: 0,
   fireflies: 0, warmth: .6, richness: .35,
 }
@@ -34,15 +35,16 @@ export function updateEnvironmentState(delta: number) {
   const t = 1 - Math.exp(-Math.min(delta, .1) * 1.4), state = environmentState
   state.grass.lerp(target.temp.copy(target.grass).lerp(target.snowColor,state.weatherSnow), t); state.foliage.lerp(target.foliage, t); state.flower.lerp(target.flower, t); state.skyTint.lerp(target.sky, t)
   const weather = presentedWeather(),look=WEATHER_LOOK[weather]
-  const rain = look.rain
+  const rain = Math.max(look.rain,eventIntensity('HEAVY_RAIN'),eventIntensity('THUNDERSTORM'))
   // Cover leads rainfall; substrate response trails both and dries much more slowly.
   state.cloudiness = MathUtils.lerp(state.cloudiness,look.cloud,1-Math.exp(-delta*.9))
   state.rain = MathUtils.lerp(state.rain,rain*MathUtils.smoothstep(state.cloudiness,.2,.7),1-Math.exp(-delta*.65))
-  state.wind = MathUtils.lerp(state.wind,livingWorld.windOverride ?? (look.wind+(1-brain.calmness)*.06),t)
+  state.wind = MathUtils.lerp(state.wind,livingWorld.windOverride ?? Math.max(look.wind+(1-brain.calmness)*.06,eventIntensity('STRONG_WIND'),eventIntensity('AUTUMN_LEAF_STORM')*.85,eventIntensity('CHERRY_BLOSSOM_WIND')*.62),t)
   state.wetness = MathUtils.lerp(state.wetness,state.rain,1-Math.exp(-delta*(state.rain>state.wetness?.2:.012)))
-  state.weatherSnow = real.season !== 'winter' ? 0 : MathUtils.clamp(state.weatherSnow + delta * (weather === 'snow' ? .025 : -.002),0,1)
-  state.snowAmount = MathUtils.lerp(state.snowAmount,weather === 'snow' ? {light:.3,normal:.6,heavy:1,magical:.65}[livingWorld.snowMode] : snow*.3,t)
-  state.snow = real.season !== 'winter' ? 0 : MathUtils.lerp(state.snow, Math.max(snow,state.weatherSnow), t); state.bloom = MathUtils.lerp(state.bloom, bloom * (.7 + brain.vitality * .3), t)
+  const eventSnow=eventIntensity('SNOW')>0||eventIntensity('HEAVY_SNOW')>0||eventIntensity('DIAMOND_DUST')>0
+  state.weatherSnow = real.season !== 'winter'&&!eventSnow ? 0 : MathUtils.clamp(state.weatherSnow + delta * (weather === 'snow' ? .025 : -.002),0,1)
+  state.snowAmount = MathUtils.lerp(state.snowAmount,weather === 'snow' ? Math.max({light:.3,normal:.6,heavy:1,magical:.65}[livingWorld.snowMode],eventIntensity('HEAVY_SNOW')) : snow*.3,t)
+  state.snow = real.season !== 'winter'&&!eventSnow ? 0 : MathUtils.lerp(state.snow, Math.max(snow,state.weatherSnow), t); state.bloom = MathUtils.lerp(state.bloom, bloom * (.7 + brain.vitality * .3), t)
   state.density = MathUtils.lerp(state.density, density, t); state.sunlight = MathUtils.lerp(state.sunlight, sun, t)
   state.haze = MathUtils.lerp(state.haze, haze * (1 + brain.mystery * .08) * look.haze, t)
   const sunY = worldTime.presentation.sunY
@@ -56,17 +58,20 @@ export function updateEnvironmentState(delta: number) {
     scheduled = fantasyEventAt(real.date, real.season, night > .8, brain.curiosity)
   }
   const forced = livingWorld.eventOverride
-  state.aurora = MathUtils.lerp(state.aurora, (forced ? forced === 'aurora' : events.aurora) ? night : 0, t)
+  const manualAurora=eventIntensity('AURORA')>0,manualMeteor=eventIntensity('METEOR_SHOWER')>0,manualFireflies=eventIntensity('FIREFLY_NIGHT')>0,manualDust=eventIntensity('DIAMOND_DUST')>0
+  state.aurora = MathUtils.lerp(state.aurora, (manualAurora||(forced ? forced === 'aurora' : events.aurora)) ? night : 0, t)
   state.meteor = (forced ? forced === 'shootingStar' : events.shootingStar) ? night : 0
   const discovery = forced === 'none' ? null : forced ?? scheduled
-  state.meteorShower = MathUtils.lerp(state.meteorShower,discovery==='meteorShower'?night:0,t)
+  state.meteorShower = MathUtils.lerp(state.meteorShower,manualMeteor||discovery==='meteorShower'?night:0,t)
   state.moonSize = MathUtils.lerp(state.moonSize,discovery==='giantMoon'?1.7:1,t)
   state.crescent = MathUtils.lerp(state.crescent,discovery==='crescentMoon'?1:0,t)
   state.rainbow = MathUtils.lerp(state.rainbow,(discovery==='doubleRainbow'?2:discovery==='rainbow'?1:state.wetness>.3&&weather==='clear'?1:0)*(1-night),t)
   state.lightning = MathUtils.lerp(state.lightning,discovery==='lightning'||weather==='storm'?1:0,t)
   state.starRichness = MathUtils.lerp(state.starRichness,discovery==='starryNight'?1.7:1,t)
   state.cloudGlow = MathUtils.lerp(state.cloudGlow,discovery==='glowingClouds'?1:0,t)
-  state.shower = MathUtils.lerp(state.shower,(discovery==='petalShower'||discovery==='goldenWind'||discovery==='magicalSnow')?1:0,t)
+  const winterSnowCrystals=real.season==='winter'&&weather==='snow' ? .5 : 0
+  state.shower = MathUtils.lerp(state.shower,Math.max(winterSnowCrystals,(manualDust||discovery==='petalShower'||discovery==='goldenWind'||discovery==='magicalSnow')?1:0),t)
   state.leafFall = MathUtils.lerp(state.leafFall,real.season==='autumn'?Math.min(1,real.seasonProgress*2):0,t)
-  state.fireflies = MathUtils.lerp(state.fireflies, night * (discovery==='fireflyNight'?1.5:real.season === 'summer' ? 1 : .2) * (.5 + brain.vitality * .5), t)
+  const seasonalFireflies=real.season==='winter'?0:real.season==='summer'?1:.72
+  state.fireflies = MathUtils.lerp(state.fireflies, night * (manualFireflies||discovery==='fireflyNight'?1.5:seasonalFireflies) * (.5 + brain.vitality * .5), t)
 }

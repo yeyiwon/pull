@@ -28,14 +28,14 @@ const STAND_DURATION = 4.791667
 type Seat = { active:boolean; started:boolean; clip:string; elapsed:number; seat:WorldSeat }
 const seats = new WeakMap<Player,Seat>()
 const rotation = new Quaternion(),up=new Vector3(0,1,0),forward=new Vector3()
-function approach(seat:WorldSeat,out=new Vector3()){
+export function seatApproach(seat:WorldSeat,out=new Vector3()){
  forward.set(Math.sin(seat.yaw),0,Math.cos(seat.yaw))
  return out.set(seat.x+forward.x*1.2,seat.y,seat.z+forward.z*1.2)
 }
 export function nearestSeat(p:Player){
  if(!p.isGrounded)return null
  let found:WorldSeat|null=null,best=2.3
- for(const seat of WORLD_SEATS){const point=approach(seat),distance=Math.hypot(p.position.x-point.x,p.position.z-point.z);if(distance<best&&Math.abs(p.position.y-seat.y)<.65){found=seat;best=distance}}
+ for(const seat of WORLD_SEATS){const point=seatApproach(seat),distance=Math.hypot(p.position.x-point.x,p.position.z-point.z);if(distance<best&&Math.abs(p.position.y-seat.y)<.65){found=seat;best=distance}}
  return found
 }
 export function isSeated(p:Player){return seats.get(p)?.active??false}
@@ -54,7 +54,7 @@ export function updateBench(p:Player,dt:number,start:(clip:string)=>boolean,stop
  const seat=seats.get(p)
  if(!seat?.active)return
  const moving=p.keys.size>0||Math.hypot(p.touchX,p.touchZ)>.05||p.jumpRequested||!p.isGrounded
- const exit=approach(seat.seat)
+ const exit=seatApproach(seat.seat)
  if(moving){seats.delete(p);stop();p.position.copy(exit);p.groundY=seat.seat.y;return}
  if(!seat.started){if(!start(seat.clip)){seats.delete(p);return}seat.started=true}
  // Approach and turn over the existing sitting clip, never snap to a seat remotely.

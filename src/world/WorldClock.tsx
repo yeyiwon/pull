@@ -10,6 +10,8 @@ import type { FantasyEvent, GrowthStage } from './livingWorld.ts'
 import type { WeatherContext } from './realWorld.ts'
 import { weatherPreview } from './weatherPresentation.ts'
 import { cinematicHooks } from '../graphics/cinematicHooks.ts'
+import { WORLD_EVENTS,useWorldEvents,worldEvents } from './worldEvents.ts'
+import type { WorldEventId } from './worldEvents.ts'
 import { DAY_PREVIEWS, CLOCK_DISPLAY, refreshWorldTime, worldTime } from './worldTime.ts'
 function visitPreview(player:Player,location:string) {
       const point=location==='door'?homeWorldPoint(DOOR.x,6):location==='inside'?homeWorldPoint(1,0):location==='stream'?{x:streamCenter(3),z:3}:location==='bridge'?{x:streamCenter(BRIDGE.z),z:BRIDGE.z}:{x:0,z:1}
@@ -17,13 +19,15 @@ function visitPreview(player:Player,location:string) {
 }
 const seasonLabels:Record<string,string>={spring:'Spring',summer:'Summer',autumn:'Autumn',winter:'Winter'}
 const seasonIcons:Record<string,string>={spring:'🌸',summer:'🌿',autumn:'🍂',winter:'❄️'}
+const specialEvents:readonly WorldEventId[]=['FIREWORKS','METEOR_SHOWER','AURORA']
+const eventLabels:Record<WorldEventId,string>={CLEAR:'맑음',RAIN:'비',HEAVY_RAIN:'폭우',SNOW:'눈',HEAVY_SNOW:'함박눈',FOG:'안개',STRONG_WIND:'강풍',FIREWORKS:'불꽃축제',METEOR_SHOWER:'유성우',DIAMOND_DUST:'다이아몬드 더스트',AURORA:'오로라',FIREFLY_NIGHT:'반딧불이 밤',CHERRY_BLOSSOM_WIND:'벚꽃바람',AUTUMN_LEAF_STORM:'가을 낙엽바람',THUNDERSTORM:'천둥비',WINTER_ILLUMINATION:'겨울 일루미네이션'}
 function label() {
   const { hour, phase } = worldTime.current
   const date = worldTime.realWorld.date.toLocaleDateString('en-US', { month: CLOCK_DISPLAY.dateFormat, day: 'numeric' })
   return `${date.toUpperCase()} · ${worldTime.realWorld.season.toUpperCase()}\n${String(CLOCK_DISPLAY.hour12 ? Math.floor(hour) % 12 || 12 : Math.floor(hour)).padStart(2, '0')}:${String(Math.floor(hour * 60) % 60).padStart(2, '0')}${CLOCK_DISPLAY.hour12 ? (hour < 12 ? ' AM' : ' PM') : ''} · ${phase}`
 }
 export default function WorldClock({ player, mode='status' }: { player: RefObject<Player>; mode?:'status'|'panel'|'debug' }) {
-  const [text, setText] = useState(label)
+  const [text, setText] = useState(label),eventState=useWorldEvents()
   useEffect(() => {
     const tick = () => { refreshWorldTime(); setText(label()) }
     tick(); const id = window.setInterval(tick, 1000)
@@ -36,15 +40,20 @@ export default function WorldClock({ player, mode='status' }: { player: RefObjec
     const clockLabel=date.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false})
     return <div className="world-status-time"><span className="status-season"><span aria-hidden="true">{seasonIcons[worldTime.canonical.season]}</span> {seasonLabels[worldTime.canonical.season]}</span><time dateTime={date.toISOString()}>{dateLabel} <span className="status-clock"><svg className="clock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label={date.getHours()>=6&&date.getHours()<18?'낮':'밤'}>{date.getHours()>=6&&date.getHours()<18?<><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4L19 5"/></>:<path d="M20 15.2A8.5 8.5 0 0 1 8.8 4a8.5 8.5 0 1 0 11.2 11.2Z"/>}</svg> {clockLabel}</span></time></div>
   }
-  if(mode==='panel')return <section className="world-menu">
+  if(mode==='panel'){
+	   const weatherValue=weatherPreview.type
+	   // These mutable adapters are the existing imperative preview boundary shared with the renderer.
+	   // oxlint-disable-next-line react/immutability
+	   const choosePhenomenon=(id:WorldEventId)=>{if(id==='AURORA')worldTime.seasonOverride={season:'winter',progress:.65};worldTime.override=22;worldEvents.toggleManual(id);refreshWorldTime();setText(label()+id)}
+   return <section className="world-menu">
     <p className="section-label">시간</p><div className="time-choices">{[['Real Time',null],...DAY_PREVIEWS].map(([name,hour])=><button key={name} aria-pressed={worldTime.override===hour} onClick={()=>{worldTime.override=hour as number|null;refreshWorldTime();setText(label())}}>{name}<span aria-hidden="true">{worldTime.override===hour?'●':'○'}</span></button>)}</div>
     <p className="section-label">계절</p><div className="season-choices">{['REAL TIME',...SEASONS].map(s=><button key={s} data-season={s} aria-pressed={s==='REAL TIME'?worldTime.seasonOverride===null:worldTime.seasonOverride?.season===s} onClick={()=>{worldTime.seasonOverride=s==='REAL TIME'?null:{season:s as Season,progress:.65};refreshWorldTime();setText(label())}}><span aria-hidden="true">{seasonIcons[s]}</span>{s==='REAL TIME'?'Real Season':seasonLabels[s]}</button>)}</div>
-    <p className="section-label">날씨</p><div className="weather-choices">{['auto','clear','cloudy','rain','snow','fog'].map(w=><button key={w} aria-pressed={w==='auto'?weatherPreview.type===null:weatherPreview.type===w} onClick={()=>{weatherPreview.type=w==='auto'?null:w as WeatherContext['type'];setText(label()+w)}}>{{auto:'자연스럽게',clear:'맑음',cloudy:'흐림',rain:'비',snow:'눈',fog:'안개'}[w]}</button>)}</div>
-    {weatherPreview.type==='snow'&&<><p className="section-label">눈의 양</p><div className="weather-choices">{(['light','normal','heavy'] as const).map(mode=><button key={mode} aria-pressed={livingWorld.snowMode===mode} onClick={()=>{livingWorld.snowMode=mode;setText(label()+mode)}}>{{light:'살짝',normal:'보통',heavy:'함박눈'}[mode]}</button>)}</div></>}
-    <p className="section-label">밤하늘</p><div className="weather-choices">{([['자연스럽게',null],['별똥별','shootingStar'],['유성우','meteorShower']] as const).map(([title,event])=><button key={title} aria-pressed={livingWorld.eventOverride===event} onClick={()=>{livingWorld.eventOverride=event;setText(label()+title)}}>{title}</button>)}</div><p className="sheet-intro">밤에 하늘을 올려다보세요.</p>
-    <p className="section-label">바람</p><div className="weather-choices wind-choices">{([['자동',null],['약하게',.1],['보통',.3],['강하게',.6]] as const).map(([title,value])=><button key={title} aria-pressed={livingWorld.windOverride===value} onClick={()=>{livingWorld.windOverride=value;setText(label()+title)}}>{title}</button>)}</div>
-    <p className="sheet-intro">잠깐 다른 빛으로 바라보기.<br/>현재 시간 · 현재 계절을 선택하면 원래대로 돌아와요.</p>
-  </section>
+    <p className="section-label">날씨</p><div className="weather-choices">{['auto','clear','cloudy','rain','snow','fog'].map(w=><button key={w} aria-pressed={w==='auto'?weatherValue===null:weatherValue===w} onClick={()=>{weatherPreview.type=w==='auto'?null:w as WeatherContext['type'];setText(label()+w)}}>{{auto:'자동',clear:'맑음',cloudy:'흐림',rain:'비',snow:'눈',fog:'안개'}[w]}</button>)}</div>
+    {weatherValue==='snow'&&<><p className="section-label">눈의 양</p><div className="weather-choices">{(['light','normal','heavy'] as const).map(value=><button key={value} aria-pressed={livingWorld.snowMode===value} onClick={()=>{livingWorld.snowMode=value;setText(label()+value)}}>{{light:'살짝',normal:'보통',heavy:'함박눈'}[value]}</button>)}</div></>}
+    <p className="section-label">현상</p><div className="weather-choices"><button aria-pressed={eventState.mode==='AUTO'} onClick={()=>worldEvents.setManual(null)}>자동</button><button aria-pressed={eventState.mode==='MANUAL'&&!eventState.active.length} onClick={()=>worldEvents.setNone()}>없음</button>{specialEvents.map(id=><button key={id} aria-pressed={eventState.active.some(event=>event.id===id)} onClick={()=>choosePhenomenon(id)}>{eventLabels[id]}</button>)}</div>
+    <p className="sheet-intro">현상은 여러 개를 함께 켤 수 있어요.</p>
+   </section>
+  }
   return <aside className="world-clock"><time>{text}</time>
     {import.meta.env.DEV && <details className="world-preview"><summary>World preview</summary><select aria-label="Time preview" value={worldTime.override??'REAL'} onChange={e => {
       worldTime.override = e.target.value === 'REAL' ? null : Number(e.target.value)
@@ -61,6 +70,8 @@ export default function WorldClock({ player, mode='status' }: { player: RefObjec
     <label>Season progress<input aria-label="Season progress" type="range" min="0" max="1" step=".01" defaultValue=".65" onChange={e => {
       worldTime.seasonOverride = { season: worldTime.realWorld.season, progress: Number(e.target.value) }; refreshWorldTime(); setText(label())
     }} /></label>
+    <select aria-label="Living World event" value={eventState.manual??'AUTO'} onChange={e=>worldEvents.setManual(e.target.value==='AUTO'?null:e.target.value as WorldEventId)}><option value="AUTO">자동 · 살아 있는 세계</option>{WORLD_EVENTS.map(event=><option key={event.id} value={event.id}>{eventLabels[event.id]}</option>)}</select>
+    <output aria-label="World event diagnostics">{eventState.active.length?eventState.active.map(event=>`${event.category} · ${event.label} · intensity ${event.intensity} · ${event.significance} · Moru ${event.moruAwareness?'aware':'passive'}`).join(' | '):'AUTO · no active event'}</output>
     <select aria-label="Sky event preview" defaultValue="auto" onChange={e => {
       livingWorld.eventOverride = e.target.value === 'auto' ? null : e.target.value as 'none' | FantasyEvent
     }}><option value="auto">Rare events: auto</option><option value="none">None</option>{SKY_EVENTS.map(event=><option key={event} value={event}>{event}</option>)}</select>

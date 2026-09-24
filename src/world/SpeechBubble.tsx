@@ -8,10 +8,11 @@ import { speechEnvelope, speechDuration, initialSpeech } from '../characters/pre
 import { conversationSession } from '../conversation/session.ts'
 import { useEffect, useRef } from 'react'
 import type { RefObject } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import { Vector3 } from 'three'
 import type { Player } from './locomotion.ts'
 import { createMoruMind, brainCommands } from './brain/mind.ts'
+import { worldEvents } from './worldEvents.ts'
 import { observeWorld, userControlsMoru } from './brain/observation.ts'
 import { getMemorySession } from './brain/memory.ts'
 import { audio } from '../audio/AudioManager.ts'
@@ -21,6 +22,9 @@ import { homeState } from './homeSpace.ts'
 import { livingWorld } from './livingWorld.ts'
 import { streamCenter, streamWidth } from './terrain.ts'
 import type { Reaction } from './personality.ts'
+import { createAgentExecutor, agentDiagnostics } from './agentExecutor.ts'
+import { perceiveWorld } from './worldPerception.ts'
+import { agentControl } from './agentControl.ts'
 
 function clearEvents(player:Player){player.events.length=0}
 function markBrainAction(player:Player){player.brainRequested=true}
@@ -48,11 +52,18 @@ function paint(node: HTMLDivElement, opacity: string, transform?: string) {
 }
 
 function SpeechBubble({ player, element }: { player: RefObject<Player>; element: RefObject<HTMLDivElement | null> }) {
+  const {camera}=useThree()
   const brain = useRef<ReturnType<typeof createMoruMind> | null>(null)
+  const agent=useRef<ReturnType<typeof createAgentExecutor>|null>(null)
   const active = useRef({ age: 0, duration: 0, letters: [] as string[], shown: 0 })
-  const semantic = useRef({elapsed:0,idle:0,returned:false,userVersion:0})
+ const semantic = useRef({elapsed:0,idle:0,returned:false,userVersion:0,eventRevision:-1,noticedEvent:''})
   useEffect(() => {
     const memory=getMemorySession()
+    const controlledPlayer=player.current
+    const executor=createAgentExecutor(result=>{if(result==='completed')memory.event('AGENT_COMMAND_COMPLETED')})
+    const detachAgentControl=agentControl.bind(executor.start)
+    agent.current=executor
+    if(import.meta.env.DEV)(window as Window&{__moruAgentDiagnostics?:typeof agentDiagnostics}).__moruAgentDiagnostics=agentDiagnostics
     moru.setAutonomy(false)
     const controller = createMoruMind({research:{provider:new ServerResearchProvider(),budget:memory.memory.researchBudget,session:researchSessionBudget},interests:memory.memory.interests,interestsChanged:memory.interestsChanged,visits:memory.memory.visitCount,debug:import.meta.env.DEV,execute:intent=>{
       const p=player.current
@@ -63,14 +74,15 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
       if(acted&&p.actionRequested)markBrainAction(p)
       return {action:acted?intent.action:null,speech:offered?intent.speech:null,emote:offered&&!!intent.emote}
     }})
-    const detach=conversationSession.attach({snapshot:()=>{const snapshot=controller.snapshot();return snapshot?{...snapshot,continuity:continuitySummary(memory.memory.offline,memory.memory.evolution)}:null},hold:controller.holdConversation,
+    const detach=conversationSession.attach({snapshot:()=>{const snapshot=controller.snapshot();return snapshot?{...snapshot,perception:perceiveWorld(player.current,camera),continuity:continuitySummary(memory.memory.offline,memory.memory.evolution)}:null},hold:controller.holdConversation,
       listen(){moru.cancelSpeech();active.current.duration=0;moru.perform('listen','user',false)},
-      speak(response){
+      speak(response,command){
         const p=player.current
         const fx={heart:'HEARTS',sparkle:'SPARKLES',question:'QUESTION',surprise:'SURPRISE',music:'JOY'} as const
         active.current.duration=0
         const offered=moru.offer({event:'BRAIN',speech:response.speech,fx:response.emote?fx[response.emote]:undefined,emotion:response.emotion,typing:true,duration:speechDuration(response.speech)},'conversation')
-        if(response.action&&!userControlsMoru(p))moru.perform(response.action,'conversation',false)
+        if(response.action&&!response.plan.length&&!userControlsMoru(p))moru.perform(response.action,'conversation',false)
+        if(response.plan.length)executor.start(response.plan,p,command)
         return offered
       },cancel(){moru.cancelSpeech();active.current.duration=0},
     })
@@ -82,8 +94,8 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
     document.addEventListener('visibilitychange', returned)
     document.addEventListener('visibilitychange', suspend)
     window.addEventListener('pagehide', leave)
-    return () => { document.removeEventListener('visibilitychange', returned); detach();controller.dispose(); memory.save(); brainCommands.trigger=null;brainCommands.converse=null;moru.setAutonomy(true);brain.current = null; document.removeEventListener('visibilitychange', suspend); window.removeEventListener('pagehide', leave) }
-  }, [player])
+    return () => { detachAgentControl();executor.interrupt(controlledPlayer,'disposed');agent.current=null;document.removeEventListener('visibilitychange', returned); detach();controller.dispose(); memory.save(); brainCommands.trigger=null;brainCommands.converse=null;moru.setAutonomy(true);brain.current = null; document.removeEventListener('visibilitychange', suspend); window.removeEventListener('pagehide', leave) }
+  }, [player,camera])
   const projected = useRef(new Vector3())
   const headTop = useRef(new Vector3())
   const emotePoint = useRef(new Vector3())
@@ -102,6 +114,7 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
   useFrame(({ camera, size }, delta) => {
     if (document.hidden) return
     const pState=player.current
+    agent.current?.update(pState,Math.min(delta,.05))
     const available=pState.state==='IDLE'&&!pState.actionRequested&&!pState.jumpRequested&&pState.isGrounded
     moru.update(Math.min(delta,.05),{hour:worldTime.canonical.hour+worldTime.canonical.minute/60,season:worldTime.canonical.season,weather:livingWorld.weather?.type??'clear',inside:homeState.inside,
       nearWater:Math.abs(pState.position.x-streamCenter(pState.position.z))<streamWidth(pState.position.z)+2,idle:available})
@@ -112,6 +125,16 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
     if(clock.elapsed>=1){
       const elapsed=clock.elapsed;clock.elapsed=0
       const memory=getMemorySession();memory.tick(elapsed)
+      const eventState=worldEvents.getSnapshot()
+      if(eventState.revision!==clock.eventRevision){
+       clock.eventRevision=eventState.revision
+       const important=eventState.active.find(event=>event.moruAwareness&&(event.significance==='HIGH'||event.significance==='VERY_HIGH'))
+       if(important&&important.id!==clock.noticedEvent&&available&&!userControlsMoru(pState)){
+        clock.noticedEvent=important.id
+        void conversationSession.reactToEvent(important.id)
+       }
+       if(!important)clock.noticedEvent=''
+      }
       let interacted=moru.userVersion!==clock.userVersion
       for(const event of pState.events){memory.event(event);interacted=true}
       clearEvents(pState);clock.userVersion=moru.userVersion

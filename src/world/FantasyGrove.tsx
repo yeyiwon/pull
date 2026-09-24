@@ -8,6 +8,7 @@ import { branch, leafBlade, weatheredStone } from './artGeometry.ts'
 import { artMaterial, updateArtMaterial } from '../graphics/artMaterial.ts'
 import { worldTime } from './worldTime.ts'
 import { useQuality } from '../graphics/quality.ts'
+import { V2_SLICE_TREE_INDICES,useRendererMode } from '../graphics/rendererV2.ts'
 
 function treeSkeleton(family:number){
  const parts=[branch([[0,-.12,0],[-.25,1.8,.12],[.18,3.5,0],[.65,5.3,-.25],[.2,7.6,-.15]],.5,.06)]
@@ -20,9 +21,9 @@ function treeSkeleton(family:number){
  const g=mergeGeometries(parts);parts.forEach(p=>p.dispose());return g
 }
 export default function FantasyGrove() {
- const quality=useQuality(), foliage=useRef<InstancedMesh>(null),grass=useRef<InstancedMesh>(null),canopy=useRef<Group>(null)
+ const quality=useQuality(),rendererMode=useRendererMode(), foliage=useRef<InstancedMesh>(null),grass=useRef<InstancedMesh>(null),canopy=useRef<Group>(null)
  const snowCaps=useRef<InstancedMesh>(null),red=useRef<InstancedMesh>(null),green=useRef<InstancedMesh>(null)
- const time=useRef(0),lastSnow=useRef(-1),lastSeason=useRef('')
+ const time=useRef(0),lastSnow=useRef(-1),lastSeason=useRef(''),lastRenderer=useRef('')
  const r=useMemo(()=>({
   object:new Object3D(),color:new Color(),wood:artMaterial('#746553','bark'),
   leaves:artMaterial('#ffffff','leaf'), snow:new MeshStandardMaterial({color:'#dbe5ed',roughness:.95}),bulb:new SphereGeometry(.05,5,3),red:new MeshStandardMaterial({color:'#f39798',emissive:'#d54d5f',emissiveIntensity:1.4,toneMapped:false}),green:new MeshStandardMaterial({color:'#b4ecd0',emissive:'#61b889',emissiveIntensity:1.4,toneMapped:false}), grass:Object.assign(artMaterial('#7d9d82','leaf'),{side:DoubleSide}),cap:artMaterial('#c3a6ac'),
@@ -44,19 +45,19 @@ export default function FantasyGrove() {
   r.grass.color.copy(env.grass).multiplyScalar(1.12)
   const season=worldTime.realWorld.season
   if(snowCaps.current)snowCaps.current.visible=env.snow>.02
-  if(red.current)red.current.visible=season==='winter'&&env.night>.2
-  if(green.current)green.current.visible=season==='winter'&&env.night>.2
-  if(grass.current)grass.current.count=quality==='PERFORMANCE'?(TREES.length*24):(TREES.length*48)
+  if(red.current)red.current.visible=rendererMode==='V1'||rendererMode==='V2_SLICE'&&season==='winter'&&env.night>.2
+  if(green.current)green.current.visible=rendererMode==='V1'||rendererMode==='V2_SLICE'&&season==='winter'&&env.night>.2
+  if(grass.current)grass.current.count=rendererMode==='V2_FULL'||rendererMode==='V3_FULL'?0:quality==='PERFORMANCE'?(TREES.length*24):(TREES.length*48)
   if(canopy.current)canopy.current.rotation.z=Math.sin(time.current*.23)*.003
-  if(foliage.current && (Math.abs(lastSnow.current-env.snow)>.002||lastSeason.current!==season)){
-   lastSnow.current=env.snow;lastSeason.current=season
+  if(foliage.current && (Math.abs(lastSnow.current-env.snow)>.002||lastSeason.current!==season||lastRenderer.current!==rendererMode)){
+   lastSnow.current=env.snow;lastSeason.current=season;lastRenderer.current=rendererMode
    for(let i=0;i<(TREES.length*20);i++){
     const tree=Math.floor(i/20),n=i%20,[x,z,s,family]=TREES[tree],a=n*2.399+family*.7
     const radius=(family===2?.25:.6)+(n%5)*(family===2?.22:.48),y=(family===2?4.2:5.3)+(n%4)*(family===2?1.1:.56)-Math.max(0,radius-1)*.35
     r.object.position.set(x+(Math.cos(a)*radius+.2)*s,y*s,z+Math.sin(a)*radius*s)
     r.object.rotation.set(n*.13,a,n*.07)
-    const winter=family===2?1:Math.max(.68,1-env.snow*.32)
-    r.object.scale.set((1.3+n%3*.22)*s*winter,(.85+n%3*.16)*s*winter,(1.2+n%4*.14)*s*winter)
+    const winter=family===2?1:Math.max(.68,1-env.snow*.32),replaced=rendererMode==='V2_FULL'||rendererMode==='V3_FULL'||rendererMode==='V2_SLICE'&&V2_SLICE_TREE_INDICES.has(tree)
+    r.object.scale.set((1.3+n%3*.22)*s*winter,(.85+n%3*.16)*s*winter,(1.2+n%4*.14)*s*winter);if(replaced)r.object.scale.setScalar(0)
     r.object.updateMatrix();foliage.current.setMatrixAt(i,r.object.matrix)
     const palette=season==='spring'?(family===2?['#6d9872','#88aa78']:['#f3c5d8','#efb2cf','#ffe0e5']):season==='autumn'?['#bd733b','#d5a349','#b34d40','#8e9b63']:season==='winter'?['#708a7b','#7a8b83']:['#6e9c67','#8baa6b','#507f5c']
     r.color.set(palette[(tree+n)%palette.length]);foliage.current.setColorAt(i,r.color)
@@ -71,7 +72,7 @@ export default function FantasyGrove() {
   }
  })
  return <>
-  {TREES.map(([x,z,s,family],i)=><mesh key={i} position={[x,0,z]} scale={s} geometry={r.skeletons[family]} material={r.wood} castShadow={quality!=='PERFORMANCE'||i<5} receiveShadow/>)}
+  {TREES.map(([x,z,s,family],i)=>(rendererMode==='V2_FULL'||rendererMode==='V3_FULL'||rendererMode==='V2_SLICE'&&V2_SLICE_TREE_INDICES.has(i))?null:<mesh key={i} position={[x,0,z]} scale={s} geometry={r.skeletons[family]} material={r.wood} castShadow={quality!=='PERFORMANCE'||i<5} receiveShadow/>)}
   <group ref={canopy}><instancedMesh ref={foliage} args={[r.crown,r.leaves,(TREES.length*20)]} frustumCulled={false} castShadow={quality!=='PERFORMANCE'} receiveShadow/></group>
   <instancedMesh ref={snowCaps} args={[r.snowCrown,r.snow,TREES.length*20]} frustumCulled={false} receiveShadow/>
   <instancedMesh ref={red} args={[r.bulb,r.red,TREES.length*10]}/><instancedMesh ref={green} args={[r.bulb,r.green,TREES.length*10]}/>
