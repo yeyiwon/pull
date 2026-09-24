@@ -139,6 +139,8 @@
 .world-menu{padding-top:12px}.world-menu>.section-label{margin:30px 0 14px}.world-menu>.section-label:first-child{margin-top:10px}
 .world-menu .time-choices button{align-items:center;min-height:48px}.world-menu .season-choices button{min-height:48px}
 .time-choices{gap:8px}.season-choices{gap:8px}.weather-choices{gap:3px}
+.phenomenon-choices{align-items:flex-start;flex-wrap:wrap;max-width:100%;overflow:visible}
+.phenomenon-choices button{flex:0 0 auto;white-space:nowrap}
 .interface-sheet[data-panel="moru"]{top:auto;bottom:calc(90px + env(safe-area-inset-bottom));height:auto;max-height:50dvh;padding:14px 18px;width:min(340px,calc(100vw - 32px))}
 .interface-sheet[data-panel="moru"] .sheet-eyebrow,.interface-sheet[data-panel="moru"] h1{display:none}
 .moru-context-row{display:flex;align-items:center;gap:8px}

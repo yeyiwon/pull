@@ -6,7 +6,7 @@ import { weatherPreview } from './weatherPresentation.ts'
 export type WorldEventCategory='WEATHER'|'CELESTIAL'|'SEASONAL'|'MAGICAL'|'FESTIVAL'
 export type WorldEventSignificance='LOW'|'MEDIUM'|'HIGH'|'VERY_HIGH'
 export type WorldEventId='CLEAR'|'RAIN'|'HEAVY_RAIN'|'SNOW'|'HEAVY_SNOW'|'FOG'|'STRONG_WIND'|'FIREWORKS'|'METEOR_SHOWER'|'DIAMOND_DUST'|'AURORA'|'FIREFLY_NIGHT'|'CHERRY_BLOSSOM_WIND'|'AUTUMN_LEAF_STORM'|'THUNDERSTORM'|'WINTER_ILLUMINATION'
-export type WorldEventDefinition={id:WorldEventId;label:string;category:WorldEventCategory;intensity:number;duration:number;seasons:readonly Season[];time:'ANY'|'DAY'|'NIGHT';rarity:number;cooldown:number;location:string|null;significance:WorldEventSignificance;moruAwareness:boolean}
+export type WorldEventDefinition={id:WorldEventId;label:string;controlLabel?:string;category:WorldEventCategory;intensity:number;duration:number;seasons:readonly Season[];time:'ANY'|'DAY'|'NIGHT';rarity:number;cooldown:number;location:string|null;significance:WorldEventSignificance;moruAwareness:boolean}
 const ALL:readonly Season[]=['spring','summer','autumn','winter']
 export const WORLD_EVENTS:readonly WorldEventDefinition[]=[
  {id:'CLEAR',label:'Clear',category:'WEATHER',intensity:0,duration:300,seasons:ALL,time:'ANY',rarity:1,cooldown:0,location:null,significance:'LOW',moruAwareness:false},
@@ -16,16 +16,18 @@ export const WORLD_EVENTS:readonly WorldEventDefinition[]=[
  {id:'HEAVY_SNOW',label:'Heavy Snow',category:'WEATHER',intensity:1,duration:120,seasons:['winter'],time:'ANY',rarity:.28,cooldown:600,location:'AncientTree',significance:'HIGH',moruAwareness:true},
  {id:'FOG',label:'Fog',category:'WEATHER',intensity:.7,duration:120,seasons:ALL,time:'ANY',rarity:.28,cooldown:420,location:'HiddenGarden',significance:'MEDIUM',moruAwareness:false},
  {id:'STRONG_WIND',label:'Strong Wind',category:'WEATHER',intensity:.9,duration:70,seasons:ALL,time:'ANY',rarity:.22,cooldown:360,location:null,significance:'MEDIUM',moruAwareness:true},
- {id:'FIREWORKS',label:'Fireworks',category:'FESTIVAL',intensity:1,duration:55,seasons:ALL,time:'NIGHT',rarity:.025,cooldown:86400,location:'OldBridge',significance:'VERY_HIGH',moruAwareness:true},
- {id:'METEOR_SHOWER',label:'Meteor Shower',category:'CELESTIAL',intensity:1,duration:75,seasons:ALL,time:'NIGHT',rarity:.035,cooldown:43200,location:'MoonShrine',significance:'VERY_HIGH',moruAwareness:true},
+ {id:'FIREWORKS',label:'Fireworks',controlLabel:'불꽃놀이',category:'FESTIVAL',intensity:1,duration:55,seasons:ALL,time:'NIGHT',rarity:.025,cooldown:86400,location:'OldBridge',significance:'VERY_HIGH',moruAwareness:true},
+ {id:'METEOR_SHOWER',label:'Meteor Shower',controlLabel:'유성우',category:'CELESTIAL',intensity:1,duration:75,seasons:ALL,time:'NIGHT',rarity:.035,cooldown:43200,location:'MoonShrine',significance:'VERY_HIGH',moruAwareness:true},
  {id:'DIAMOND_DUST',label:'Diamond Dust',category:'MAGICAL',intensity:.75,duration:80,seasons:['winter'],time:'ANY',rarity:.06,cooldown:21600,location:'AncientTree',significance:'HIGH',moruAwareness:true},
- {id:'AURORA',label:'Aurora',category:'CELESTIAL',intensity:.85,duration:120,seasons:['winter'],time:'NIGHT',rarity:.02,cooldown:86400,location:'MoonShrine',significance:'VERY_HIGH',moruAwareness:true},
- {id:'FIREFLY_NIGHT',label:'Firefly Night',category:'MAGICAL',intensity:.7,duration:100,seasons:['spring','summer'],time:'NIGHT',rarity:.12,cooldown:3600,location:'HiddenGarden',significance:'HIGH',moruAwareness:true},
+ {id:'AURORA',label:'Aurora',controlLabel:'오로라',category:'CELESTIAL',intensity:.85,duration:120,seasons:['winter'],time:'NIGHT',rarity:.02,cooldown:86400,location:'MoonShrine',significance:'VERY_HIGH',moruAwareness:true},
+ {id:'FIREFLY_NIGHT',label:'Firefly Night',category:'MAGICAL',intensity:.7,duration:100,seasons:['spring','summer','autumn'],time:'NIGHT',rarity:.12,cooldown:3600,location:'HiddenGarden',significance:'HIGH',moruAwareness:true},
  {id:'CHERRY_BLOSSOM_WIND',label:'Cherry Blossom Wind',category:'SEASONAL',intensity:.75,duration:75,seasons:['spring'],time:'ANY',rarity:.18,cooldown:1800,location:'HiddenGarden',significance:'HIGH',moruAwareness:true},
  {id:'AUTUMN_LEAF_STORM',label:'Autumn Leaf Storm',category:'SEASONAL',intensity:.8,duration:75,seasons:['autumn'],time:'ANY',rarity:.16,cooldown:1800,location:'AncientTree',significance:'HIGH',moruAwareness:true},
  {id:'THUNDERSTORM',label:'Thunderstorm',category:'WEATHER',intensity:1,duration:80,seasons:['spring','summer','autumn'],time:'ANY',rarity:.08,cooldown:3600,location:'home',significance:'HIGH',moruAwareness:true},
  {id:'WINTER_ILLUMINATION',label:'Winter Illumination',category:'SEASONAL',intensity:1,duration:180,seasons:['winter'],time:'NIGHT',rarity:.35,cooldown:900,location:'AncientTree',significance:'HIGH',moruAwareness:true},
 ]
+// One registry-backed list feeds desktop, mobile and Capacitor controls.
+export const WORLD_EVENT_CONTROLS=WORLD_EVENTS.filter(event=>event.controlLabel)
 export const eventDefinition=(id:WorldEventId)=>WORLD_EVENTS.find(event=>event.id===id)!
 type Snapshot={mode:'AUTO'|'MANUAL';manual:WorldEventId|null;manuals:readonly WorldEventId[];active:readonly WorldEventDefinition[];elapsed:number;revision:number}
 let snapshot:Snapshot={mode:'AUTO',manual:null,manuals:[],active:[],elapsed:0,revision:0},lastSlot=-1

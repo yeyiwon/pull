@@ -100,8 +100,10 @@ function Environment({ player, art = {} }: { player: RefObject<Player>; art?: En
     setUniform(sky.uTime, sky.uTime.value + delta)
     const { from, to, blend, sunX, sunY, daylight } = worldTime.current
     const smooth = 1 - Math.exp(-delta * 2)
-    tint.a.set(from.top).lerp(tint.b.set(to.top), blend).lerp(env.skyTint, .12 * (1 - env.night)); sky.uTop.value.lerp(tint.a, smooth)
-    tint.a.set(from.horizon).lerp(tint.b.set(to.horizon), blend).lerp(env.skyTint, .14 * (1 - env.night)); sky.uHorizon.value.lerp(tint.a, smooth)
+    const season=worldTime.realWorld.season
+    const seasonalNight=season==='spring'?['#130d2c','#2b214d'] as const:season==='autumn'?['#190d28','#382039'] as const:null
+    tint.a.set(from.top).lerp(tint.b.set(to.top), blend).lerp(env.skyTint, .12 * (1 - env.night));if(seasonalNight)tint.a.lerp(tint.b.set(seasonalNight[0]),env.night*.34);sky.uTop.value.lerp(tint.a, smooth)
+    tint.a.set(from.horizon).lerp(tint.b.set(to.horizon), blend).lerp(env.skyTint, .14 * (1 - env.night));if(seasonalNight)tint.a.lerp(tint.b.set(seasonalNight[1]),env.night*.3);sky.uHorizon.value.lerp(tint.a, smooth)
     tint.sun.set(sunX, sunY, -.4).normalize()
     sky.uSunDirection.value.lerp(tint.sun, smooth).normalize()
     setUniform(sky.uRays,preset.rays&&graphicsState.rays&&['DAWN','MORNING','SUNSET'].includes(worldTime.current.phase)?Math.min(.6,env.haze*.35)*(1-env.rain):0);

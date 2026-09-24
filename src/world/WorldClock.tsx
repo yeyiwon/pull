@@ -10,7 +10,7 @@ import type { FantasyEvent, GrowthStage } from './livingWorld.ts'
 import type { WeatherContext } from './realWorld.ts'
 import { weatherPreview } from './weatherPresentation.ts'
 import { cinematicHooks } from '../graphics/cinematicHooks.ts'
-import { WORLD_EVENTS,useWorldEvents,worldEvents } from './worldEvents.ts'
+import { eventDefinition,WORLD_EVENT_CONTROLS,WORLD_EVENTS,useWorldEvents,worldEvents } from './worldEvents.ts'
 import type { WorldEventId } from './worldEvents.ts'
 import { DAY_PREVIEWS, CLOCK_DISPLAY, refreshWorldTime, worldTime } from './worldTime.ts'
 function visitPreview(player:Player,location:string) {
@@ -19,7 +19,6 @@ function visitPreview(player:Player,location:string) {
 }
 const seasonLabels:Record<string,string>={spring:'Spring',summer:'Summer',autumn:'Autumn',winter:'Winter'}
 const seasonIcons:Record<string,string>={spring:'🌸',summer:'🌿',autumn:'🍂',winter:'❄️'}
-const specialEvents:readonly WorldEventId[]=['FIREWORKS','METEOR_SHOWER','AURORA']
 const eventLabels:Record<WorldEventId,string>={CLEAR:'맑음',RAIN:'비',HEAVY_RAIN:'폭우',SNOW:'눈',HEAVY_SNOW:'함박눈',FOG:'안개',STRONG_WIND:'강풍',FIREWORKS:'불꽃축제',METEOR_SHOWER:'유성우',DIAMOND_DUST:'다이아몬드 더스트',AURORA:'오로라',FIREFLY_NIGHT:'반딧불이 밤',CHERRY_BLOSSOM_WIND:'벚꽃바람',AUTUMN_LEAF_STORM:'가을 낙엽바람',THUNDERSTORM:'천둥비',WINTER_ILLUMINATION:'겨울 일루미네이션'}
 function label() {
   const { hour, phase } = worldTime.current
@@ -44,13 +43,13 @@ export default function WorldClock({ player, mode='status' }: { player: RefObjec
 	   const weatherValue=weatherPreview.type
 	   // These mutable adapters are the existing imperative preview boundary shared with the renderer.
 	   // oxlint-disable-next-line react/immutability
-	   const choosePhenomenon=(id:WorldEventId)=>{if(id==='AURORA')worldTime.seasonOverride={season:'winter',progress:.65};worldTime.override=22;worldEvents.toggleManual(id);refreshWorldTime();setText(label()+id)}
+	   const choosePhenomenon=(id:WorldEventId)=>{const event=eventDefinition(id);if(!event.seasons.includes(worldTime.canonical.season))worldTime.seasonOverride={season:event.seasons[0],progress:.65};if(event.time==='NIGHT')worldTime.override=22;worldEvents.toggleManual(id);refreshWorldTime();setText(label()+id)}
    return <section className="world-menu">
     <p className="section-label">시간</p><div className="time-choices">{[['Real Time',null],...DAY_PREVIEWS].map(([name,hour])=><button key={name} aria-pressed={worldTime.override===hour} onClick={()=>{worldTime.override=hour as number|null;refreshWorldTime();setText(label())}}>{name}<span aria-hidden="true">{worldTime.override===hour?'●':'○'}</span></button>)}</div>
     <p className="section-label">계절</p><div className="season-choices">{['REAL TIME',...SEASONS].map(s=><button key={s} data-season={s} aria-pressed={s==='REAL TIME'?worldTime.seasonOverride===null:worldTime.seasonOverride?.season===s} onClick={()=>{worldTime.seasonOverride=s==='REAL TIME'?null:{season:s as Season,progress:.65};refreshWorldTime();setText(label())}}><span aria-hidden="true">{seasonIcons[s]}</span>{s==='REAL TIME'?'Real Season':seasonLabels[s]}</button>)}</div>
     <p className="section-label">날씨</p><div className="weather-choices">{['auto','clear','cloudy','rain','snow','fog'].map(w=><button key={w} aria-pressed={w==='auto'?weatherValue===null:weatherValue===w} onClick={()=>{weatherPreview.type=w==='auto'?null:w as WeatherContext['type'];setText(label()+w)}}>{{auto:'자동',clear:'맑음',cloudy:'흐림',rain:'비',snow:'눈',fog:'안개'}[w]}</button>)}</div>
     {weatherValue==='snow'&&<><p className="section-label">눈의 양</p><div className="weather-choices">{(['light','normal','heavy'] as const).map(value=><button key={value} aria-pressed={livingWorld.snowMode===value} onClick={()=>{livingWorld.snowMode=value;setText(label()+value)}}>{{light:'살짝',normal:'보통',heavy:'함박눈'}[value]}</button>)}</div></>}
-    <p className="section-label">현상</p><div className="weather-choices"><button aria-pressed={eventState.mode==='AUTO'} onClick={()=>worldEvents.setManual(null)}>자동</button><button aria-pressed={eventState.mode==='MANUAL'&&!eventState.active.length} onClick={()=>worldEvents.setNone()}>없음</button>{specialEvents.map(id=><button key={id} aria-pressed={eventState.active.some(event=>event.id===id)} onClick={()=>choosePhenomenon(id)}>{eventLabels[id]}</button>)}</div>
+    <p className="section-label">현상</p><div className="weather-choices phenomenon-choices"><button aria-pressed={eventState.mode==='AUTO'} onClick={()=>worldEvents.setManual(null)}>자동</button><button aria-pressed={eventState.mode==='MANUAL'&&!eventState.active.length} onClick={()=>worldEvents.setNone()}>없음</button>{WORLD_EVENT_CONTROLS.map(event=><button key={event.id} aria-pressed={eventState.active.some(active=>active.id===event.id)} onClick={()=>choosePhenomenon(event.id)}>{event.controlLabel}</button>)}</div>
     <p className="sheet-intro">현상은 여러 개를 함께 켤 수 있어요.</p>
    </section>
   }
