@@ -2,7 +2,7 @@ import { bodySelection } from './characters/bodySelection.ts'
 import BenchPrompt from './world/BenchPrompt.tsx'
 import WorldInterface from './ui/WorldInterface.tsx'
 import { worldInterface } from './ui/interface.ts'
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { PCFShadowMap } from 'three'
 import { createPlayer } from './world/locomotion.ts'
@@ -10,8 +10,11 @@ import World from './world/World.tsx'
 import TouchControls from './world/TouchControls.tsx'
 import ConversationInput from './conversation/ConversationInput.tsx'
 import { conversationSession } from './conversation/session.ts'
+import { cloudSync } from './cloud/sync.ts'
 import './App.css'
 import './ui/renaissance.css'
+
+const AccountGateway=lazy(()=>import('./cloud/AccountGateway.tsx'))
 
 
 type Theme = 'dark' | 'light'
@@ -25,6 +28,7 @@ function App() {
   useEffect(()=>{try{localStorage.setItem('pull.ui.theme',theme)}catch{/* Keep the theme usable without persistence. */}},[theme])
   const conversation=useSyncExternalStore(conversationSession.subscribe,conversationSession.getSnapshot)
   const panel=useSyncExternalStore(worldInterface.subscribe,worldInterface.getSnapshot)
+  const account=useSyncExternalStore(cloudSync.subscribe,cloudSync.getSnapshot)
   const player = useRef(createPlayer())
   const bubble = useRef<HTMLDivElement>(null)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
@@ -33,6 +37,7 @@ function App() {
 
   return (
     <main data-theme={theme} className="experiment" aria-label="PULL — A living world">
+      {account.authenticated&&<>
       <Canvas
         camera={{ position: [1.6, 3.28, 10.5], fov: 48, near: 0.1, far: 600 }}
         shadows={{ type: PCFShadowMap }}
@@ -55,6 +60,9 @@ function App() {
           ? '캐릭터를 불러오지 못했습니다. 페이지를 새로고침해 주세요.'
           : null}
       </p>
+      </>}
+      {!account.initialized&&<div className="account-session-loading" aria-label="계정 확인 중"><span>PULL</span></div>}
+      <Suspense fallback={null}><AccountGateway/></Suspense>
     </main>
   )
 }

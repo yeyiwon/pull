@@ -50,7 +50,8 @@ export function createBackgroundWorldStore(storage:Pick<Storage,'getItem'|'setIt
  const reconcile=(at=now())=>{const elapsed=Math.max(0,at-state.updatedAt),result=simulateBackground(state,at);state=result.state;save();backgroundDiagnostics.simulations++;backgroundDiagnostics.candidateNotifications+=result.candidate?1:0;backgroundDiagnostics.lastElapsedMinutes=Math.round(elapsed/60000);backgroundDiagnostics.lastCandidate=result.candidate;backgroundDiagnostics.lastMemories=result.memories;return result}
  const simulate=(milliseconds:number)=>{const result=simulateBackground(state,state.updatedAt+Math.max(0,milliseconds));state=result.state;save();backgroundDiagnostics.simulations++;backgroundDiagnostics.candidateNotifications+=result.candidate?1:0;backgroundDiagnostics.lastElapsedMinutes=Math.round(milliseconds/60000);backgroundDiagnostics.lastCandidate=result.candidate;backgroundDiagnostics.lastMemories=result.memories;return result}
  const markNotificationSent=(candidate:NotificationCandidate,at=now())=>{const today=day(at),count=state.notificationsToday.day===today?state.notificationsToday.count:0;state.lastNotificationAt=at;state.lastNotifiedEvent=candidate.eventId;state.notificationsToday={day:today,count:count+1};save();backgroundDiagnostics.notificationsSent++}
- return {get state(){return state},capture,reconcile,simulate,markNotificationSent,save}
+ const replace=(next:PersistentWorldState)=>{state=structuredClone(next);save()}
+ return {get state(){return state},capture,reconcile,simulate,markNotificationSent,replace,save}
 }
 let backgroundSession:ReturnType<typeof createBackgroundWorldStore>|null=null
 export function getBackgroundWorld(){if(!backgroundSession){let storage:null|Storage=null;try{storage=localStorage}catch{/* optional */}backgroundSession=createBackgroundWorldStore(storage)}return backgroundSession}

@@ -2,7 +2,7 @@ import { bodySelection } from '../characters/bodySelection.ts'
 import BodySelector from '../characters/BodySelector.tsx'
 import { isSeated } from '../world/bench.ts'
 import GestureGlyph from './GestureGlyph.tsx'
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import type { RefObject } from 'react'
 import type { Player } from '../world/locomotion.ts'
 import { worldInterface } from './interface.ts'
@@ -17,6 +17,7 @@ import { moru } from '../characters/expression.ts'
 import { conversationSession } from '../conversation/session.ts'
 import { setRendererMode,useRendererMode,V2_FULL_BUDGET,V2_SLICE_BUDGET,V3_FULL_BUDGET } from '../graphics/rendererV2.ts'
 import { graphicsState } from '../graphics/quality.ts'
+const AccountPanel=lazy(()=>import('../cloud/AccountPanel.tsx'))
 function moruAttention(){moru.perform('listen','user',false)}
 function clearMovement(p:Player){p.keys.clear();p.touchX=0;p.touchZ=0;p.jumpRequested=false}
 function jump(p:Player){p.jumpRequested=true}
@@ -92,7 +93,7 @@ export default function WorldInterface({player,ready,theme,onThemeChange}:{playe
     {panel==='music'&&<div ref={setMusicSlot} id="music-panel-slot"/>}
     {panel==='appearance'&&<div className="appearance-workspace"><BodySelector disabled={isSeated(player.current)}/><div className="appearance-dances"><p className="section-label">Preview motion</p><ActionControls player={player} danceOnly disabled={!ready||!bodyReady}/></div></div>}
     {panel==='moru'&&<ActionControls player={player} disabled={!ready||!bodyReady||!conversation.ready}/>}
-    {panel==='display'&&<><fieldset className="theme-picker"><legend>Mode</legend><div>{(['light','dark'] as const).map(value=><button key={value} aria-pressed={theme===value} onClick={()=>onThemeChange(value)}>{value==='light'?'Light':'Dark'}<small>{value==='light'?'맑고 부드럽게':'차분하고 깊게'}</small></button>)}</div><p>메뉴와 채팅의 테마예요. 세계의 시간은 그대로 유지돼요.</p></fieldset><p className="section-label">Display quality</p><GraphicsControls diagnostics={false}/><button className="text-link" onClick={()=>worldInterface.open('controls')}>Controls<span>조작 안내</span></button></>}
+    {panel==='display'&&<><Suspense fallback={<section className="account-panel"><p>Account</p><small>연결 상태 확인 중…</small></section>}><AccountPanel/></Suspense><fieldset className="theme-picker"><legend>Mode</legend><div>{(['light','dark'] as const).map(value=><button key={value} aria-pressed={theme===value} onClick={()=>onThemeChange(value)}>{value==='light'?'Light':'Dark'}<small>{value==='light'?'맑고 부드럽게':'차분하고 깊게'}</small></button>)}</div><p>메뉴와 채팅의 테마예요. 세계의 시간은 그대로 유지돼요.</p></fieldset><p className="section-label">Display quality</p><GraphicsControls diagnostics={false}/><button className="text-link" onClick={()=>worldInterface.open('controls')}>Controls<span>조작 안내</span></button></>}
     {panel==='controls'&&<div className="control-guide"><p><span>이동</span>WASD / 방향키 · 터치 스틱</p><p><span>달리기</span>Shift · 스틱 바깥쪽</p><p><span>둘러보기</span>화면 드래그</p><p><span>점프</span>Space · ↑</p><p><span>인사 / 춤</span>1 / 2</p><p><span>반응</span>E · 모루 메뉴</p><p className="sheet-intro">움직이면 현재 행동을 멈추고 따라가요.</p></div>}
     {panel==='debug'&&<div className="studio-controls"><WorldClock player={player} mode="debug"/><GraphicsControls/><fieldset className="theme-picker"><legend>Renderer A/B</legend><div>{(['V1','V2_SLICE','V2_FULL','V3_FULL'] as const).map(mode=><button key={mode} aria-pressed={rendererMode===mode} onClick={()=>setRendererMode(mode)}>{mode==='V1'?'World v1':mode==='V2_SLICE'?'Renderer v2 slice':mode==='V2_FULL'?'Renderer v2 full':'World v3'}<small>{mode==='V1'?'기존 World':mode==='V2_SLICE'?'House–Bridge vertical slice':mode==='V2_FULL'?'Full environment migration':'Living magical open world'}</small></button>)}</div><p>Live: {Math.round(graphicsState.fps)} FPS · {graphicsState.calls} calls · {graphicsState.triangles.toLocaleString()} tris</p>{rendererMode!=='V1'&&<p>{rendererMode==='V3_FULL'?'V3':rendererMode==='V2_FULL'?'Full':'Slice'} budget: +{(rendererMode==='V3_FULL'?V3_FULL_BUDGET:rendererMode==='V2_FULL'?V2_FULL_BUDGET:V2_SLICE_BUDGET).drawCalls} calls · ~{(rendererMode==='V3_FULL'?V3_FULL_BUDGET:rendererMode==='V2_FULL'?V2_FULL_BUDGET:V2_SLICE_BUDGET).estimatedTriangles.toLocaleString()} tris · textures +0</p>}</fieldset><BrainInspector/><CharacterInspector/></div>}
     {import.meta.env.DEV&&panel==='menu'&&<button className="studio-link" onClick={()=>worldInterface.open('debug')}>개발 도구</button>}

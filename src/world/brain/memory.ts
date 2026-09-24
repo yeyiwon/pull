@@ -56,6 +56,7 @@ export function createMemoryStore(storage: MemoryStorage | null, now = () => new
   save()
   return {
     memory, previousVisitAt,
+    replace(next:MoruMemory){for(const key of Object.keys(memory) as (keyof MoruMemory)[])delete (memory as unknown as Record<string,unknown>)[key];Object.assign(memory,structuredClone(next));dirty=true;save()},
     interestsChanged() { dirty = true; save() },
     autonomyChanged() { dirty = true; save() },
     intelligenceChanged() { dirty = true },

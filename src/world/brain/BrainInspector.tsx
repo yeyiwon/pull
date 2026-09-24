@@ -7,6 +7,7 @@ import { backgroundDiagnostics,getBackgroundWorld } from '../backgroundWorld.ts'
 import { enableRemotePush,notificationDiagnostics,testLocalNotification,testRemoteNotificationCopy } from '../../native/notifications.ts'
 import { getMemorySession } from './memory.ts'
 import { recordExperience } from '../intelligence.ts'
+import CloudInspector from '../../cloud/CloudInspector.tsx'
 export default function BrainInspector(){
  const [snapshot,setSnapshot]=useState(()=>structuredClone(brainDebug)),[text,setText]=useState(''),[pending,setPending]=useState(false)
  useEffect(()=>{const timer=setInterval(()=>setSnapshot(structuredClone(brainDebug)),1000);return()=>clearInterval(timer)},[])
@@ -28,6 +29,7 @@ export default function BrainInspector(){
    <button onClick={()=>void enableRemotePush()}>Enable remote push</button>
    <pre style={{whiteSpace:'pre-wrap'}}>{JSON.stringify({background:backgroundDiagnostics,notifications:notificationDiagnostics,state:getBackgroundWorld().state},null,2)}</pre>
   </details>}
+  {import.meta.env.DEV&&<CloudInspector/>}
   <div>Memory: {snapshot.events.slice(-3).map(e=>e.event).join(" / ")||"—"}</div>
   {import.meta.env.DEV&&snapshot.interests&&<details><summary>Current Fascination / Curiosity Queue / Research Journal</summary>
    <div>Current Fascination: {snapshot.interests.fascination?.topic??'—'}</div>
