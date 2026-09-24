@@ -29,6 +29,7 @@ function entries():Entry[]{return [
  ...WORLD_SEATS.map(seat=>({id:`bench-${seat.id}`,type:'bench' as const,position:seatApproach(seat),tags:['bench','seat','벤치','의자'],affordances:['approach','sit','inspect']})),
  ...FLOWERS.map(([x,z],i)=>({id:`flower-${i+1}`,type:'flower' as const,position:new Vector3(x,surfaceHeight(x,z),z),tags:['flower','꽃'],affordances:['approach','look_at','inspect']})),
  ...WORLD_V3_LANDMARKS.map(landmark=>({id:landmark.id,type:(landmark.kind==='old-bridge'?'bridge':'landmark') as WorldCandidate['type'],position:new Vector3(landmark.approach[0],surfaceHeight(landmark.approach[0],landmark.approach[1]),landmark.approach[1]),tags:[...landmark.tags],affordances:['approach','look_at','inspect']})),
+ {id:'MoonLakeViewpoint',type:'water',position:new Vector3(streamCenter(42)+streamWidth(42)+2.2,surfaceHeight(streamCenter(42)+streamWidth(42)+2.2,42),42),tags:['lake','water','호수','물가'],affordances:['approach','look_at']},
  {id:'house',type:'house',position:new Vector3(HOME.x,0,HOME.z),tags:['house','home','집'],affordances:['approach','look_at']},
  ]}
 export function worldTarget(id:string,player:Player){

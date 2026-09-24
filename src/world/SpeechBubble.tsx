@@ -25,6 +25,7 @@ import type { Reaction } from './personality.ts'
 import { createAgentExecutor, agentDiagnostics } from './agentExecutor.ts'
 import { perceiveWorld } from './worldPerception.ts'
 import { agentControl } from './agentControl.ts'
+import { createAutonomy, autonomyDebug } from './autonomy.ts'
 
 function clearEvents(player:Player){player.events.length=0}
 function markBrainAction(player:Player){player.brainRequested=true}
@@ -55,15 +56,18 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
   const {camera}=useThree()
   const brain = useRef<ReturnType<typeof createMoruMind> | null>(null)
   const agent=useRef<ReturnType<typeof createAgentExecutor>|null>(null)
+  const autonomy=useRef<ReturnType<typeof createAutonomy>|null>(null)
   const active = useRef({ age: 0, duration: 0, letters: [] as string[], shown: 0 })
  const semantic = useRef({elapsed:0,idle:0,returned:false,userVersion:0,eventRevision:-1,noticedEvent:''})
   useEffect(() => {
     const memory=getMemorySession()
     const controlledPlayer=player.current
-    const executor=createAgentExecutor(result=>{if(result==='completed')memory.event('AGENT_COMMAND_COMPLETED')})
+    const executor=createAgentExecutor((result,command)=>{if(result==='completed'&&!command.startsWith('AUTONOMY:'))memory.event('AGENT_COMMAND_COMPLETED');autonomy.current?.result(result,command)})
+    const director=createAutonomy({start:executor.start,memory:memory.memory.autonomy,changed:memory.autonomyChanged})
     const detachAgentControl=agentControl.bind(executor.start)
     agent.current=executor
-    if(import.meta.env.DEV)(window as Window&{__moruAgentDiagnostics?:typeof agentDiagnostics}).__moruAgentDiagnostics=agentDiagnostics
+    autonomy.current=director
+    if(import.meta.env.DEV){const debugWindow=window as Window&{__moruAgentDiagnostics?:typeof agentDiagnostics;__moruAutonomyDiagnostics?:typeof autonomyDebug};debugWindow.__moruAgentDiagnostics=agentDiagnostics;debugWindow.__moruAutonomyDiagnostics=autonomyDebug}
     moru.setAutonomy(false)
     const controller = createMoruMind({research:{provider:new ServerResearchProvider(),budget:memory.memory.researchBudget,session:researchSessionBudget},interests:memory.memory.interests,interestsChanged:memory.interestsChanged,visits:memory.memory.visitCount,debug:import.meta.env.DEV,execute:intent=>{
       const p=player.current
@@ -94,7 +98,7 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
     document.addEventListener('visibilitychange', returned)
     document.addEventListener('visibilitychange', suspend)
     window.addEventListener('pagehide', leave)
-    return () => { detachAgentControl();executor.interrupt(controlledPlayer,'disposed');agent.current=null;document.removeEventListener('visibilitychange', returned); detach();controller.dispose(); memory.save(); brainCommands.trigger=null;brainCommands.converse=null;moru.setAutonomy(true);brain.current = null; document.removeEventListener('visibilitychange', suspend); window.removeEventListener('pagehide', leave) }
+    return () => { detachAgentControl();executor.interrupt(controlledPlayer,'disposed');agent.current=null;autonomy.current=null;document.removeEventListener('visibilitychange', returned); detach();controller.dispose(); memory.save(); brainCommands.trigger=null;brainCommands.converse=null;moru.setAutonomy(true);brain.current = null; document.removeEventListener('visibilitychange', suspend); window.removeEventListener('pagehide', leave) }
   }, [player,camera])
   const projected = useRef(new Vector3())
   const headTop = useRef(new Vector3())
@@ -140,7 +144,9 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
       clearEvents(pState);clock.userVersion=moru.userVersion
       // Preserve completed ideas on return before research can start its next cycle.
       if(brain.current)evolve(brain.current.interests.data,worldTime.realWorld.season,available&&!conversationActive())
-      brain.current?.tick(observeWorld(pState,{idle:clock.idle,interacted,returned:clock.returned,actions:moru.recentActions,speech:moru.recentSpeech}),elapsed)
+      const observation=observeWorld(pState,{idle:clock.idle,interacted,returned:clock.returned,actions:moru.recentActions,speech:moru.recentSpeech,autonomousGoal:autonomy.current?.goal?.id??null,agentSkill:agentDiagnostics.skill,autonomyState:autonomy.current?.state??'QUIET'})
+      brain.current?.tick(observation,elapsed)
+      autonomy.current?.update({observation,perception:perceiveWorld(pState,camera),player:pState,agentState:agentDiagnostics.state,currentSkill:agentDiagnostics.skill},elapsed)
       clock.returned=false
     }
     const node = element.current

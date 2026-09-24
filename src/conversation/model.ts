@@ -8,13 +8,13 @@ import type { AttentionTarget, BrainEmote, InternalState, MeaningfulMemory, Obse
 import { directCommandPlan, parseActionPlan } from '../world/agentSkills.ts'
 import type { SkillStep, WorldPerception } from '../world/agentSkills.ts'
 export type Turn={user:string;moru:string}
-export type Context={continuity?:Continuity;research?:ResearchSummary;userMessage:string;world:Pick<Observation,'season'|'timeOfDay'|'weather'|'location'|'indoor'|'nearWater'|'skyEvent'|'activeEvents'|'eventLocation'>;moru:InternalState&{target:AttentionTarget};perception:WorldPerception;recentConversation:Turn[];recentEvents:MeaningfulMemory[]}
+export type Context={continuity?:Continuity;research?:ResearchSummary;userMessage:string;world:Pick<Observation,'season'|'timeOfDay'|'weather'|'location'|'indoor'|'nearWater'|'skyEvent'|'activeEvents'|'eventLocation'|'currentAutonomousGoal'|'currentAgentSkill'|'autonomyState'>;moru:InternalState&{target:AttentionTarget};perception:WorldPerception;recentConversation:Turn[];recentEvents:MeaningfulMemory[]}
 export interface MoruConversationProvider{respond(context:Context,signal:AbortSignal):Promise<unknown>}
 export type Response={speech:string;emotion:'calm'|'happy'|'curious'|'sleepy'|'warm'|'sad'|'angry'|'annoyed'|null;attention:AttentionTarget;action:MoruActionId|null;emote:BrainEmote|null;plan:SkillStep[]}
 const emptyPerception=():WorldPerception=>({candidates:[],deicticTarget:null})
 export function buildContext(userMessage:string,o:Observation,state:InternalState,target:AttentionTarget,turns:Turn[],events:MeaningfulMemory[],research?:ResearchSummary,continuity?:Continuity,perception:WorldPerception=emptyPerception()):Context{
- const {season,timeOfDay,weather,location,indoor,nearWater,skyEvent,activeEvents=[],eventLocation=null}=o
- return structuredClone({...(continuity&&continuityQuestion(userMessage)?{continuity:parseContinuity(continuity)}:{}),...(research&&/궁금|관심|연구|탐구|발견|뭐.*생각|뭐.*하|뭐해|없을 때|없는 동안|뭐했|뭐 했/.test(userMessage)?{research:parseResearchSummary(research)}:{}),userMessage,world:{season,timeOfDay,weather,location,indoor,nearWater,skyEvent,activeEvents,eventLocation},moru:{...state,target},perception,recentConversation:turns.slice(-8),recentEvents:events.slice(-8)})
+ const {season,timeOfDay,weather,location,indoor,nearWater,skyEvent,activeEvents=[],eventLocation=null,currentAutonomousGoal=null,currentAgentSkill=null,autonomyState='QUIET'}=o
+ return structuredClone({...(continuity&&continuityQuestion(userMessage)?{continuity:parseContinuity(continuity)}:{}),...(research&&/궁금|관심|연구|탐구|발견|뭐.*생각|뭐.*하|뭐해|없을 때|없는 동안|뭐했|뭐 했/.test(userMessage)?{research:parseResearchSummary(research)}:{}),userMessage,world:{season,timeOfDay,weather,location,indoor,nearWater,skyEvent,activeEvents,eventLocation,currentAutonomousGoal,currentAgentSkill,autonomyState},moru:{...state,target},perception,recentConversation:turns.slice(-8),recentEvents:events.slice(-8)})
 }
 export function parseResponse(raw:unknown,context:Context){
  const rejected:string[]=[]

@@ -2,6 +2,7 @@ import { conversationProvider } from '../../conversation/provider.ts'
 import { useEffect, useState } from 'react'
 import { conversationSession } from '../../conversation/session.ts'
 import { brainDebug, brainCommands } from './mind.ts'
+import { autonomyDebug } from '../autonomy.ts'
 export default function BrainInspector(){
  const [snapshot,setSnapshot]=useState(()=>structuredClone(brainDebug)),[text,setText]=useState(''),[pending,setPending]=useState(false)
  useEffect(()=>{const timer=setInterval(()=>setSnapshot(structuredClone(brainDebug)),1000);return()=>clearInterval(timer)},[])
@@ -11,6 +12,7 @@ export default function BrainInspector(){
   <div>Attention: {snapshot.attention}</div><div>Intent: {snapshot.intent}</div>
   <div>Observe: {snapshot.observation}</div><div>Decision: {snapshot.decision}</div><div>Cooldown: {snapshot.cooldown}s</div>
   <div>Speech: {snapshot.recentSpeech.slice(-3).join(' / ')||'—'}</div><div>Actions: {snapshot.recentActions.slice(-3).join(' / ')||'—'}</div>
+  {import.meta.env.DEV&&<details><summary>Embodied Autonomy</summary><pre style={{whiteSpace:'pre-wrap'}}>{JSON.stringify(autonomyDebug,null,2)}</pre></details>}
   <div>Memory: {snapshot.events.slice(-3).map(e=>e.event).join(" / ")||"—"}</div>
   {import.meta.env.DEV&&snapshot.interests&&<details><summary>Current Fascination / Curiosity Queue / Research Journal</summary>
    <div>Current Fascination: {snapshot.interests.fascination?.topic??'—'}</div>

@@ -7,6 +7,7 @@ export type Observation = {
  location:'home'|'water'|'field';indoor:boolean;nearWater:boolean;skyEvent:string|null;activeEvents?:string[];eventLocation?:string|null
  userMoving:boolean;userIdleDuration:number;userInteracted:boolean;userReturned:boolean
  actionBusy:boolean;grounded:boolean;recentMoruActions:string[];recentSpeech:string[]
+ currentAutonomousGoal?:string|null;currentAgentSkill?:string|null;autonomyState?:'QUIET'|'THINKING'|'ACTING'|'INTERRUPTED'
 }
 export type BrainEmote = 'heart'|'sparkle'|'question'|'surprise'|'music'
 export type Intent = {kind:'WAIT'|'REACT';attention:AttentionTarget;action:MoruActionId|null;speech:string|null;emote:BrainEmote|null;reason:string}

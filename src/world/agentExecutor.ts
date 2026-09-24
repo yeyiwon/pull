@@ -22,17 +22,18 @@ function navigateDirection(player:Player,point:Vector3){
  }
  return best
 }
-export function createAgentExecutor(onResult?:(event:string)=>void){
- let plan:SkillStep[]=[],index=0,elapsed=0,origin=new Vector3(),lastDistance=Infinity,stuck=0
+export function createAgentExecutor(onResult?:(event:string,command:string)=>void){
+ let plan:SkillStep[]=[],index=0,elapsed=0,origin=new Vector3(),lastDistance=Infinity,stuck=0,activeCommand=''
  const resolved=new Map<string,Vector3>()
  const state=()=>agentDiagnostics.state
- function finish(result:string){agentDiagnostics.result=result;agentDiagnostics.state='IDLE';plan=[];index=0;elapsed=0;onResult?.(result)}
+ function finish(result:string){const command=activeCommand;agentDiagnostics.result=result;agentDiagnostics.state='IDLE';agentDiagnostics.skill=null;agentDiagnostics.resolvedTarget=null;plan=[];index=0;elapsed=0;activeCommand='';onResult?.(result,command)}
  function advance(){agentDiagnostics.completedSteps.push(plan[index].skill);index++;elapsed=0;lastDistance=Infinity;stuck=0;agentDiagnostics.step=index;if(index>=plan.length)finish('completed')}
  function start(next:ActionPlan,player:Player,command:string){
   if(!next.length)return false
+  if(plan.length)finish('replaced')
   player.agentMovement=null;player.agentInterrupted=false;origin.copy(player.position);resolved.clear();resolved.set('ORIGIN',origin.clone())
   for(const id of ['AHEAD_POINT','DEICTIC_POINT']){const point=worldTarget(id,player);if(point)resolved.set(id,point)}
-  plan=[...next];index=0;elapsed=0;agentDiagnostics.command=command;agentDiagnostics.plan=plan;agentDiagnostics.skill=plan[0].skill;agentDiagnostics.step=0;agentDiagnostics.completedSteps=[];agentDiagnostics.result='running';agentDiagnostics.startPosition={x:player.position.x,z:player.position.z};agentDiagnostics.position={...agentDiagnostics.startPosition};agentDiagnostics.distanceFromStart=0;agentDiagnostics.maxDistanceFromStart=0;return true
+  plan=[...next];index=0;elapsed=0;activeCommand=command;agentDiagnostics.command=command;agentDiagnostics.plan=plan;agentDiagnostics.skill=plan[0].skill;agentDiagnostics.step=0;agentDiagnostics.completedSteps=[];agentDiagnostics.result='running';agentDiagnostics.startPosition={x:player.position.x,z:player.position.z};agentDiagnostics.position={...agentDiagnostics.startPosition};agentDiagnostics.distanceFromStart=0;agentDiagnostics.maxDistanceFromStart=0;return true
  }
  function interrupt(player:Player,reason='interrupted'){player.agentMovement=null;finish(reason)}
  function target(step:SkillStep,player:Player){const id=step.target??'';return resolved.get(id)?.clone()??worldTarget(id,player)}

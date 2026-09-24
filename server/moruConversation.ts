@@ -5,6 +5,7 @@ import type { DiagnosticSink } from './conversationDiagnostics.ts'
 import { MORU_ACTIONS } from '../src/characters/actions.ts'
 import { MockConversationAdapter, parseResponse } from '../src/conversation/model.ts'
 import type { Context } from '../src/conversation/model.ts'
+import type { Observation } from '../src/world/brain/types.ts'
 import { conversationPayload, WORLD_EVENT_LABELS } from '../src/conversation/transport.ts'
 import { apiResponseHeaders, corsPreflight, isAllowedRequestOrigin } from './cors.ts'
 import { MORU_SKILLS } from '../src/world/agentSkills.ts'
@@ -32,7 +33,7 @@ export function validateContext(raw:unknown):Context{
   const type=choice(candidate.type,['tree','bench','flower','water','house','ground','bridge','landmark']) as Context['perception']['candidates'][number]['type']
   return {id:str(candidate.id,80),type,position:{x:finite(position.x),z:finite(position.z)},tags:list(candidate.tags).map(tag=>str(tag,30)),affordances:list(candidate.affordances).map(a=>str(a,30)),distance:finite(candidate.distance,0,500),visible:bool(candidate.visible)}})
  return {...(c.continuity&&continuityQuestion(String(c.userMessage))?{continuity:parseContinuity(c.continuity)}:{}),...(c.research?{research:parseResearchSummary(c.research)}:{}),userMessage:str(c.userMessage,280),
- world:{season:choice(w.season,['spring','summer','autumn','winter']),timeOfDay:choice(w.timeOfDay,['DAWN','MORNING','DAY','SUNSET','EVENING','NIGHT']),weather:choice(w.weather,['clear','cloudy','rain','snow','fog','storm']),location:choice(w.location,['home','water','field']) as Context['world']['location'],indoor:bool(w.indoor),nearWater:bool(w.nearWater),skyEvent:null,activeEvents:list(w.activeEvents??[]).map(value=>choice(value,WORLD_EVENT_IDS)),eventLocation:w.eventLocation==null?null:choice(w.eventLocation,['AncientTree','MoonShrine','HiddenGarden','OldBridge','home'])},
+ world:{season:choice(w.season,['spring','summer','autumn','winter']),timeOfDay:choice(w.timeOfDay,['DAWN','MORNING','DAY','SUNSET','EVENING','NIGHT']),weather:choice(w.weather,['clear','cloudy','rain','snow','fog','storm']),location:choice(w.location,['home','water','field']) as Context['world']['location'],indoor:bool(w.indoor),nearWater:bool(w.nearWater),skyEvent:null,activeEvents:list(w.activeEvents??[]).map(value=>choice(value,WORLD_EVENT_IDS)),eventLocation:w.eventLocation==null?null:choice(w.eventLocation,['AncientTree','MoonShrine','HiddenGarden','OldBridge','home']),currentAutonomousGoal:w.currentAutonomousGoal==null?null:str(w.currentAutonomousGoal,80),currentAgentSkill:w.currentAgentSkill==null?null:choice(w.currentAgentSkill,[...MORU_SKILLS]),autonomyState:w.autonomyState==null?'QUIET':choice(w.autonomyState,['QUIET','THINKING','ACTING','INTERRUPTED']) as Observation['autonomyState']},
  moru:{energy:num(m.energy),curiosity:num(m.curiosity),comfort:num(m.comfort),attention:num(m.attention),affection:num(m.affection),sleepiness:num(m.sleepiness),target:'WORLD'},
  perception:{candidates,deicticTarget:p.deicticTarget==null?null:str(p.deicticTarget,80)},
  recentConversation:list(c.recentConversation).map(v=>{const t=obj(v);return {user:str(t.user,280),moru:str(t.moru,120)}}),
