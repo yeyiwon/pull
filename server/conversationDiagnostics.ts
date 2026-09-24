@@ -25,7 +25,7 @@ export function diagnosticErrorCode(error:unknown,secret?:string):string|null {
  return safeDiagnosticIdentifier(value.code??cause?.code,secret)
 }
 export function startDiagnostic(settings: Settings, sink?: DiagnosticSink) {
- if(!sink||process.env.NODE_ENV==='production')return null
+ if(!sink)return null
  const start=performance.now()
  let providerStart=0,done=false
  const data:ConversationDiagnostic={provider:'OPENAI',configured:!!settings.OPENAI_API_KEY,

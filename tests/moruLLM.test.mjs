@@ -106,12 +106,14 @@ test('development diagnostics cover successful output and local rejection withou
  assert.equal((await handler(req({}))).status,400);assert.equal(calls,0);assert.equal(records[0].reachedProvider,false);assert.equal(records[0].stage,'request_validation')
  assert.equal((await(await handler(req())).json()).provider,'REAL');assert.equal(calls,1);assert.equal(records[1].stage,'complete');assert.equal(records[1].fallback,false);assert.deepEqual(records[1].rejectedFields,[])
 })
-test('production never emits diagnostics even with a sink, and sink errors do not affect replies',async()=>{
+test('production diagnostics emit only safe categories, and sink errors do not affect replies',async()=>{
  const previous=process.env.NODE_ENV
  try{
-  process.env.NODE_ENV='production';let calls=0
-  const handler=createConversationHandler(real,async()=>Response.json({error:{type:'invalid_request_error',message:'private'}},{status:401}),9000,()=>calls++)
-  const body=await(await handler(req())).json();assert.equal(body.provider,'FALLBACK');assert.equal(calls,0);assert.equal(JSON.stringify(body).includes('private'),false)
+  process.env.NODE_ENV='production';const records=[]
+  const handler=createConversationHandler(real,async()=>Response.json({error:{type:'invalid_request_error',code:'invalid_api_key',message:'private'}},{status:401}),9000,d=>records.push(d))
+  const body=await(await handler(req())).json();assert.equal(body.provider,'FALLBACK');assert.equal(records.length,1);assert.equal(JSON.stringify(body).includes('private'),false)
+  assert.equal(records[0].stage,'provider_http');assert.equal(records[0].status,401);assert.equal(records[0].errorType,'invalid_request_error');assert.equal(records[0].errorCode,'invalid_api_key');assert.equal(records[0].message,'Provider authentication failed.')
+  for(const value of ['private',real.OPENAI_API_KEY,context.userMessage])assert.equal(JSON.stringify(records).includes(value),false)
  }finally{if(previous===undefined)delete process.env.NODE_ENV;else process.env.NODE_ENV=previous}
  assert.equal((await(await createConversationHandler(real,async()=>envelope(valid),9000,()=>{throw Error('sink')})(req())).json()).provider,'REAL')
 })
