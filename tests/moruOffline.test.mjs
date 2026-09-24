@@ -35,7 +35,7 @@ test('existing verified-provider result may be revisited but no new facts, resea
 })
 test('v4 migration starts offline clock without fabricated absence; active heartbeat and reload are idempotent',()=>{
  const s=storage();s.setItem(MEMORY_KEY,JSON.stringify({version:4,visitCount:7,interests:interests(),lastVisitAt:'2020-01-01'}))
- let time=start;const a=createMemoryStore(s,()=>new Date(time).toISOString());assert.equal(a.memory.offline.events.length,0);assert.equal(a.memory.version,6)
+ let time=start;const a=createMemoryStore(s,()=>new Date(time).toISOString());assert.equal(a.memory.offline.events.length,0);assert.equal(a.memory.version,7)
  time+=DAY;a.tick(15);const b=createMemoryStore(s,()=>new Date(time+1000).toISOString());assert.equal(b.memory.offline.events.length,0)
  const c=createMemoryStore(s,()=>new Date(time+DAY*2).toISOString());assert.equal(c.memory.offline.events.length,1)
  const d=createMemoryStore(s,()=>new Date(time+DAY*2+1).toISOString());assert.equal(d.memory.offline.events.length,1)

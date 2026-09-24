@@ -5,6 +5,8 @@ import { brainDebug, brainCommands } from './mind.ts'
 import { autonomyDebug } from '../autonomy.ts'
 import { backgroundDiagnostics,getBackgroundWorld } from '../backgroundWorld.ts'
 import { enableRemotePush,notificationDiagnostics,testLocalNotification,testRemoteNotificationCopy } from '../../native/notifications.ts'
+import { getMemorySession } from './memory.ts'
+import { recordExperience } from '../intelligence.ts'
 export default function BrainInspector(){
  const [snapshot,setSnapshot]=useState(()=>structuredClone(brainDebug)),[text,setText]=useState(''),[pending,setPending]=useState(false)
  useEffect(()=>{const timer=setInterval(()=>setSnapshot(structuredClone(brainDebug)),1000);return()=>clearInterval(timer)},[])
@@ -14,7 +16,11 @@ export default function BrainInspector(){
   <div>Attention: {snapshot.attention}</div><div>Intent: {snapshot.intent}</div>
   <div>Observe: {snapshot.observation}</div><div>Decision: {snapshot.decision}</div><div>Cooldown: {snapshot.cooldown}s</div>
   <div>Speech: {snapshot.recentSpeech.slice(-3).join(' / ')||'—'}</div><div>Actions: {snapshot.recentActions.slice(-3).join(' / ')||'—'}</div>
-  {import.meta.env.DEV&&<details><summary>Embodied Autonomy</summary><pre style={{whiteSpace:'pre-wrap'}}>{JSON.stringify(autonomyDebug,null,2)}</pre></details>}
+ {import.meta.env.DEV&&<details><summary>Embodied Autonomy</summary><pre style={{whiteSpace:'pre-wrap'}}>{JSON.stringify(autonomyDebug,null,2)}</pre></details>}
+  {import.meta.env.DEV&&<details><summary>Intelligence v3</summary>
+   <div><button onClick={()=>simulateIntelligence('MoonLakeViewpoint',10)}>Simulate 10 MoonLake experiences</button><button onClick={()=>simulateIntelligence('MIXED',10)}>Simulate mixed experiences</button></div>
+   <pre style={{whiteSpace:'pre-wrap'}}>{JSON.stringify({selectedGoal:autonomyDebug.goal,candidateGoals:autonomyDebug.candidates,retrievedMemories:autonomyDebug.retrievedMemories,recentExperience:autonomyDebug.recentExperience,...getMemorySession().memory.intelligence},null,2)}</pre>
+  </details>}
   {import.meta.env.DEV&&<details><summary>Background World</summary>
    <div>{[30,120,480,1440].map(minutes=><button key={minutes} onClick={()=>{getBackgroundWorld().simulate(minutes*60000);setSnapshot(structuredClone(brainDebug))}}>+{minutes<60?`${minutes} min`:`${minutes/60} hours`}</button>)}</div>
    <button onClick={()=>void testLocalNotification(backgroundDiagnostics.lastCandidate??undefined)}>Test local notification</button>
@@ -45,3 +51,4 @@ export default function BrainInspector(){
   <details><summary>Decision log</summary>{snapshot.log.map((line,i)=><div key={i}>{line}</div>)}</details>
  </details>
 }
+function simulateIntelligence(target:string,count:number){const memory=getMemorySession(),locations=['MoonLakeViewpoint','AncientTree','HiddenGarden','OldBridge'];for(let index=0;index<count;index++){const location=target==='MIXED'?locations[index%locations.length]:target;recordExperience(memory.memory.intelligence,{timestamp:new Date(Date.now()+index*1000).toISOString(),source:'FOREGROUND',location,activity:location==='MoonLakeViewpoint'?'observe_water':'inspect',nearbyObjects:[location],season:index%3?'spring':'winter',timeOfDay:index%2?'NIGHT':'DAY',weather:index%4?'clear':'snow',activeEvent:index===7?'METEOR_SHOWER':null,userPresent:index===7,voluntary:true,novelty:index<2?1:.1,significance:index===7 ? .85 : .35,outcome:index===7?'shared':'revisited',dwellSeconds:6+index%4})}memory.intelligenceChanged();memory.save()}

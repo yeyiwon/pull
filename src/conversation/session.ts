@@ -7,7 +7,8 @@ import type { Context, MoruConversationProvider, Response, Turn } from './model.
 import type { AttentionTarget, InternalState, MeaningfulMemory, Observation } from '../world/brain/types.ts'
 export type ConversationPhase='closed'|'composing'|'thinking'|'speaking'
 import type { WorldPerception } from '../world/agentSkills.ts'
-type Port={snapshot:()=>{continuity?:Continuity;research?:ResearchSummary;observation:Observation;state:InternalState;attention:AttentionTarget;events:MeaningfulMemory[];perception?:WorldPerception}|null;hold:(value:boolean)=>void;listen:()=>void;speak:(response:Response,command:string)=>boolean;cancel:()=>void}
+import type { IntelligenceState } from '../world/intelligence.ts'
+type Port={snapshot:()=>{continuity?:Continuity;research?:ResearchSummary;intelligence?:IntelligenceState;observation:Observation;state:InternalState;attention:AttentionTarget;events:MeaningfulMemory[];perception?:WorldPerception}|null;hold:(value:boolean)=>void;listen:()=>void;speak:(response:Response,command:string)=>boolean;cancel:()=>void}
 export function createConversationSession(provider:MoruConversationProvider=new MockConversationAdapter(),timing={thinking:650,timeout:11000}){
  let port:Port|null=null,token=0,abort:AbortController|null=null,release:ReturnType<typeof setTimeout>|undefined
  let state={phase:'closed' as ConversationPhase,ready:false,notice:'',reply:'',revision:0}
@@ -27,7 +28,7 @@ export function createConversationSession(provider:MoruConversationProvider=new 
   const snap=port.snapshot();if(!snap||!snap.observation.grounded){update({notice:'땅에 내려오면 말 걸어줘.'});return false}
   if(state.phase==='closed')open()
   const id=++token,controller=new AbortController();abort=controller
-  const context=buildContext(clean,snap.observation,snap.state,snap.attention,turns,snap.events,snap.research,snap.continuity,snap.perception)
+  const context=buildContext(clean,snap.observation,snap.state,snap.attention,turns,snap.events,snap.research,snap.continuity,snap.perception,snap.intelligence)
   debug.context=context;debug.outcome='thinking';port.listen();update({phase:'thinking',notice:'듣고 있어…'})
   let raw:unknown
   let timeoutTimer:ReturnType<typeof setTimeout>|undefined
@@ -60,7 +61,7 @@ export function createConversationSession(provider:MoruConversationProvider=new 
   if(!port||state.phase!=='closed')return false
   const snap=port.snapshot();if(!snap||!snap.observation.grounded||!snap.observation.activeEvents?.includes(eventId))return false
   const id=++token,controller=new AbortController();abort=controller
-  const context=buildContext(`WORLD_EVENT_STARTED:${eventId}`,snap.observation,snap.state,snap.attention,turns,snap.events,snap.research,snap.continuity,snap.perception)
+  const context=buildContext(`WORLD_EVENT_STARTED:${eventId}`,snap.observation,snap.state,snap.attention,turns,snap.events,snap.research,snap.continuity,snap.perception,snap.intelligence)
   let timer:ReturnType<typeof setTimeout>|undefined
   try{
    const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(Error('timeout'))},timing.timeout)})

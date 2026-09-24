@@ -6,8 +6,10 @@ import { emptyResearchBudget } from '../../research/controller.ts'
 import type { ResearchBudget } from '../../research/controller.ts'
 import { emptyInterests, readInterests } from './interests.ts'
 import type { Interests } from './interests.ts'
+import { emptyIntelligence,readIntelligence } from '../intelligence.ts'
+import type { IntelligenceState } from '../intelligence.ts'
 export type MoruMemory = {
-  version: 6; offline: OfflineLife; evolution: Evolution; researchBudget: ResearchBudget; interests: Interests; autonomy: AutonomyMemory; firstMetAt: string; lastVisitAt: string; visitCount: number; totalTimeTogetherSeconds: number
+  version: 7; offline: OfflineLife; evolution: Evolution; researchBudget: ResearchBudget; interests: Interests; autonomy: AutonomyMemory; intelligence:IntelligenceState; firstMetAt: string; lastVisitAt: string; visitCount: number; totalTimeTogetherSeconds: number
   interactions: { jumps: number; waves: number; dances: number }
   recentEvents: { type: string; timestamp: string }[]
 }
@@ -22,16 +24,16 @@ export type MemoryStorage = Pick<Storage, 'getItem' | 'setItem'>
 const count = (v: unknown) => typeof v === 'number' && Number.isFinite(v) && v >= 0 ? Math.min(v, Number.MAX_SAFE_INTEGER) : 0
 const date = (v: unknown, fallback: string) => typeof v === 'string' && Number.isFinite(Date.parse(v)) ? v : fallback
 export function readMemory(raw: string | null, now: string): MoruMemory {
-  const fresh: MoruMemory = { version: 6, offline: emptyOffline(), evolution: emptyEvolution(), researchBudget: emptyResearchBudget(), interests: emptyInterests(), autonomy: emptyAutonomyMemory(), firstMetAt: now, lastVisitAt: now, visitCount: 0, totalTimeTogetherSeconds: 0, interactions: { jumps: 0, waves: 0, dances: 0 }, recentEvents: [] }
+  const fresh: MoruMemory = { version: 7, offline: emptyOffline(), evolution: emptyEvolution(), researchBudget: emptyResearchBudget(), interests: emptyInterests(), autonomy: emptyAutonomyMemory(), intelligence:emptyIntelligence(), firstMetAt: now, lastVisitAt: now, visitCount: 0, totalTimeTogetherSeconds: 0, interactions: { jumps: 0, waves: 0, dances: 0 }, recentEvents: [] }
   try {
     const v = JSON.parse(raw ?? 'null')
-    if (!v || ![1,2,3,4,5,6].includes(v.version)) return fresh
+    if (!v || ![1,2,3,4,5,6,7].includes(v.version)) return fresh
     const autonomy=emptyAutonomyMemory()
     if(v.version>=6&&v.autonomy&&typeof v.autonomy==='object'){
       for(const [id,value] of Object.entries(v.autonomy.discoveries??{}).slice(0,64)){const item=value as Record<string,unknown>;if(id.length<=80&&(item.status==='discovered'||item.status==='familiar'))autonomy.discoveries[id]={status:item.status,firstSeenAt:date(item.firstSeenAt,now),lastSeenAt:date(item.lastSeenAt,now),observations:Math.floor(count(item.observations))}}
       if(Array.isArray(v.autonomy.recentGoals))autonomy.recentGoals=v.autonomy.recentGoals.slice(-12).flatMap((item:unknown)=>{if(!item||typeof item!=='object')return [];const goal=item as Record<string,unknown>;return typeof goal.id==='string'&&goal.id.length<=80&&(goal.target===null||typeof goal.target==='string')?[{id:goal.id,target:goal.target as string|null,completedAt:date(goal.completedAt,now)}]:[]})
     }
-    return { ...fresh, offline: v.version >= 5 ? readOffline(v.offline) : emptyOffline(), evolution: readEvolution(v.evolution), researchBudget: {day: typeof v.researchBudget?.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v.researchBudget.day) ? v.researchBudget.day : '', attempts: Math.floor(count(v.researchBudget?.attempts)), nextAllowedAt: count(v.researchBudget?.nextAllowedAt)}, interests: v.version >= 2 ? readInterests(v.interests) : emptyInterests(), autonomy, firstMetAt: date(v.firstMetAt, now), lastVisitAt: date(v.lastVisitAt, now), visitCount: Math.floor(count(v.visitCount)),
+    return { ...fresh, offline: v.version >= 5 ? readOffline(v.offline) : emptyOffline(), evolution: readEvolution(v.evolution), researchBudget: {day: typeof v.researchBudget?.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v.researchBudget.day) ? v.researchBudget.day : '', attempts: Math.floor(count(v.researchBudget?.attempts)), nextAllowedAt: count(v.researchBudget?.nextAllowedAt)}, interests: v.version >= 2 ? readInterests(v.interests) : emptyInterests(), autonomy, intelligence:v.version>=7?readIntelligence(v.intelligence,now):emptyIntelligence(), firstMetAt: date(v.firstMetAt, now), lastVisitAt: date(v.lastVisitAt, now), visitCount: Math.floor(count(v.visitCount)),
       totalTimeTogetherSeconds: count(v.totalTimeTogetherSeconds),
       interactions: { jumps: Math.floor(count(v.interactions?.jumps)), waves: Math.floor(count(v.interactions?.waves)), dances: Math.floor(count(v.interactions?.dances)) },
       recentEvents: Array.isArray(v.recentEvents) ? v.recentEvents.filter((e: unknown) => !!e && typeof e === 'object' && 'type' in e && typeof e.type === 'string' && e.type.length <= 40 && 'timestamp' in e && typeof e.timestamp === 'string' && Number.isFinite(Date.parse(e.timestamp))).slice(-24).map((e: { type: string; timestamp: string }) => ({ type: e.type, timestamp: e.timestamp })) : [] }
@@ -41,7 +43,7 @@ export function createMemoryStore(storage: MemoryStorage | null, now = () => new
   let raw: string | null = null
   try { raw = storage?.getItem(MEMORY_KEY) ?? null } catch { /* Private browsing may deny storage. */ }
   let futureVersion = false
-  try { const version = JSON.parse(raw ?? 'null')?.version; futureVersion = typeof version === 'number' && version > 5 } catch { /* Corrupt data uses fresh defaults. */ }
+  try { const version = JSON.parse(raw ?? 'null')?.version; futureVersion = typeof version === 'number' && version > 7 } catch { /* Corrupt data uses fresh defaults. */ }
   const memory = readMemory(raw, now())
   const previousVisitAt = memory.visitCount > 0 ? memory.lastVisitAt : null
   simulateOffline(memory.offline, memory.interests, Date.parse(now()))
@@ -56,6 +58,7 @@ export function createMemoryStore(storage: MemoryStorage | null, now = () => new
     memory, previousVisitAt,
     interestsChanged() { dirty = true; save() },
     autonomyChanged() { dirty = true; save() },
+    intelligenceChanged() { dirty = true },
     event(type: string) {
       if (type === 'JUMP') memory.interactions.jumps++
       if (type === 'WAVE') memory.interactions.waves++

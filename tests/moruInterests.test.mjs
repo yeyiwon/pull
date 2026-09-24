@@ -49,7 +49,7 @@ test('v1 migration preserves existing life memory; interests persist immediately
  const s=storage(),date=()=> '2026-09-22T00:00:00Z'
  s.setItem(MEMORY_KEY,JSON.stringify({version:1,visitCount:4,totalTimeTogetherSeconds:100,firstMetAt:date(),lastVisitAt:date(),interactions:{jumps:3,waves:2,dances:1},recentEvents:[{type:'WAVE',timestamp:date()}]}))
  const store=createMemoryStore(s,date)
- assert.equal(store.memory.version,6);assert.equal(store.memory.visitCount,5);assert.equal(store.memory.totalTimeTogetherSeconds,100);assert.equal(store.memory.interactions.jumps,3);assert.equal(store.memory.recentEvents.length,1)
+ assert.equal(store.memory.version,7);assert.equal(store.memory.visitCount,5);assert.equal(store.memory.totalTimeTogetherSeconds,100);assert.equal(store.memory.interactions.jumps,3);assert.equal(store.memory.recentEvents.length,1)
  const m=createInterestModel(store.memory.interests,store.interestsChanged,()=>100);m.observe(o)
  const saved=readMemory(s.getItem(MEMORY_KEY),date())
  assert.deepEqual(saved.interests,m.data)

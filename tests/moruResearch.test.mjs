@@ -81,7 +81,7 @@ test('v2 migration and v3 research roundtrip retain evidence/continuity; interru
  const saved=readMemory(JSON.stringify({version:3,interests:s.data,researchBudget:s.budget,visitCount:4}),new Date(s.time).toISOString())
  assert.equal(saved.visitCount,4);assert.deepEqual(saved.interests,s.data);assert.deepEqual(saved.researchBudget,s.budget)
  const old=readMemory(JSON.stringify({version:2,interests:s.data,visitCount:4}),'2026-09-22')
- assert.equal(old.version,6);assert.equal(old.interests.fascination.topic,'snow');assert.equal(old.researchBudget.attempts,0)
+ assert.equal(old.version,7);assert.equal(old.interests.fascination.topic,'snow');assert.equal(old.researchBudget.attempts,0)
  assert.equal(readProgress({...s.data.journal[0].research,status:'RESEARCHING'},'snow').status,'UNRESOLVED')
 })
 test('conversation includes only relevant compact research, preserving provenance and no entire journal',async()=>{

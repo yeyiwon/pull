@@ -32,6 +32,7 @@ import { attachNotificationListeners } from '../native/notifications.ts'
 import { weatherPreview } from './weatherPresentation.ts'
 import { App } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
+import { recordExperience } from './intelligence.ts'
 
 function clearEvents(player:Player){player.events.length=0}
 function markBrainAction(player:Player){player.brainRequested=true}
@@ -79,15 +80,16 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
       for(const item of result.memories){
        memory.event(`BACKGROUND_${item.kind}_${item.id}`)
        if(item.kind==='DISCOVERY'&&!memory.memory.autonomy.discoveries[item.id])memory.memory.autonomy.discoveries[item.id]={status:'discovered',firstSeenAt:new Date(item.at).toISOString(),lastSeenAt:new Date(item.at).toISOString(),observations:1}
+       recordExperience(memory.memory.intelligence,{timestamp:new Date(item.at).toISOString(),source:'BACKGROUND',location:item.location,activity:item.kind==='EVENT'?`observe:${item.id}`:'discover',nearbyObjects:item.location?[item.location]:[],season:result.state.season,timeOfDay:result.state.worldTime>=20||result.state.worldTime<5?'NIGHT':'DAY',weather:result.state.weather,activeEvent:item.kind==='EVENT'?item.id:null,userPresent:false,voluntary:true,novelty:item.kind==='DISCOVERY'?1:.45,significance:item.kind==='EVENT' ? .7 : .6,outcome:item.kind==='EVENT'?'observed':'discovered',dwellSeconds:2})
       }
-      if(result.memories.length)memory.autonomyChanged()
+      if(result.memories.length){memory.intelligenceChanged();memory.autonomyChanged()}
     }
     const captureBackground=()=>{const eventState=worldEvents.getSnapshot();background.capture({season:worldTime.realWorld.season,worldTime:worldTime.current.hour,weather:livingWorld.weather?.type??'clear',activeEvents:eventState.active.map(event=>({id:event.id,startedAt:Date.now()-eventState.elapsed*1000,endsAt:Date.now()+Math.max(0,event.duration-eventState.elapsed)*1000,significance:event.significance,location:event.location})),moruLocation:WORLD_V3_LANDMARKS.map(item=>({id:item.id,distance:Math.hypot(item.approach[0]-controlledPlayer.position.x,item.approach[1]-controlledPlayer.position.z)})).sort((a,b)=>a.distance-b.distance)[0]?.id??'home',moruState:'QUIET',moruGoal:autonomy.current?.goal?.id??null,discoveries:Object.fromEntries(Object.entries(memory.memory.autonomy.discoveries).map(([id,value])=>[id,value.status])),manual:{season:worldTime.seasonOverride!==null,time:worldTime.override!==null,weather:weatherPreview.type!==null,events:eventState.mode==='MANUAL'}})}
     restoreBackground();void attachNotificationListeners()
     let disposed=false,appStateHandle:{remove:()=>Promise<void>}|null=null
     if(Capacitor.isNativePlatform())void App.addListener('appStateChange',({isActive})=>{if(isActive)restoreBackground();else captureBackground()}).then(handle=>{if(disposed)void handle.remove();else appStateHandle=handle})
     const executor=createAgentExecutor((result,command)=>{if(result==='completed'&&!command.startsWith('AUTONOMY:'))memory.event('AGENT_COMMAND_COMPLETED');autonomy.current?.result(result,command)})
-    const director=createAutonomy({start:executor.start,memory:memory.memory.autonomy,changed:memory.autonomyChanged})
+    const director=createAutonomy({start:executor.start,memory:memory.memory.autonomy,intelligence:memory.memory.intelligence,changed:()=>{memory.intelligenceChanged();memory.autonomyChanged()}})
     const detachAgentControl=agentControl.bind(executor.start)
     agent.current=executor
     autonomy.current=director
@@ -102,7 +104,7 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
       if(acted&&p.actionRequested)markBrainAction(p)
       return {action:acted?intent.action:null,speech:offered?intent.speech:null,emote:offered&&!!intent.emote}
     }})
-    const detach=conversationSession.attach({snapshot:()=>{const snapshot=controller.snapshot();return snapshot?{...snapshot,perception:perceiveWorld(player.current,camera),continuity:continuitySummary(memory.memory.offline,memory.memory.evolution)}:null},hold:controller.holdConversation,
+    const detach=conversationSession.attach({snapshot:()=>{const snapshot=controller.snapshot();return snapshot?{...snapshot,intelligence:memory.memory.intelligence,perception:perceiveWorld(player.current,camera),continuity:continuitySummary(memory.memory.offline,memory.memory.evolution)}:null},hold:controller.holdConversation,
       listen(){moru.cancelSpeech();active.current.duration=0;moru.perform('listen','user',false)},
       speak(response,command){
         const p=player.current

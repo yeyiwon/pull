@@ -3,10 +3,12 @@ import type { ActionPlan, WorldCandidate, WorldPerception } from './agentSkills.
 import type { AgentState } from './agentExecutor.ts'
 import type { Observation } from './brain/types.ts'
 import type { AutonomyMemory } from './brain/memory.ts'
+import { adaptiveScore,recordExperience } from './intelligence.ts'
+import type { IntelligenceState,ScoreParts } from './intelligence.ts'
 
 export type AutonomyState='QUIET'|'THINKING'|'ACTING'|'INTERRUPTED'
 export type AutonomyGoal={id:string;target:string|null;reason:string;score:number;source:'LOCAL'|'REAL';plan:ActionPlan;meaningful:boolean}
-export const autonomyDebug={state:'QUIET' as AutonomyState,decisionSource:'LOCAL' as 'LOCAL'|'REAL',perception:'waiting',candidates:[] as {id:string;score:number;reason:string}[],goal:null as AutonomyGoal|null,plan:[] as ActionPlan,currentSkill:null as string|null,result:'idle',memoryCandidate:null as string|null,localDecisions:0,realCalls:0,nextDecisionIn:0}
+export const autonomyDebug={state:'QUIET' as AutonomyState,decisionSource:'LOCAL' as 'LOCAL'|'REAL',perception:'waiting',candidates:[] as {id:string;score:number;reason:string;parts:ScoreParts}[],goal:null as AutonomyGoal|null,plan:[] as ActionPlan,currentSkill:null as string|null,result:'idle',memoryCandidate:null as string|null,retrievedMemories:[] as string[],recentExperience:null as string|null,localDecisions:0,realCalls:0,nextDecisionIn:0}
 
 type Start=(plan:ActionPlan,player:Player,command:string)=>boolean
 type Input={observation:Observation;perception:WorldPerception;player:Player;agentState:AgentState;currentSkill:string|null}
@@ -14,31 +16,34 @@ const step=(skill:ActionPlan[number]['skill'],target:string|null=null,duration:n
 const eventTargets:Record<string,string>={FIREWORKS:'OldBridge',METEOR_SHOWER:'MoonShrine',AURORA:'MoonShrine',HEAVY_SNOW:'AncientTree',DIAMOND_DUST:'AncientTree',FIREFLY_NIGHT:'HiddenGarden',CHERRY_BLOSSOM_WIND:'HiddenGarden',AUTUMN_LEAF_STORM:'AncientTree',WINTER_ILLUMINATION:'AncientTree'}
 const eventRarity=(id:string)=>['FIREWORKS','METEOR_SHOWER','AURORA'].includes(id)?1:['HEAVY_SNOW','DIAMOND_DUST','WINTER_ILLUMINATION'].includes(id)?.82:.65
 
-export function createAutonomy(options:{start:Start;memory:AutonomyMemory;changed:()=>void;random?:()=>number;now?:()=>string}){
+export function createAutonomy(options:{start:Start;memory:AutonomyMemory;intelligence?:IntelligenceState;changed:()=>void;random?:()=>number;now?:()=>string}){
  const random=options.random??Math.random,now=options.now??(()=>new Date().toISOString())
- let elapsed=0,nextDecision=18+random()*12,current:AutonomyGoal|null=null,lastEvent='',quietUntil=0
+ let elapsed=0,nextDecision=18+random()*12,current:AutonomyGoal|null=null,lastEvent='',quietUntil=0,lastObservation:Observation|null=null
  const recent=(id:string,target:string|null)=>options.memory.recentGoals.some((g,index)=>g.id===id&&g.target===target&&index>=options.memory.recentGoals.length-4)
  function score(candidate:WorldCandidate,o:Observation){
   const memory=options.memory.discoveries[candidate.id],novelty=!memory?1:memory.status==='discovered'?.35:.08
   const rarity=candidate.type==='landmark'||candidate.type==='bridge'?.7:candidate.type==='flower'?.45:.2
   const proximity=Math.max(0,1-candidate.distance/55),season=candidate.type==='flower'&&['spring','summer'].includes(o.season)?.3:0
-  return novelty*.46+rarity*.24+proximity*.22+season-(recent('inspect',candidate.id)?.55:0)
+  const context=rarity*.24+proximity*.22+season,repetition=recent('inspect',candidate.id)?.55:0
+  const parts=options.intelligence?adaptiveScore(options.intelligence,{id:candidate.id,activity:candidate.type==='bench'?'sit':candidate.type==='water'?'observe_water':'inspect',observation:o,novelty,context,event:0,repetition}):{context,novelty:novelty*.46,preference:0,memory:0,event:0,transient:0,repetition:-repetition,total:novelty*.46+context-repetition,retrievedMemoryIds:[]}
+  return parts
  }
  function candidates(input:Input){
-  const list:{goal:AutonomyGoal;score:number}[]=[]
+  const list:{goal:AutonomyGoal;score:number;parts:ScoreParts}[]=[]
   for(const id of input.observation.activeEvents??[]){const target=eventTargets[id]??input.observation.eventLocation??null;if(!target)continue
    const plan:ActionPlan=id==='HEAVY_RAIN'||id==='THUNDERSTORM'?[step('WAIT',null,3)]:[step('MOVE_NEAR',target),step('LOOK_AT',target),step('WAIT',null,Math.min(8,id==='FIREWORKS'?8:5))]
-   const value=1.1+eventRarity(id)-(recent(`event:${id}`,target)?.7:0)
-   list.push({score:value,goal:{id:`event:${id}`,target,reason:`active ${id}`,score:value,source:'LOCAL',plan,meaningful:true}})
+   const repetition=recent(`event:${id}`,target)?.7:0,parts=options.intelligence?adaptiveScore(options.intelligence,{id:target,activity:`observe:${id}`,observation:input.observation,novelty:options.memory.discoveries[target]?.status==='familiar'?.08:.5,context:.45,event:.65+eventRarity(id)*.2,repetition}):{context:.45,novelty:.2,preference:0,memory:0,event:.65+eventRarity(id)*.2,transient:0,repetition:-repetition,total:1.1+eventRarity(id)-repetition,retrievedMemoryIds:[]}
+   const value=parts.total;list.push({score:value,parts,goal:{id:`event:${id}`,target,reason:`active ${id}`,score:value,source:'LOCAL',plan,meaningful:true}})
   }
   for(const candidate of input.perception.candidates){if(candidate.id==='DEICTIC_POINT'||!candidate.affordances.includes('inspect')&&candidate.type!=='water')continue
-   const value=score(candidate,input.observation);if(value<.48)continue
+   const parts=score(candidate,input.observation),value=parts.total;if(value<.48)continue
    const plan:ActionPlan=candidate.type==='bench'?[step('SIT',candidate.id),step('WAIT',null,6),step('STAND')]:[step(candidate.distance>16?'WALK_TO':'MOVE_NEAR',candidate.id),step('LOOK_AT',candidate.id),...(candidate.affordances.includes('inspect')?[step('INSPECT',candidate.id,2)]:[]),step('WAIT',null,2)]
-   list.push({score:value,goal:{id:'inspect',target:candidate.id,reason:`interest ${candidate.type}`,score:value,source:'LOCAL',plan,meaningful:candidate.type==='landmark'||candidate.type==='bridge'}})
+   list.push({score:value,parts,goal:{id:'inspect',target:candidate.id,reason:`interest ${candidate.type}`,score:value,source:'LOCAL',plan,meaningful:candidate.type==='landmark'||candidate.type==='bridge'}})
   }
   return list.sort((a,b)=>b.score-a.score).slice(0,6)
  }
  function update(input:Input,delta:number){
+  lastObservation=input.observation
   elapsed+=Math.max(0,Math.min(2,delta));autonomyDebug.currentSkill=input.currentSkill
   autonomyDebug.perception=`${input.observation.timeOfDay} · ${input.observation.weather} · ${input.observation.location} · ${input.perception.candidates.length} candidates`
   autonomyDebug.nextDecisionIn=Math.max(0,Math.ceil(nextDecision-elapsed))
@@ -49,8 +54,8 @@ export function createAutonomy(options:{start:Start;memory:AutonomyMemory;change
   if(!eventTrigger&&(elapsed<nextDecision||elapsed<quietUntil)){autonomyDebug.state='QUIET';return}
   if(important)lastEvent=important
   autonomyDebug.state='THINKING';autonomyDebug.localDecisions++;autonomyDebug.memoryCandidate=null
-  const ranked=candidates(input);autonomyDebug.candidates=ranked.map(({goal,score})=>({id:`${goal.id}:${goal.target??'—'}`,score:+score.toFixed(2),reason:goal.reason}))
-  const chosen=ranked[0]?.goal
+  const ranked=candidates(input);autonomyDebug.candidates=ranked.map(({goal,score,parts})=>({id:`${goal.id}:${goal.target??'—'}`,score:+score.toFixed(2),reason:goal.reason,parts}))
+  const close=ranked.filter(item=>item.score>=(ranked[0]?.score??0)-.12),chosen=(close.length>1?close[Math.min(close.length-1,Math.floor(random()*close.length))]:ranked[0])?.goal
   nextDecision=elapsed+45+random()*45
   if(!chosen||(!eventTrigger&&random()<.62)){autonomyDebug.goal=null;autonomyDebug.plan=[];autonomyDebug.result='chose quiet';quietUntil=elapsed+20+random()*25;autonomyDebug.state='QUIET';return}
   current=chosen;autonomyDebug.goal=structuredClone(chosen);autonomyDebug.plan=[...chosen.plan];autonomyDebug.result='starting'
@@ -62,6 +67,7 @@ export function createAutonomy(options:{start:Start;memory:AutonomyMemory;change
   if(value!=='completed'||!goal)return
   options.memory.recentGoals.push({id:goal.id,target:goal.target,completedAt:now()});options.memory.recentGoals=options.memory.recentGoals.slice(-12)
   if(goal.target){const previous=options.memory.discoveries[goal.target],observations=(previous?.observations??0)+1;options.memory.discoveries[goal.target]={status:observations>=3?'familiar':'discovered',firstSeenAt:previous?.firstSeenAt??now(),lastSeenAt:now(),observations};autonomyDebug.memoryCandidate=goal.meaningful?goal.target:null}
+  if(options.intelligence&&lastObservation){const activeEvent=goal.id.startsWith('event:')?goal.id.slice(6):null,experience=recordExperience(options.intelligence,{timestamp:now(),source:'FOREGROUND',location:goal.target,activity:activeEvent?`observe:${activeEvent}`:goal.plan.some(item=>item.skill==='SIT')?'sit':'inspect',nearbyObjects:goal.target?[goal.target]:[],season:lastObservation.season,timeOfDay:lastObservation.timeOfDay,weather:lastObservation.weather,activeEvent,userPresent:true,voluntary:true,novelty:options.memory.discoveries[goal.target??'']?.status==='familiar'?.08:.5,significance:goal.meaningful ? .8 : .35,outcome:activeEvent?'observed':options.memory.discoveries[goal.target??'']?.status==='familiar'?'revisited':'completed',dwellSeconds:goal.plan.filter(item=>item.skill==='WAIT').reduce((sum,item)=>sum+(item.duration??1),0)});autonomyDebug.recentExperience=experience.id;autonomyDebug.retrievedMemories=autonomyDebug.candidates.find(item=>item.id===`${goal.id}:${goal.target??'—'}`)?.parts.retrievedMemoryIds??[]}
   options.changed()
  }
  function interrupt(reason='user priority'){if(current){current=null;autonomyDebug.state='INTERRUPTED';autonomyDebug.result=reason;quietUntil=elapsed+12}}
