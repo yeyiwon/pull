@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import { conversationSession } from '../../conversation/session.ts'
 import { brainDebug, brainCommands } from './mind.ts'
 import { autonomyDebug } from '../autonomy.ts'
+import { backgroundDiagnostics,getBackgroundWorld } from '../backgroundWorld.ts'
+import { enableRemotePush,notificationDiagnostics,testLocalNotification,testRemoteNotificationCopy } from '../../native/notifications.ts'
 export default function BrainInspector(){
  const [snapshot,setSnapshot]=useState(()=>structuredClone(brainDebug)),[text,setText]=useState(''),[pending,setPending]=useState(false)
  useEffect(()=>{const timer=setInterval(()=>setSnapshot(structuredClone(brainDebug)),1000);return()=>clearInterval(timer)},[])
@@ -13,6 +15,13 @@ export default function BrainInspector(){
   <div>Observe: {snapshot.observation}</div><div>Decision: {snapshot.decision}</div><div>Cooldown: {snapshot.cooldown}s</div>
   <div>Speech: {snapshot.recentSpeech.slice(-3).join(' / ')||'—'}</div><div>Actions: {snapshot.recentActions.slice(-3).join(' / ')||'—'}</div>
   {import.meta.env.DEV&&<details><summary>Embodied Autonomy</summary><pre style={{whiteSpace:'pre-wrap'}}>{JSON.stringify(autonomyDebug,null,2)}</pre></details>}
+  {import.meta.env.DEV&&<details><summary>Background World</summary>
+   <div>{[30,120,480,1440].map(minutes=><button key={minutes} onClick={()=>{getBackgroundWorld().simulate(minutes*60000);setSnapshot(structuredClone(brainDebug))}}>+{minutes<60?`${minutes} min`:`${minutes/60} hours`}</button>)}</div>
+   <button onClick={()=>void testLocalNotification(backgroundDiagnostics.lastCandidate??undefined)}>Test local notification</button>
+   <button disabled={!backgroundDiagnostics.lastCandidate} onClick={()=>{const candidate=backgroundDiagnostics.lastCandidate;if(candidate)void testRemoteNotificationCopy(candidate)}}>Test REAL notification copy</button>
+   <button onClick={()=>void enableRemotePush()}>Enable remote push</button>
+   <pre style={{whiteSpace:'pre-wrap'}}>{JSON.stringify({background:backgroundDiagnostics,notifications:notificationDiagnostics,state:getBackgroundWorld().state},null,2)}</pre>
+  </details>}
   <div>Memory: {snapshot.events.slice(-3).map(e=>e.event).join(" / ")||"—"}</div>
   {import.meta.env.DEV&&snapshot.interests&&<details><summary>Current Fascination / Curiosity Queue / Research Journal</summary>
    <div>Current Fascination: {snapshot.interests.fascination?.topic??'—'}</div>

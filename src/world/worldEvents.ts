@@ -45,6 +45,12 @@ export const worldEvents={
   for(const event of active)applyPresentation(event)
  },
  setNone(){resetPresentation();publish({mode:'MANUAL',manual:null,manuals:[],active:[],elapsed:0})},
+ restoreSemantic(ids:readonly WorldEventId[],elapsed=0){
+  if(snapshot.mode==='MANUAL')return
+  resetPresentation();const active=ids.map(eventDefinition)
+  publish({active,manuals:[],elapsed:Math.max(0,elapsed)})
+  for(const event of active)applyPresentation(event)
+ },
 }
 export function useWorldEvents(){return useSyncExternalStore(worldEvents.subscribe,worldEvents.getSnapshot,worldEvents.getSnapshot)}
 function resetPresentation(){weatherPreview.eventType=null;livingWorld.windOverride=null;livingWorld.eventOverride=null}

@@ -20,12 +20,18 @@ import { worldTime } from './worldTime.ts'
 import { moru } from '../characters/expression.ts'
 import { homeState } from './homeSpace.ts'
 import { livingWorld } from './livingWorld.ts'
-import { streamCenter, streamWidth } from './terrain.ts'
+import { streamCenter, streamWidth, surfaceHeight } from './terrain.ts'
 import type { Reaction } from './personality.ts'
 import { createAgentExecutor, agentDiagnostics } from './agentExecutor.ts'
 import { perceiveWorld } from './worldPerception.ts'
 import { agentControl } from './agentControl.ts'
 import { createAutonomy, autonomyDebug } from './autonomy.ts'
+import { getBackgroundWorld } from './backgroundWorld.ts'
+import { WORLD_V3_LANDMARKS } from './worldV3.ts'
+import { attachNotificationListeners } from '../native/notifications.ts'
+import { weatherPreview } from './weatherPresentation.ts'
+import { App } from '@capacitor/app'
+import { Capacitor } from '@capacitor/core'
 
 function clearEvents(player:Player){player.events.length=0}
 function markBrainAction(player:Player){player.brainRequested=true}
@@ -61,7 +67,25 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
  const semantic = useRef({elapsed:0,idle:0,returned:false,userVersion:0,eventRevision:-1,noticedEvent:''})
   useEffect(() => {
     const memory=getMemorySession()
+    const background=getBackgroundWorld()
     const controlledPlayer=player.current
+    const restoreBackground=()=>{
+      const result=background.reconcile()
+      if(worldEvents.getSnapshot().mode==='AUTO')worldEvents.restoreSemantic(result.state.activeEvents.map(event=>event.id))
+      const landmark=WORLD_V3_LANDMARKS.find(item=>item.id===result.state.moruLocation)
+      // The imperative Player is the existing R3F simulation boundary, not React state.
+      // oxlint-disable-next-line react/immutability
+      if(landmark){const y=surfaceHeight(landmark.approach[0],landmark.approach[1]);controlledPlayer.groundY=y;controlledPlayer.position.set(landmark.approach[0],y,landmark.approach[1])}
+      for(const item of result.memories){
+       memory.event(`BACKGROUND_${item.kind}_${item.id}`)
+       if(item.kind==='DISCOVERY'&&!memory.memory.autonomy.discoveries[item.id])memory.memory.autonomy.discoveries[item.id]={status:'discovered',firstSeenAt:new Date(item.at).toISOString(),lastSeenAt:new Date(item.at).toISOString(),observations:1}
+      }
+      if(result.memories.length)memory.autonomyChanged()
+    }
+    const captureBackground=()=>{const eventState=worldEvents.getSnapshot();background.capture({season:worldTime.realWorld.season,worldTime:worldTime.current.hour,weather:livingWorld.weather?.type??'clear',activeEvents:eventState.active.map(event=>({id:event.id,startedAt:Date.now()-eventState.elapsed*1000,endsAt:Date.now()+Math.max(0,event.duration-eventState.elapsed)*1000,significance:event.significance,location:event.location})),moruLocation:WORLD_V3_LANDMARKS.map(item=>({id:item.id,distance:Math.hypot(item.approach[0]-controlledPlayer.position.x,item.approach[1]-controlledPlayer.position.z)})).sort((a,b)=>a.distance-b.distance)[0]?.id??'home',moruState:'QUIET',moruGoal:autonomy.current?.goal?.id??null,discoveries:Object.fromEntries(Object.entries(memory.memory.autonomy.discoveries).map(([id,value])=>[id,value.status])),manual:{season:worldTime.seasonOverride!==null,time:worldTime.override!==null,weather:weatherPreview.type!==null,events:eventState.mode==='MANUAL'}})}
+    restoreBackground();void attachNotificationListeners()
+    let disposed=false,appStateHandle:{remove:()=>Promise<void>}|null=null
+    if(Capacitor.isNativePlatform())void App.addListener('appStateChange',({isActive})=>{if(isActive)restoreBackground();else captureBackground()}).then(handle=>{if(disposed)void handle.remove();else appStateHandle=handle})
     const executor=createAgentExecutor((result,command)=>{if(result==='completed'&&!command.startsWith('AUTONOMY:'))memory.event('AGENT_COMMAND_COMPLETED');autonomy.current?.result(result,command)})
     const director=createAutonomy({start:executor.start,memory:memory.memory.autonomy,changed:memory.autonomyChanged})
     const detachAgentControl=agentControl.bind(executor.start)
@@ -92,13 +116,13 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
     })
     brainCommands.trigger=controller.trigger;brainCommands.converse=async text=>{await conversationSession.send(text);return controller.intent}
     brain.current = controller
-    const suspend = () => { if (document.hidden){controller.suspend();conversationSession.cancel()} memory.save() }
-    const leave = () => {controller.suspend();memory.save()}
-    const returned = () => { if (!document.hidden) semantic.current.returned=true }
+    const suspend = () => { if (document.hidden){captureBackground();controller.suspend();conversationSession.cancel()} memory.save() }
+    const leave = () => {captureBackground();controller.suspend();memory.save()}
+    const returned = () => { if (!document.hidden){restoreBackground();semantic.current.returned=true} }
     document.addEventListener('visibilitychange', returned)
     document.addEventListener('visibilitychange', suspend)
     window.addEventListener('pagehide', leave)
-    return () => { detachAgentControl();executor.interrupt(controlledPlayer,'disposed');agent.current=null;autonomy.current=null;document.removeEventListener('visibilitychange', returned); detach();controller.dispose(); memory.save(); brainCommands.trigger=null;brainCommands.converse=null;moru.setAutonomy(true);brain.current = null; document.removeEventListener('visibilitychange', suspend); window.removeEventListener('pagehide', leave) }
+    return () => { disposed=true;void appStateHandle?.remove();detachAgentControl();executor.interrupt(controlledPlayer,'disposed');agent.current=null;autonomy.current=null;document.removeEventListener('visibilitychange', returned); detach();controller.dispose(); memory.save(); brainCommands.trigger=null;brainCommands.converse=null;moru.setAutonomy(true);brain.current = null; document.removeEventListener('visibilitychange', suspend); window.removeEventListener('pagehide', leave) }
   }, [player,camera])
   const projected = useRef(new Vector3())
   const headTop = useRef(new Vector3())

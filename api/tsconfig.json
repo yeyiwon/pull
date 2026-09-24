@@ -18,5 +18,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["*.ts", "../server/moruConversation.ts", "../server/moruResearch.ts", "../server/cors.ts"]
+  "include": ["*.ts", "../server/moruConversation.ts", "../server/moruResearch.ts", "../server/moruNotification.ts", "../server/cors.ts"]
 }
