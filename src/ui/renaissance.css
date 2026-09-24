@@ -172,7 +172,9 @@
 .moru-context-row button:first-child{margin-right:auto;font-weight:600}.moru-context-row button:hover,.moru-specials button:hover,.moru-dances button:hover{background:var(--surface)}
 .moru-specials{display:flex;gap:6px;margin-top:10px}.moru-dances{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x proximity;padding:10px 0 4px;scrollbar-width:none}.moru-dances::-webkit-scrollbar{display:none}.moru-dances button{flex:0 0 auto;scroll-snap-align:start;border:1px solid var(--glass-line)}
 @media(max-width:600px){.interface-sheet[data-panel="moru"]{left:16px;right:16px;width:auto}}
-.interface-sheet[data-panel="account"] .account-panel{border-bottom:0;padding-bottom:0}
+.menu-profile{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 10px;padding:5px 0 22px;border-bottom:1px solid var(--line)}
+.menu-profile>div{display:grid;grid-template-columns:auto auto;align-items:baseline;column-gap:10px;min-width:0}.menu-profile-kicker{grid-column:1/-1;margin-bottom:8px;color:var(--quiet);font-size:9px;letter-spacing:.16em}.menu-profile strong{min-width:0;overflow:hidden;text-overflow:ellipsis;color:var(--ivory);font-family:var(--serif);font-size:20px;font-weight:500;white-space:nowrap}.menu-profile small{color:var(--quiet);font-size:11px;white-space:nowrap}.menu-profile>button{flex:0 0 auto;min-width:72px;min-height:38px;padding:0 14px;border:1px solid var(--line);border-radius:13px;background:color-mix(in srgb,var(--surface) 70%,transparent);color:var(--quiet);font-size:11px;transition:border-color .2s ease,background .2s ease,color .2s ease,transform .2s ease}.menu-profile>button:hover{border-color:var(--glass-line);background:var(--surface);color:var(--ivory)}.menu-profile>button:active{transform:scale(.97)}
+@media(max-width:600px){.menu-profile{padding-top:2px}.menu-profile strong{font-size:19px}.menu-profile>button{min-width:76px;min-height:42px}}
 @media(prefers-reduced-motion:reduce){.interface-sheet :is(.time-choices,.season-choices,.weather-choices) button{transition:none}}
 
 /* Navigation uses the same names as the destination, with a generous return target. */
