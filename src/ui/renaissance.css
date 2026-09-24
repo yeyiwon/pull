@@ -172,6 +172,7 @@
 .moru-context-row button:first-child{margin-right:auto;font-weight:600}.moru-context-row button:hover,.moru-specials button:hover,.moru-dances button:hover{background:var(--surface)}
 .moru-specials{display:flex;gap:6px;margin-top:10px}.moru-dances{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x proximity;padding:10px 0 4px;scrollbar-width:none}.moru-dances::-webkit-scrollbar{display:none}.moru-dances button{flex:0 0 auto;scroll-snap-align:start;border:1px solid var(--glass-line)}
 @media(max-width:600px){.interface-sheet[data-panel="moru"]{left:16px;right:16px;width:auto}}
+.interface-sheet[data-panel="account"] .account-panel{border-bottom:0;padding-bottom:0}
 @media(prefers-reduced-motion:reduce){.interface-sheet :is(.time-choices,.season-choices,.weather-choices) button{transition:none}}
 
 /* Navigation uses the same names as the destination, with a generous return target. */
