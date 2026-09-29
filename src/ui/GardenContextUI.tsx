@@ -1,6 +1,6 @@
 import { useEffect,useState,useSyncExternalStore } from 'react'
 import { useRendererMode } from '../graphics/rendererV2.ts'
-import { gardenStore,growthStage,PLANTS } from '../world/gardenState.ts'
+import { gardenStore,growthStage,PLANTS,soilMoisture } from '../world/gardenState.ts'
 import { worldTime } from '../world/worldTime.ts'
 import { gameUiMode } from './gameUiMode.ts'
 
@@ -15,11 +15,11 @@ export default function GardenContextUI(){
  const close=()=>gardenStore.select(null)
  if(selection.kind==='garden'){
   const plant=state.plants.find(p=>p.spotId===selection.spotId)
-  const stage=plant&&growthStage(plant,now,worldTime.realWorld.season)
+  const stage=plant&&growthStage(plant,now,worldTime.realWorld.season),wet=soilMoisture(plant,now)>.08
   return <><Dismiss close={close}/><aside className="garden-context" aria-live="polite"><button className="garden-close" onClick={close} aria-label="닫기">×</button>
    <GardenHeader title={plant?PLANTS.find(p=>p.id===plant.kind)?.name??'작은 꽃':'무엇을 심을까?'}/>
    {!plant&&<div className="garden-actions garden-items">{PLANTS.filter(p=>state.discovered.includes(p.id)).map(p=><button key={p.id} disabled={!state.seeds[p.id]} onClick={()=>{if(gardenStore.plant(selection.spotId,p.id)){feel('seed');close()}}}><span>{p.name}</span><em>{state.seeds[p.id]}</em></button>)}</div>}
-   {plant&&<><p>{stage==='seed'?'흙 속에서 쉬는 중':stage==='sprout'?'작은 싹이 올라왔어':stage==='young'?'잎을 펼치는 중':plant.collectedAt?'꽃이 정원에 남아 있어':'활짝 피었어'}</p><div className="garden-actions garden-primary-actions"><button onClick={()=>{gardenStore.water(selection.spotId);feel('water');close()}}>물 주기</button>{stage==='bloom'&&!plant.collectedAt&&<button onClick={()=>{feel();if(gardenStore.collect(selection.spotId))close()}}>꽃 받기</button>}</div></>}
+   {plant&&<><p>{stage==='seed'?'흙 속에서 쉬는 중':stage==='sprout'?'작은 싹이 올라왔어':stage==='young'?'잎을 펼치는 중':'활짝 피었어'}</p><div className="garden-actions garden-primary-actions">{!wet&&<button onClick={()=>{gardenStore.water(selection.spotId);feel('water');close()}}>물 주기</button>}{stage==='bloom'&&!plant.collectedAt&&<button onClick={()=>{feel();if(gardenStore.collect(selection.spotId))close()}}>꽃 받기</button>}</div></>}
   </aside></>
  }
  const decor=state.decorations.find(d=>d.spotId===selection.spotId)

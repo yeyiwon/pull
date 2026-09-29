@@ -12,6 +12,7 @@ export const PLANTS:{id:GardenPlant;name:string;preferred:'spring'|'summer'|'aut
 ]
 const HOUR=3_600_000
 export const GROWTH_MS=18*HOUR
+export const WATERED_MS=24*HOUR
 const emptyCounts=()=>({starbell:0,moondrop:0,cloverlight:0})
 export const emptyGarden=(now=Date.now()):GardenState=>({version:1,updatedAt:now,discovered:['starbell'],seeds:{...emptyCounts(),starbell:2},inventory:emptyCounts(),plants:[],decorations:[]})
 const kinds=new Set<GardenPlant>(PLANTS.map(p=>p.id))
@@ -36,7 +37,8 @@ function emit(){state={...state,updatedAt:Date.now()};try{storage?.setItem(GARDE
 function plant(spotId:string,kind:GardenPlant){if(state.plants.some(p=>p.spotId===spotId)||state.seeds[kind]<1)return false;state={...state,seeds:{...state.seeds,[kind]:state.seeds[kind]-1},plants:[...state.plants,{spotId,kind,plantedAt:Date.now(),wateredAt:0,collectedAt:null}]};emit();return true}
 function water(spotId:string){const at=Date.now();state={...state,plants:state.plants.map(p=>p.spotId===spotId?{...p,wateredAt:at}:p)};emit()}
 function waterAll(){const at=Date.now();state={...state,plants:state.plants.map(p=>({...p,wateredAt:at}))};emit()}
-function collect(spotId:string){const found=state.plants.find(p=>p.spotId===spotId);if(!found||growthStage(found,Date.now())!=='bloom'||found.collectedAt)return false;const unlock=found.kind==='moondrop'&&!state.discovered.includes('cloverlight');state={...state,discovered:unlock?[...state.discovered,'cloverlight']:state.discovered,seeds:unlock?{...state.seeds,cloverlight:state.seeds.cloverlight+1}:state.seeds,inventory:{...state.inventory,[found.kind]:state.inventory[found.kind]+1},plants:state.plants.map(p=>p===found?{...p,collectedAt:Date.now()}:p)};emit();return true}
+function collect(spotId:string){const found=state.plants.find(p=>p.spotId===spotId);if(!found||growthStage(found,Date.now())!=='bloom'||found.collectedAt)return false;const unlock=found.kind==='moondrop'&&!state.discovered.includes('cloverlight');state={...state,discovered:unlock?[...state.discovered,'cloverlight']:state.discovered,seeds:{...state.seeds,[found.kind]:state.seeds[found.kind]+1,...(unlock?{cloverlight:state.seeds.cloverlight+1}:{})},inventory:{...state.inventory,[found.kind]:state.inventory[found.kind]+1},plants:state.plants.filter(p=>p!==found)};emit();return true}
+export function soilMoisture(plant:GardenPlanting|undefined,now=Date.now()){if(!plant||plant.wateredAt<plant.plantedAt)return 0;return Math.max(0,Math.min(1,1-(now-plant.wateredAt)/WATERED_MS))}
 function place(spotId:string,variant:GardenPlant){if(state.decorations.some(d=>d.spotId===spotId))return false
  if(movingFrom){state={...state,decorations:state.decorations.map(d=>d.spotId===movingFrom?{...d,spotId}:d)};movingFrom=null;emit();return true}
  if(state.inventory[variant]<1)return false;state={...state,inventory:{...state.inventory,[variant]:state.inventory[variant]-1},decorations:[...state.decorations,{id:crypto.randomUUID(),type:'flower',spotId,variant,createdAt:Date.now()}]};emit();return true}

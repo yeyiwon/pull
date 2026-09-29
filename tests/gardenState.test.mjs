@@ -30,8 +30,11 @@ test('play loop plants, waters, grows, collects and places without duplicating i
  gardenStore.clear();gardenStore.giveSeeds()
  assert.equal(gardenStore.plant('garden-1','starbell'),true)
  gardenStore.water('garden-1');gardenStore.advance(GROWTH_MS)
+ const seedsBefore=gardenStore.getSnapshot().seeds.starbell
  assert.equal(gardenStore.collect('garden-1'),true);assert.equal(gardenStore.collect('garden-1'),false)
  assert.equal(gardenStore.getSnapshot().inventory.starbell,1)
+ assert.equal(gardenStore.getSnapshot().seeds.starbell,seedsBefore+1)
+ assert.equal(gardenStore.getSnapshot().plants.length,0)
  assert.equal(gardenStore.place('decor-1','starbell'),true);assert.equal(gardenStore.place('decor-1','starbell'),false)
  assert.equal(gardenStore.getSnapshot().inventory.starbell,0)
  gardenStore.remove('decor-1');assert.equal(gardenStore.getSnapshot().inventory.starbell,1)
