@@ -309,7 +309,7 @@ Visual formula:
 
 전체 World를 바꾸기 전에 “PULL이 귀엽고 살고 싶은 세계가 될 수 있는가”를 가장 짧은 동선에서 검증한다.
 
-### V4_COZY_TEST 변경 범위
+### V4_COZY 변경 범위
 
 #### Home micro-scene
 
@@ -334,12 +334,12 @@ Visual formula:
 - 작은 ripple과 stepping stones
 - water edge negative space 확보
 
-### A/B 구조
+### Canonical / fallback 구조
 
-- `V3_CURRENT`: 현 production baseline을 그대로 보존
-- `V4_COZY_TEST`: Development Studio에서만 선택 가능
+- `V4_COZY`: 현재 production canonical PULL World
+- `V3_FULL`: Development Studio의 regression/reference fallback
 - 동일 camera/time/season/quality로 즉시 비교
-- 승인 전 V3 asset, layout, renderer path를 삭제하거나 교체하지 않음
+- V3 asset, layout, renderer path는 회귀 비교용으로 보존
 
 ### Prototype acceptance
 
@@ -405,7 +405,7 @@ Visual formula:
 
 ### MUST
 
-1. V3_CURRENT/V4_COZY_TEST A/B 경로
+1. V3_CURRENT/V4_COZY A/B 경로
 2. Home–Bridge–River prototype
 3. 모바일 silhouette/composition QA
 4. authored micro-scenes와 negative space
@@ -479,6 +479,6 @@ Visual formula:
 
 다음 단계로 넘어가기 전에 확인할 질문은 하나다.
 
-> **V4_COZY_TEST의 Home–Bridge–River 30초 산책이, 현재 V3보다 더 귀엽고 더 살고 싶으며 PULL의 원경 마법성을 잃지 않는가?**
+> **V4_COZY의 Home–Bridge–River 30초 산책이, 현재 V3보다 더 귀엽고 더 살고 싶으며 PULL의 원경 마법성을 잃지 않는가?**
 
 이 질문에 모바일 실제 화면으로 “예”라고 답한 뒤에만 다른 zone과 game loop를 구현한다.

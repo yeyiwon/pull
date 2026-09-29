@@ -100,8 +100,8 @@ export default function CozyHomeRiverSlice(){
  const [,setSeason]=useState(worldTime.realWorld.season)
  const materials=useMemo(()=>({wood:new MeshStandardMaterial({color:'#8c7158',roughness:.9}),cream:new MeshStandardMaterial({color:'#d9ceb5',roughness:.92})}),[])
  useEffect(()=>()=>{materials.wood.dispose();materials.cream.dispose()},[materials])
- useEffect(()=>{if(mode!=='V4_COZY_TEST')return;const timer=window.setInterval(()=>setSeason(current=>current===worldTime.realWorld.season?current:worldTime.realWorld.season),250);return()=>window.clearInterval(timer)},[mode])
- if(mode!=='V4_COZY_TEST')return null
+ useEffect(()=>{if(mode!=='V4_COZY')return;const timer=window.setInterval(()=>setSeason(current=>current===worldTime.realWorld.season?current:worldTime.realWorld.season),250);return()=>window.clearInterval(timer)},[mode])
+ if(mode!=='V4_COZY')return null
  return <group name="V4CozyHomeBridgeRiver">
   <HomeDetails/>
   <PathAndRiverLife/>

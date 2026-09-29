@@ -4,6 +4,48 @@
 
 Phase 2의 큰 형태 전환은 승인된 Hero asset 부재로 인해 **asset production gate**에 있다. Phase 1 procedural tree는 candy-like crown과 수관 아래로 기둥처럼 내려오는 branch artifact가 확인되어 V4 비교 화면에서 비활성화했다. 이를 primitive 조합으로 계속 보정해 최종 아트라고 주장하지 않는다.
 
+## Hero Home production pipeline
+
+2026-09-30부터 `V4_HERO_HOME`의 procedural/code-generated 모델링을 중단한다. 두 차례 기술 prototype은 mobile size, triangle, material, node contract를 검증했지만 animation-film 수준의 visual quality gate를 통과하지 못했다. 실패한 형태를 추가 코드로 반복 보정하지 않는다.
+
+앞으로의 고정 pipeline은 다음과 같다.
+
+```text
+2D CONCEPT
+→ external high-quality 3D generation/modeling
+→ incoming GLB
+→ technical optimization
+→ PULL asset QA
+→ user visual approval
+→ V4_COZY integration
+```
+
+`scripts/create-v4-hero-home.py`와 `artifacts/v4-hero-home/v4-hero-home.glb`는 **REFERENCE / TECHNICAL PROTOTYPE ONLY**다. production asset, approved Hero Home, runtime candidate가 아니며 registry 또는 `V4_COZY`에 연결하지 않는다. 추가 procedural Hero Home 제작에 이 script를 사용하지 않는다.
+
+### Codex responsibility after pipeline change
+
+Codex가 담당하는 범위:
+
+- incoming GLB 구조와 topology 검사
+- triangles, vertices, payload, textures, draw calls 분석
+- silhouette를 훼손하지 않는 decimation과 texture compression
+- material consolidation과 embedded texture 검증
+- PULL world scale, origin, pivot 정렬
+- `DoorPivot`, entrance clearance, cutaway/interior node contract 검증
+- 기존 collision authority와 semantic Home identity 보존
+- wetness, snow, illumination용 seasonal surface 확인
+- 승인 이후 V4-only runtime integration
+- iPhone memory, frame time, rendering regression QA
+
+Codex가 담당하지 않는 범위:
+
+- primitive/box 조합으로 Hero Home을 새로 모델링
+- code-generated procedural house를 final art로 승격
+- visual quality 부족을 specification 완화로 통과 처리
+- 사용자 승인 전 registry/runtime 연결
+
+이 문서의 triangle, payload, texture, material, draw-call, door, collision, seasonal budget은 pipeline 변경 이후에도 동일한 hard gate다.
+
 현재 후보 검사:
 
 | Candidate | Size | Triangles | Result | Reason |
@@ -12,7 +54,9 @@ Phase 2의 큰 형태 전환은 승인된 Hero asset 부재로 인해 **asset pr
 | `pull-house-hero.glb` | 36.4 MB | 119,692 | REJECTED | normal map 없음, mobile hero budget 초과 |
 | `pull-tree-hero-b.glb` | 66.9 MB | 29,502 | REVIEW REQUIRED | structural pass, untracked/unapproved, mobile payload 과다 |
 
-후보 GLB는 자동으로 V4에 넣지 않는다. 시각 검토, 최적화, registry approval을 통과한 자산만 `V4_COZY_TEST`에 연결한다.
+2026-09-30 Hero World Pass 재검사에서도 결과는 동일하다. House 후보는 triangle budget과 surface-detail 계약을 모두 위반한다. Tree B는 단일 primitive, embedded base-color/normal/roughness texture와 29,502 triangles로 구조 검사를 통과했지만 66.9MB payload 때문에 runtime 입장은 보류한다. 현재 승인 가능한 Hero Home은 0개, Hero Tree family는 0/3개다.
+
+후보 GLB는 자동으로 V4에 넣지 않는다. 시각 검토, 최적화, registry approval을 통과한 자산만 `V4_COZY`에 연결한다.
 
 ## HOUSE_HERO_V4
 
@@ -64,6 +108,14 @@ HomeRoot
 - delivery GLB 목표: ≤ 12MB
 - draw calls: 6 이하
 
+### Delivery dimensions and collision
+
+- authored world-space footprint: 현재 Home collision footprint 안쪽, 약 `12m × 8m`
+- exterior height: chimney 포함 약 `10–12m`
+- door pivot/threshold는 현재 `HOME` local contract와 정확히 정렬
+- visual mesh는 collision authority가 아니다. 기존 house shell, door trigger, interior cutaway와 entry collision을 그대로 사용한다.
+- material slots: 최대 6개 (`wall`, `wood`, `roof`, `glass/interior`, `foundation`, `snow receiver`)
+
 ### V4 presentation
 
 - 기존 HOME transform과 door/collision authority 유지
@@ -80,7 +132,16 @@ Thick readable trunk, expressive branching, layered soft foliage를 가진 styli
 
 - `TREE_HERO_V4_A`: Home framing tree, 넓고 포근한 crown
 - `TREE_HERO_V4_B`: Bridge/river threshold tree, 한쪽으로 열린 silhouette
+- `TREE_HERO_V4_C`: Garden/river framing tree, 위로 열린 crown과 낮은 비대칭 side branch
 - 동일 tree의 단순 scale/rotation 복제가 아니라 trunk/branch/crown 구조가 달라야 함
+
+### Per-asset silhouette and dimensions
+
+| Asset | Silhouette | Authored dimensions | Placement purpose |
+|---|---|---:|---|
+| `V4_HERO_TREE_A` | 낮고 넓은 canopy, 집 쪽을 감싸는 비대칭 crown | 높이 8–10m, crown 폭 7–9m | Home hero-frame side depth |
+| `V4_HERO_TREE_B` | 강 쪽으로 시야가 열리고 반대편 foliage mass가 무거운 형태 | 높이 9–11m, crown 폭 6–8m | Bridge threshold와 river opening |
+| `V4_HERO_TREE_C` | 위쪽 sky gap과 낮은 side branch가 읽히는 가벼운 형태 | 높이 7–9m, crown 폭 6–7m | Garden pocket과 river foreground frame |
 
 ### Required structure
 
@@ -123,6 +184,15 @@ TreeRoot
 - delivery GLB 목표: ≤ 8MB
 - draw calls: 3 이하
 
+### Delivery contract per tree
+
+- material slots: 최대 3개 (`bark`, `foliage`, optional `snow receiver`)
+- texture budget: 한 tree당 최대 2K atlas 1세트. Family가 같은 bark/foliage atlas를 공유하는 방식을 우선한다.
+- seasonal requirement: trunk는 공유하고 Spring/Summer/Autumn foliage color 또는 mesh variant, Winter sparse branch/foliage variant를 제공한다.
+- wind requirement: `TreeRoot`는 고정하고 `SecondaryBranches`와 canopy cluster가 개별 phase를 받을 수 있도록 node 또는 vertex-color mask를 제공한다.
+- collision: visual trunk와 별개로 단순 capsule/cylinder metadata만 제공한다. roots/canopy가 navigation collision을 만들지 않는다.
+- ground contact: root flare는 visual geometry로 제공하되 path와 resident route를 침범하지 않는다.
+
 ## PATH / CLEARING ART KIT
 
 Hero house/tree와 별도로 다음은 optimized shared kit로 제작한다.
@@ -137,7 +207,7 @@ Hero house/tree와 별도로 다음은 optimized shared kit로 제작한다.
 
 ## Camera contract
 
-`V4_COZY_TEST`에서만 시험한다.
+향후 승인된 Hero Home은 canonical `V4_COZY`에서 시험한다.
 
 - portrait follow distance: V3 대비 약 8–12% 가까움
 - Moru screen size 증가
@@ -154,6 +224,6 @@ Hero house/tree와 별도로 다음은 optimized shared kit로 제작한다.
 5. development preview only 등록
 6. Day/Sunset/Night/Winter/Rain visual review
 7. iPhone viewport와 device memory/FPS 확인
-8. 사용자 승인 후에만 `V4_COZY_TEST` runtime placement
+8. 사용자 승인 후에만 `V4_COZY` runtime placement
 
-Production 기본 Renderer는 계속 `V3_FULL`이다.
+Production 기본 World는 `V4_COZY`다. `V3_FULL`은 development regression/reference fallback으로만 유지한다.

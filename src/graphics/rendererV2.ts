@@ -1,12 +1,12 @@
 import { useSyncExternalStore } from 'react'
 
-export type RendererMode='V1'|'V2_SLICE'|'V2_FULL'|'V3_FULL'|'V4_COZY_TEST'
-let mode:RendererMode='V3_FULL'
+export type RendererMode='V1'|'V2_SLICE'|'V2_FULL'|'V3_FULL'|'V4_COZY'
+let mode:RendererMode='V4_COZY'
 const listeners=new Set<()=>void>()
 export function setRendererMode(next:RendererMode){if(mode===next)return;mode=next;for(const listener of listeners)listener()}
 export function getRendererMode(){return mode}
-export function useRendererMode(){return useSyncExternalStore<RendererMode>(listener=>{listeners.add(listener);return()=>listeners.delete(listener)},getRendererMode,()=> 'V3_FULL')}
-export function isV3World(next:RendererMode=getRendererMode()){return next==='V3_FULL'||next==='V4_COZY_TEST'}
+export function useRendererMode(){return useSyncExternalStore<RendererMode>(listener=>{listeners.add(listener);return()=>listeners.delete(listener)},getRendererMode,()=> 'V4_COZY')}
+export function isV3World(next:RendererMode=getRendererMode()){return next==='V3_FULL'||next==='V4_COZY'}
 
 export const V2_LIGHTING_PRESETS={
  // These two fixtures sit close to pale surfaces. Keep the approved colour,

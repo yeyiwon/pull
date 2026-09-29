@@ -6,7 +6,7 @@ import {createPlayer} from '../src/world/locomotion.ts'
 import {perceiveWorld} from '../src/world/worldPerception.ts'
 
 test('Renderer v2 remains an explicit reversible slice with a bounded mobile budget',()=>{
- assert.equal(getRendererMode(),'V3_FULL')
+ assert.equal(getRendererMode(),'V4_COZY')
  setRendererMode('V2_SLICE');assert.equal(getRendererMode(),'V2_SLICE')
  assert.equal(V2_SLICE_TREE_INDICES.size,5)
  assert.ok(V2_SLICE_BUDGET.drawCalls<=9)
@@ -18,7 +18,7 @@ test('Renderer v2 remains an explicit reversible slice with a bounded mobile bud
  assert.ok(V3_FULL_BUDGET.drawCalls<=20)
  assert.ok(V3_FULL_BUDGET.estimatedTriangles<145000)
  assert.equal(V3_FULL_BUDGET.textures,0)
- setRendererMode('V4_COZY_TEST');assert.equal(getRendererMode(),'V4_COZY_TEST');assert.equal(isV3World(),true)
+ setRendererMode('V4_COZY');assert.equal(getRendererMode(),'V4_COZY');assert.equal(isV3World(),true)
  assert.ok(V4_COZY_BUDGET.drawCalls<=18)
  assert.ok(V4_COZY_BUDGET.estimatedTriangles<50000)
  assert.equal(V4_COZY_BUDGET.textures,0)

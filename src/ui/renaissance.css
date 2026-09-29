@@ -470,3 +470,11 @@ html[data-game-ui-mode="conversation"] :is(.moru-conversation,.moru-gesture-entr
 
 /* Desktop game affordance: clickable UI gets a visible PULL pointer. */
 @media(pointer:fine){.experiment :is(button,a[href],summary,[role="button"]):not(:disabled){cursor:url('/ui/pull-cursor-action.svg') 5 5,pointer}.experiment :is(button,a[href],summary,[role="button"]):not(:disabled):active{cursor:url('/ui/pull-cursor-press.svg') 6 6,pointer}.experiment :is(input,textarea,[contenteditable="true"]){cursor:text}.experiment input[type="range"]{cursor:ew-resize}.interaction-dismiss{cursor:url('/ui/pull-cursor-action.svg') 5 5,pointer}}
+
+/* Resident dialogue portraits inherit the same palette and silhouette cues as their world models. */
+.npc-context .npc-speaker>span{background:var(--npc-body,#dfc99f);box-shadow:inset 0 -3px color-mix(in srgb,var(--npc-accent,#79956f) 42%,transparent),0 5px 14px var(--shadow)}
+.npc-context .npc-speaker>span::before,.npc-context .npc-speaker>span::after{background:var(--npc-accent,#79956f)}
+.npc-context .dialogue-caret{background:var(--npc-detail,#e2c485);box-shadow:0 0 8px var(--npc-detail,#e2c485)}
+.npc-context[data-resident="pebble"] .npc-speaker>span::before,.npc-context[data-resident="pebble"] .npc-speaker>span::after{top:-4px;width:12px;height:12px;border-radius:50%;rotate:0}
+.npc-context[data-resident="lumi"] .npc-speaker>span::before{rotate:-16deg;scale:.82 1.18}
+.npc-context[data-resident="lumi"] .npc-speaker>span::after{rotate:16deg;scale:.82 1.18}

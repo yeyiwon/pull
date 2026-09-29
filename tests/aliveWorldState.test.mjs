@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {aliveWorldStore,emptyAliveWorld,FUTURE_PLAY_EVENT_HOOKS,readAliveWorld} from '../src/world/aliveWorldState.ts'
+import {aliveNpcPosition,aliveWorldStore,emptyAliveWorld,FUTURE_PLAY_EVENT_HOOKS,publishResidentPosition,readAliveWorld} from '../src/world/aliveWorldState.ts'
 
 test('Lost Seeds is a bounded world-space mission rather than a generic quest graph',()=>{
  const state=emptyAliveWorld(100)
@@ -28,4 +28,18 @@ test('persistence sanitizes unknown mission states and caps seed object ids',()=
  assert.equal(value.lostSeeds.status,'AVAILABLE')
  assert.deepEqual(value.lostSeeds.collected,['lost-seed-1','lost-seed-2'])
  assert.equal(value.lostSeeds.completedAt,null)
+})
+
+test('conversation camera position follows only the active resident',()=>{
+ aliveWorldStore.reset()
+ publishResidentPosition('mallow',{x:1,y:2,z:3})
+ assert.deepEqual(aliveNpcPosition,{x:1,y:2,z:3})
+ aliveWorldStore.setRuntime({activeResident:'pebble',npcOpen:true})
+ publishResidentPosition('mallow',{x:10,y:20,z:30})
+ assert.deepEqual(aliveNpcPosition,{x:1,y:2,z:3})
+ publishResidentPosition('pebble',{x:4,y:5,z:6})
+ assert.deepEqual(aliveNpcPosition,{x:4,y:5,z:6})
+ publishResidentPosition('lumi',{x:7,y:8,z:9})
+ assert.deepEqual(aliveNpcPosition,{x:4,y:5,z:6})
+ aliveWorldStore.reset()
 })
