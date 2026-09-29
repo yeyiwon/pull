@@ -10,7 +10,6 @@ function lakesideSeat(id:string,z:number,side:-1|1,offset:number,yaw:number):Wor
  return {id,kind:'IRON_BENCH',x,z,y:surfaceHeight(x,z),yaw,seatHeight:1.03}
 }
 const sofa=homeWorldPoint(-2.5,.5)
-const porchChair=homeWorldPoint(-2.6,4.6)
 const terraceWest=homeWorldPoint(-4.9,10.35),terraceEast=homeWorldPoint(-1.7,10.35)
 export const WORLD_SEATS:readonly WorldSeat[]=[
  lakesideSeat('west-lamp-bench',38,-1,8.2,Math.PI/2),
@@ -18,7 +17,6 @@ export const WORLD_SEATS:readonly WorldSeat[]=[
  lakesideSeat('west-grove-bench',65,-1,8.1,Math.PI/2),
  lakesideSeat('east-lake-bench',78,1,8.5,-Math.PI/2),
  {id:'home-sofa',kind:'SOFA',x:sofa.x,z:sofa.z,y:0,yaw:HOME.yaw,seatHeight:1},
- {id:'porch-chair',kind:'CHAIR',x:porchChair.x,z:porchChair.z,y:0,yaw:HOME.yaw+Math.PI,seatHeight:.61},
  {id:'terrace-west-chair',kind:'CHAIR',x:terraceWest.x,z:terraceWest.z,y:surfaceHeight(terraceWest.x,terraceWest.z),yaw:HOME.yaw+Math.PI/2,seatHeight:.64},
  {id:'terrace-east-chair',kind:'CHAIR',x:terraceEast.x,z:terraceEast.z,y:surfaceHeight(terraceEast.x,terraceEast.z),yaw:HOME.yaw-Math.PI/2,seatHeight:.64},
 ]

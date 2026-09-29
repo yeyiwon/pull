@@ -62,7 +62,7 @@ function TerraceScene(){
    <mesh position={[0,.38,0]} castShadow><cylinderGeometry args={[.055,.075,.76,10]}/><meshStandardMaterial color={iron} metalness={.7} roughness={.3}/></mesh>
    <mesh position={[0,.08,0]} rotation={[Math.PI/2,0,0]}><torusGeometry args={[.42,.035,7,20]}/><meshStandardMaterial color={iron} metalness={.7} roughness={.3}/></mesh>
   </group>
-  {[-1.6,1.6].map((x,index)=><group key={x} position={[x,0,0]} rotation={[0,index?Math.PI/2:-Math.PI/2,0]}>
+  {[-1.6,1.6].map((x,index)=><group key={x} position={[x,0,0]} rotation={[0,index?-Math.PI/2:Math.PI/2,0]}>
    <mesh position={[0,.63,0]} castShadow><cylinderGeometry args={[.43,.43,.08,20]}/><meshStandardMaterial color={iron} metalness={.58} roughness={.38}/></mesh>
    {[-.27,.27].flatMap(px=>[-.22,.22].map(pz=><mesh key={`${px}:${pz}`} position={[px,.31,pz]} rotation={[0,0,px*.08]} castShadow><cylinderGeometry args={[.025,.04,.62,7]}/><meshStandardMaterial color={iron} metalness={.65} roughness={.34}/></mesh>))}
    <mesh position={[0,1.16,-.34]} rotation={[0,0,Math.PI/2]} castShadow><torusGeometry args={[.45,.04,7,22,Math.PI]}/><meshStandardMaterial color={iron} metalness={.65} roughness={.34}/></mesh>

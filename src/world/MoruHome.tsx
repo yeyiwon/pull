@@ -87,13 +87,6 @@ export default function MoruHome({detail}:{detail?:ReactNode}) {
       {i%2===0&&<group position={[-1.1,.25,0]}><mesh><cylinderGeometry args={[.13,.17,.5,10]}/><meshStandardMaterial color="#536c69"/></mesh><mesh position={[0,.29,0]} material={r.bulbs}><sphereGeometry args={[.12,10,8]}/></mesh></group>}
     </group>)}
     {Array.from({length:19},(_,i)=><mesh key={i} position={[-4.2+i*.47,4.23+Math.sin(i/18*Math.PI)*.28,3.9]} material={r.bulbs}><sphereGeometry args={[.045,6,4]}/></mesh>)}
-    <group position={[-1.6,0,4.6]}>
-      <mesh position={[0,.9,0]}><cylinderGeometry args={[.52,.5,.1,20]}/><meshStandardMaterial color="#b8ac92"/></mesh>
-      <mesh position={[0,.43,0]}><cylinderGeometry args={[.055,.18,.86,10]}/><meshStandardMaterial color="#796e5d"/></mesh>
-      <mesh position={[-1,.55,0]}><boxGeometry args={[.75,.12,.65]}/><meshStandardMaterial color="#a4a58e"/></mesh>
-      <mesh position={[-1,1,.3]}><boxGeometry args={[.75,.85,.1]}/><meshStandardMaterial color="#a4a58e"/></mesh>
-      {[-1.25,-.75].map(x=><mesh key={x} position={[x,.25,0]}><boxGeometry args={[.07,.5,.5]}/><meshStandardMaterial color="#796e5d"/></mesh>)}
-    </group>
     <group position={[-3.3,0,4.5]}><mesh position={[0,.35,0]}><cylinderGeometry args={[.36,.25,.7,16]}/><meshStandardMaterial color="#a8968c"/></mesh><mesh position={[0,1,0]} scale={[.6,.8,.6]}><sphereGeometry args={[1,12,8]}/><meshStandardMaterial color="#779b86"/></mesh></group>
   </group>
 }
