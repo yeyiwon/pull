@@ -1,12 +1,13 @@
 import { useEffect,useState,useSyncExternalStore } from 'react'
 import { useRendererMode } from '../graphics/rendererV2.ts'
-import { gardenStore,growthStage,PLANTS,soilMoisture } from '../world/gardenState.ts'
+import { gardenStore,growthRemainingMs,growthStage,PLANTS,soilMoisture } from '../world/gardenState.ts'
 import { worldTime } from '../world/worldTime.ts'
 import { gameUiMode } from './gameUiMode.ts'
 
 const feel=(kind:'seed'|'water'|'flower'|'soft'='soft')=>{if(!('vibrate'in navigator))return;navigator.vibrate(kind==='seed'?[5,24,8]:kind==='water'?[7,16,5]:kind==='flower'?[9,22,9]:8)}
 function GardenHeader({title}:{title:string}){return <div className="garden-heading"><span><small>GARDEN</small><strong>{title}</strong></span></div>}
 function Dismiss({close}:{close:()=>void}){return <button className="interaction-dismiss" aria-label="정원 닫기" onClick={close}/>}
+function remainingLabel(ms:number){const minutes=Math.max(1,Math.ceil(ms/60_000));if(minutes<60)return `약 ${minutes}분`;const hours=Math.ceil(minutes/60);return hours<24?`약 ${hours}시간`:`약 ${Math.ceil(hours/24)}일`}
 export default function GardenContextUI(){
  const mode=useRendererMode(),state=useSyncExternalStore(gardenStore.subscribe,gardenStore.getSnapshot),selection=gardenStore.getSelection(),moving=gardenStore.getMoving(),[now,setNow]=useState(()=>Date.now())
  useEffect(()=>{const id=window.setInterval(()=>setNow(Date.now()),30_000);return()=>window.clearInterval(id)},[])
@@ -16,10 +17,11 @@ export default function GardenContextUI(){
  if(selection.kind==='garden'){
   const plant=state.plants.find(p=>p.spotId===selection.spotId)
   const stage=plant&&growthStage(plant,now,worldTime.realWorld.season),wet=soilMoisture(plant,now)>.08
+  const plantName=plant?PLANTS.find(p=>p.id===plant.kind)?.name??'작은 꽃':null
   return <><Dismiss close={close}/><aside className="garden-context" aria-live="polite"><button className="garden-close" onClick={close} aria-label="닫기">×</button>
-   <GardenHeader title={plant?PLANTS.find(p=>p.id===plant.kind)?.name??'작은 꽃':'무엇을 심을까?'}/>
+   <GardenHeader title={plant?plantName??'작은 꽃':'무엇을 심을까?'}/>
    {!plant&&<div className="garden-actions garden-items">{PLANTS.filter(p=>state.discovered.includes(p.id)).map(p=><button key={p.id} disabled={!state.seeds[p.id]} onClick={()=>{if(gardenStore.plant(selection.spotId,p.id)){feel('seed');close()}}}><span>{p.name}</span><em>{state.seeds[p.id]}</em></button>)}</div>}
-   {plant&&<><p>{stage==='seed'?'흙 속에서 쉬는 중':stage==='sprout'?'작은 싹이 올라왔어':stage==='young'?'잎을 펼치는 중':'활짝 피었어'}</p><div className="garden-actions garden-primary-actions">{!wet&&<button onClick={()=>{gardenStore.water(selection.spotId);feel('water');close()}}>물 주기</button>}{stage==='bloom'&&!plant.collectedAt&&<button onClick={()=>{feel();if(gardenStore.collect(selection.spotId))close()}}>꽃 받기</button>}</div></>}
+   {plant&&<><div className="garden-growth"><span>{stage==='seed'?'흙 속에서 쉬는 중':stage==='sprout'?'작은 싹이 올라왔어':stage==='young'?'잎을 펼치는 중':'활짝 피었어'}</span><small>{stage==='bloom'?'다 자랐어':`활짝 피기까지 ${remainingLabel(growthRemainingMs(plant,now,worldTime.realWorld.season))}`}</small></div><div className="garden-actions garden-primary-actions">{!wet&&<button onClick={()=>{gardenStore.water(selection.spotId);feel('water');close()}}>물 주기</button>}{stage==='bloom'&&!plant.collectedAt&&<button onClick={()=>{feel();if(gardenStore.collect(selection.spotId))close()}}>꽃 받기</button>}</div></>}
   </aside></>
  }
  const decor=state.decorations.find(d=>d.spotId===selection.spotId)

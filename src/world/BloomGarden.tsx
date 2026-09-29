@@ -8,6 +8,7 @@ import { leafBlade, weatheredStone } from './artGeometry.ts'
 import { artMaterial, updateArtMaterial } from '../graphics/artMaterial.ts'
 import { DoubleSide } from 'three'
 import { CRYSTALS, FLOWERS } from './worldLayout.ts'
+import { useRendererMode } from '../graphics/rendererV2.ts'
 
 export function Flower({ scale = 1 }: { scale?: number }) {
   const blossom = useRef<Group>(null)
@@ -32,6 +33,7 @@ export function Flower({ scale = 1 }: { scale?: number }) {
   </group>
 }
 function BloomGarden({grove}:{grove?:ReactNode}) {
+  const rendererMode=useRendererMode()
   const flowers=useRef<Group>(null),time=useRef(0)
   const stones=useMemo(()=>({geometry:[0,2,4].map(n=>weatheredStone(n)),material:artMaterial('#879e9b')}),[])
   useEffect(()=>()=>{stones.geometry.forEach(g=>g.dispose());stones.material.dispose()},[stones])
@@ -40,7 +42,7 @@ function BloomGarden({grove}:{grove?:ReactNode}) {
   return <>
     {grove ?? <FantasyGrove />}
     <group ref={flowers}>{FLOWERS.map(([x, z, s], i) => <group key={i} position={[x, 0, z]}><Flower scale={s} /></group>)}</group>
-    {CRYSTALS.map(([x,z,s],i)=><group key={i} position={[x,0,z]} scale={s} rotation={[0,i*.8,0]}>
+    {CRYSTALS.map(([x,z,s],i)=>rendererMode==='V4_COZY'&&i<3?null:<group key={i} position={[x,0,z]} scale={s} rotation={[0,i*.8,0]}>
       <mesh geometry={stones.geometry[i%3]} material={stones.material} position={[0,.32,0]} scale={[.85,.75,.65]} castShadow receiveShadow/>
       <mesh geometry={stones.geometry[(i+1)%3]} material={stones.material} position={[.21,1.15,.02]} scale={[.47,.72,.43]} rotation={[.1,0,-.16]} castShadow receiveShadow/>
       <mesh geometry={stones.geometry[(i+2)%3]} position={[.08,.83,.36]} scale={[.12,.31,.045]} rotation={[0,0,-.24]}>

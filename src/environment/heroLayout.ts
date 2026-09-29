@@ -1,6 +1,7 @@
 import { CatmullRomCurve3, Vector3, Vector4 } from 'three'
 import { BRIDGE, streamCenter, streamWidth } from '../world/terrain.ts'
 import { homeWorldPoint } from '../world/homeSpace.ts'
+import { isCirculationClear } from '../world/ecology.ts'
 
 // Visual paths meet the existing deck ends and porch; they never own collision.
 const bridgeX = streamCenter(BRIDGE.z)
@@ -27,7 +28,7 @@ export const MEADOW_CLUSTERS = [
   [6,-28,1.7,1.6], [-18,-17,3,2], [17,-30,2.5,2],
 ] as const
 export function acceptsPlant(x:number,z:number) {
-  return pathDistance(x,z)>1.05 && Math.abs(x-streamCenter(z))>streamWidth(z)+.45
+  return !isCirculationClear(x,z) && pathDistance(x,z)>1.05 && Math.abs(x-streamCenter(z))>streamWidth(z)+.45
     && !(x>5 && x<15 && z> -29 && z< -18)
     && !(Math.abs(z-BRIDGE.z)<2.3 && Math.abs(x-bridgeX)<BRIDGE.halfLength+1.5)
 }

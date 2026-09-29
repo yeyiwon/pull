@@ -23,9 +23,16 @@ export function readGarden(raw:string|null,now=Date.now()):GardenState{
   return {...fresh,updatedAt:Number.isFinite(value.updatedAt)?Math.min(now,value.updatedAt!):now,discovered:Array.isArray(value.discovered)?value.discovered.filter((v):v is GardenPlant=>kinds.has(v as GardenPlant)):fresh.discovered,seeds:counts(value.seeds),inventory:counts(value.inventory),plants:Array.isArray(value.plants)?value.plants.filter(p=>p&&/^garden-[1-6]$/.test(p.spotId)&&kinds.has(p.kind)).slice(0,6):[],decorations:Array.isArray(value.decorations)?value.decorations.filter(d=>d&&/^decor-[1-9]|decor-10$/.test(d.spotId)&&kinds.has(d.variant)).slice(0,10):[]}
  }catch{return fresh}
 }
-export function growthStage(plant:GardenPlanting,now=Date.now(),season?:string):GardenStage{
+export function growthProgress(plant:GardenPlanting,now=Date.now(),season?:string){
  const wateredBoost=plant.wateredAt>=plant.plantedAt?1:.42,seasonBoost=PLANTS.find(p=>p.id===plant.kind)?.preferred===season?1.15:1
- const progress=Math.max(0,now-plant.plantedAt)/GROWTH_MS*wateredBoost*seasonBoost
+ return Math.max(0,now-plant.plantedAt)/GROWTH_MS*wateredBoost*seasonBoost
+}
+export function growthRemainingMs(plant:GardenPlanting,now=Date.now(),season?:string){
+ const wateredBoost=plant.wateredAt>=plant.plantedAt?1:.42,seasonBoost=PLANTS.find(p=>p.id===plant.kind)?.preferred===season?1.15:1
+ return Math.max(0,GROWTH_MS/(wateredBoost*seasonBoost)-Math.max(0,now-plant.plantedAt))
+}
+export function growthStage(plant:GardenPlanting,now=Date.now(),season?:string):GardenStage{
+ const progress=growthProgress(plant,now,season)
  return progress>=1?'bloom':progress>=.55?'young':progress>=.18?'sprout':'seed'
 }
 type GardenSelection={kind:'garden'|'decor';spotId:string}|null

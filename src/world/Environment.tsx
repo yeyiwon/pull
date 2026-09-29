@@ -211,7 +211,7 @@ function Environment({ player, art = {} }: { player: RefObject<Player>; art?: En
       </group>}
       {art.landmark ?? <WorldHalo />}
       <ContactDepth />
-      {ROCKS.map(([x, y, z, sx, sy, sz], i) => (
+      {ROCKS.map(([x, y, z, sx, sy, sz], i) => rendererMode==='V4_COZY'&&i<2?null:(
         <mesh key={i} geometry={resources.stones[i%3]} material={resources.stoneMaterial} position={[x, y, z]} scale={[sx, sy, sz]} rotation={[0, i * 0.7, 0.12]} castShadow receiveShadow>
         </mesh>
       ))}
@@ -220,7 +220,7 @@ function Environment({ player, art = {} }: { player: RefObject<Player>; art?: En
       <SeasonalDetails player={player} />
       <BloomGarden grove={art.grove ?? <FantasyGrove />} />
       <group ref={plants}>
-        {[[7, -12, 1], [-17, -26, 1.4], [-8, 12, 0.8], [29, 7, 1.2], [-30, -48, 1]].map(([x, z, scale], i) => (
+        {[[7, -12, 1], [-17, -26, 1.4], [-8, 12, 0.8], [29, 7, 1.2], [-30, -48, 1]].map(([x, z, scale], i) => rendererMode==='V4_COZY'&&i===0?null:(
           <group key={i} position={[x, 0, z]} scale={scale}>
             {[0, 1, 2].map((n) => (
               <group key={n} position={[n * 0.55, 0, Math.sin(n * 2) * 0.5]} rotation={[0, n * 1.5 + i, 0.13 * (n - 1)]} scale={1 - n * 0.18}>

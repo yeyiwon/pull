@@ -1,13 +1,13 @@
 import { useCallback,useEffect,useMemo,useRef,useState,useSyncExternalStore } from 'react'
 import { useFrame,useThree } from '@react-three/fiber'
-import { Group,MathUtils,MeshStandardMaterial,Quaternion,Vector3 } from 'three'
+import { Group,MathUtils,MeshStandardMaterial,Quaternion,SphereGeometry,Vector3 } from 'three'
 import type { RefObject } from 'react'
 import type { Player } from './locomotion.ts'
 import { useRendererMode } from '../graphics/rendererV2.ts'
 import { aliveWorldStore,publishResidentPosition,type NpcAction } from './aliveWorldState.ts'
 import { environmentState } from './environmentState.ts'
 import { worldTime } from './worldTime.ts'
-import { branch,leafBlade,weatheredStone } from './artGeometry.ts'
+import { branch,leafBlade } from './artGeometry.ts'
 import { homeWorldPoint } from './homeSpace.ts'
 import { surfaceHeight } from './terrain.ts'
 import WorldInteractionPrompt from './WorldInteractionPrompt.tsx'
@@ -34,8 +34,8 @@ function holdPlayerForDialogue(player:Player,npc:Vector3,delta:number){player.ke
 function turnToward(current:number,target:number,delta:number){const difference=MathUtils.euclideanModulo(target-current+Math.PI,Math.PI*2)-Math.PI;return current+difference*(1-Math.exp(-5*Math.min(delta,.05)))}
 
 function MallowVisual({root}:{root:RefObject<Group|null>}){
- const r=useMemo(()=>({body:weatheredStone(.8,true,20),head:weatheredStone(2.1,true,18),ear:leafBlade(.3,1,.15),leg:branch([[0,0,0],[0,-.28,.04],[.02,-.5,.08]],.065,.045,6,6),bodyMat:new MeshStandardMaterial({color:'#dfc99f',roughness:.86}),earMat:new MeshStandardMaterial({color:'#79956f',roughness:.82}),bagMat:new MeshStandardMaterial({color:'#87664e',roughness:.95}),faceMat:new MeshStandardMaterial({color:'#27362f',roughness:.72}),cheekMat:new MeshStandardMaterial({color:'#c98e87',roughness:.82}),glowMat:new MeshStandardMaterial({color:'#f3ddb1',emissive:'#e9be74',emissiveIntensity:.42,roughness:.72})}),[])
- useEffect(()=>()=>{r.body.dispose();r.head.dispose();r.ear.dispose();r.leg.dispose();r.bodyMat.dispose();r.earMat.dispose();r.bagMat.dispose();r.faceMat.dispose();r.cheekMat.dispose();r.glowMat.dispose()},[r])
+ const r=useMemo(()=>({body:new SphereGeometry(1,24,18),head:new SphereGeometry(1,28,20),ear:leafBlade(.3,1,.15),leg:branch([[0,0,0],[0,-.28,.04],[.02,-.5,.08]],.065,.045,6,6),bodyMat:new MeshStandardMaterial({color:'#dfc99f',roughness:.62}),earMat:new MeshStandardMaterial({color:'#79956f',roughness:.7}),bagMat:new MeshStandardMaterial({color:'#87664e',roughness:.82}),faceMat:new MeshStandardMaterial({color:'#27362f',roughness:.58}),muzzleMat:new MeshStandardMaterial({color:'#ead9bb',roughness:.7}),cheekMat:new MeshStandardMaterial({color:'#c98e87',roughness:.72}),glowMat:new MeshStandardMaterial({color:'#f3ddb1',emissive:'#e9be74',emissiveIntensity:.42,roughness:.62})}),[])
+ useEffect(()=>()=>{r.body.dispose();r.head.dispose();r.ear.dispose();r.leg.dispose();r.bodyMat.dispose();r.earMat.dispose();r.bagMat.dispose();r.faceMat.dispose();r.muzzleMat.dispose();r.cheekMat.dispose();r.glowMat.dispose()},[r])
  return <group ref={root} scale={.82}>
   <mesh geometry={r.body} material={r.bodyMat} scale={[.5,.64,.46]} position={[0,.78,0]} castShadow/>
   <mesh geometry={r.head} material={r.bodyMat} scale={[.57,.49,.51]} position={[0,1.5,.02]} castShadow/>
@@ -46,6 +46,8 @@ function MallowVisual({root}:{root:RefObject<Group|null>}){
   <mesh material={r.bagMat} position={[.48,.82,.03]} rotation={[0,0,-.18]} castShadow><boxGeometry args={[.38,.44,.2]}/></mesh>
   <mesh material={r.faceMat} position={[-.15,1.52,.49]} scale={[.78,1,1]}><sphereGeometry args={[.065,12,10]}/></mesh>
   <mesh material={r.faceMat} position={[.15,1.52,.49]} scale={[.78,1,1]}><sphereGeometry args={[.065,12,10]}/></mesh>
+  <mesh material={r.muzzleMat} position={[0,1.4,.49]} scale={[1.25,.72,.45]}><sphereGeometry args={[.15,16,10]}/></mesh>
+  <mesh material={r.faceMat} position={[0,1.43,.575]} scale={[1,.72,.55]}><sphereGeometry args={[.045,10,8]}/></mesh>
   <mesh material={r.cheekMat} position={[-.28,1.42,.45]} scale={[1.4,.65,.5]}><sphereGeometry args={[.07,12,8]}/></mesh>
   <mesh material={r.cheekMat} position={[.28,1.42,.45]} scale={[1.4,.65,.5]}><sphereGeometry args={[.07,12,8]}/></mesh>
   <mesh material={r.faceMat} position={[0,1.39,.51]} rotation={[0,0,Math.PI/2]} scale={[.65,.3,.35]}><torusGeometry args={[.055,.012,6,12,Math.PI]}/></mesh>
@@ -54,8 +56,8 @@ function MallowVisual({root}:{root:RefObject<Group|null>}){
 }
 
 function ResidentVisual({id,root,carried}:{id:ResidentId;root:RefObject<Group|null>;carried:RefObject<Group|null>}){
- const spec=RESIDENTS.find(item=>item.id===id)!,r=useMemo(()=>({body:weatheredStone(.9,true,18),head:weatheredStone(1.9,true,18),ear:leafBlade(.3,1,.15),leg:branch([[0,0,0],[0,-.28,.03],[.02,-.48,.07]],.065,.045,6,6),bodyMat:new MeshStandardMaterial({color:spec.palette.body,roughness:.86}),accentMat:new MeshStandardMaterial({color:spec.palette.accent,roughness:.8}),detailMat:new MeshStandardMaterial({color:spec.palette.detail,emissive:id==='lumi'?'#d6a84e':'#000000',emissiveIntensity:id==='lumi'?.32:0,roughness:.78}),faceMat:new MeshStandardMaterial({color:'#283439',roughness:.72}),cheekMat:new MeshStandardMaterial({color:id==='pebble'?'#be9190':'#c790a1',roughness:.82})}),[id,spec])
- useEffect(()=>()=>{r.body.dispose();r.head.dispose();r.ear.dispose();r.leg.dispose();r.bodyMat.dispose();r.accentMat.dispose();r.detailMat.dispose();r.faceMat.dispose();r.cheekMat.dispose()},[r])
+ const spec=RESIDENTS.find(item=>item.id===id)!,r=useMemo(()=>({body:new SphereGeometry(1,24,18),head:new SphereGeometry(1,28,20),ear:leafBlade(.3,1,.15),leg:branch([[0,0,0],[0,-.28,.03],[.02,-.48,.07]],.065,.045,6,6),bodyMat:new MeshStandardMaterial({color:spec.palette.body,roughness:.62}),accentMat:new MeshStandardMaterial({color:spec.palette.accent,roughness:.66}),detailMat:new MeshStandardMaterial({color:spec.palette.detail,emissive:id==='lumi'?'#d6a84e':'#000000',emissiveIntensity:id==='lumi'?.32:0,roughness:.64}),faceMat:new MeshStandardMaterial({color:'#283439',roughness:.56}),muzzleMat:new MeshStandardMaterial({color:id==='pebble'?'#d9c5bd':'#efe0cf',roughness:.68}),cheekMat:new MeshStandardMaterial({color:id==='pebble'?'#be9190':'#c790a1',roughness:.7})}),[id,spec])
+ useEffect(()=>()=>{r.body.dispose();r.head.dispose();r.ear.dispose();r.leg.dispose();r.bodyMat.dispose();r.accentMat.dispose();r.detailMat.dispose();r.faceMat.dispose();r.muzzleMat.dispose();r.cheekMat.dispose()},[r])
  const long=id==='lumi',round=id==='pebble'
  return <group ref={root} scale={spec.scale}>
   <mesh geometry={r.body} material={r.bodyMat} scale={round?[.58,.5,.52]:[.49,.63,.45]} position={[0,.78,0]} castShadow/>
@@ -63,6 +65,7 @@ function ResidentVisual({id,root,carried}:{id:ResidentId;root:RefObject<Group|nu
   {round?<><mesh material={r.accentMat} position={[-.35,1.66,0]}><sphereGeometry args={[.19,12,10]}/></mesh><mesh material={r.accentMat} position={[.35,1.66,0]}><sphereGeometry args={[.19,12,10]}/></mesh></>:<><mesh geometry={r.ear} material={r.accentMat} position={[-.25,long?1.91:1.8,0]} rotation={[.06,0,.3]} scale={[.78,long?1.2:.82,.78]} castShadow/><mesh geometry={r.ear} material={r.accentMat} position={[.24,long?1.91:1.8,0]} rotation={[.05,Math.PI,-.24]} scale={[.72,long?1.14:.76,.72]} castShadow/></>}
   <mesh geometry={r.leg} material={r.bodyMat} position={[-.2,.52,0]} castShadow/><mesh geometry={r.leg} material={r.bodyMat} position={[.2,.52,0]} castShadow/>
   <mesh material={r.faceMat} position={[-.15,1.51,.49]} scale={[.78,1,1]}><sphereGeometry args={[.064,12,10]}/></mesh><mesh material={r.faceMat} position={[.15,1.51,.49]} scale={[.78,1,1]}><sphereGeometry args={[.064,12,10]}/></mesh>
+  <mesh material={r.muzzleMat} position={[0,1.4,.49]} scale={[1.28,.72,.45]}><sphereGeometry args={[.145,16,10]}/></mesh><mesh material={r.faceMat} position={[0,1.43,.575]} scale={[1,.7,.52]}><sphereGeometry args={[.043,10,8]}/></mesh>
   <mesh material={r.cheekMat} position={[-.27,1.41,.45]} scale={[1.35,.6,.5]}><sphereGeometry args={[.067,12,8]}/></mesh><mesh material={r.cheekMat} position={[.27,1.41,.45]} scale={[1.35,.6,.5]}><sphereGeometry args={[.067,12,8]}/></mesh>
   <mesh material={r.accentMat} position={[0,.96,.45]} scale={[.72,.16,.28]}><torusGeometry args={[.37,.07,7,18]}/></mesh>
   <group ref={carried} position={[.5,.92,.25]}>{id==='pebble'?<mesh material={r.detailMat} scale={[1,.7,.55]} castShadow><dodecahedronGeometry args={[.18,0]}/></mesh>:<mesh material={r.detailMat} castShadow><boxGeometry args={[.25,.3,.22]}/><pointLight color="#f6d890" intensity={id==='lumi'?1.2:0} distance={2}/></mesh>}</group>

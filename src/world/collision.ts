@@ -4,6 +4,7 @@ import type { Vector3 } from 'three'
 import { CRYSTALS, FLOWERS, RIDGES, ROCKS, TREES, MUSHROOMS, HOME } from './worldLayout.ts'
 import { surfaceHeight, waterDepth } from './terrain.ts'
 import { WORLD_V3_LANDMARKS } from './worldV3.ts'
+import { getRendererMode } from '../graphics/rendererV2.ts'
 export type Obstacle = { x: number; z: number; rx: number; rz: number; angle: number; bottom: number; top: number; box?: boolean }
 const shapes = (items: readonly (readonly number[])[], turn: number): Obstacle[] => items.map(([x, y, z, sx, sy, sz], i) => ({
   x, z, rx: sx * 1.22, rz: sz * 1.22, angle: i * turn, bottom: y - sy * 1.2, top: y + sy * 1.2,
@@ -11,6 +12,9 @@ const shapes = (items: readonly (readonly number[])[], turn: number): Obstacle[]
 function wall(x: number, z: number, rx: number, rz: number): Obstacle { return { ...homeWorldPoint(x,z), rx, rz, angle: HOME.yaw, bottom: -.5, top: 4.8, box: true } }
 export const HOME_DOOR = wall(DOOR.x, DOOR.z, DOOR.width / 2, .1)
 export const HOME_WALLS = [wall(-4,0,.15,3.5), wall(4,0,.15,3.5), wall(0,-3.5,4,.15), wall(-1.7,3.5,2.3,.15), wall(3.55,3.5,.45,.15), HOME_DOOR]
+const ROCK_OBSTACLES=shapes(ROCKS,.7)
+const CRYSTAL_OBSTACLES=CRYSTALS.map(([x,z,s])=>({x,z,rx:s*.9,rz:s*.9,angle:0,bottom:0,top:3.8*s}))
+const V4_HIDDEN_OBSTACLES=new Set<Obstacle>([...ROCK_OBSTACLES.slice(0,2),...CRYSTAL_OBSTACLES.slice(0,3)])
 export const WORLD_OBSTACLES: readonly Obstacle[] = [
   ...HOME_WALLS,
   ...WORLD_SEATS.filter(seat=>seat.kind==='IRON_BENCH').map(seat=>({x:seat.x,z:seat.z,rx:.52,rz:1.48,angle:seat.yaw-Math.PI/2,bottom:seat.y,top:seat.y+1.98,box:true})),
@@ -18,10 +22,10 @@ export const WORLD_OBSTACLES: readonly Obstacle[] = [
   {...wall(-2.5,.5,1.1,.65),top:1.7},{...wall(-.9,-.9,.55,.55),top:.8},
   ...TREES.map(([x, z, s]) => ({ x, z, rx: s * .65, rz: s * .65, angle: 0, bottom: 0, top: 7 * s })),
   ...MUSHROOMS.map(([x, z, s]) => ({ x, z, rx: s * .5, rz: s * .5, angle: 0, bottom: 0, top: 3 * s })),
-  ...shapes(ROCKS, .7), ...shapes(RIDGES, .3).filter((_,i)=>i!==4&&i!==9),
+  ...ROCK_OBSTACLES, ...shapes(RIDGES, .3).filter((_,i)=>i!==4&&i!==9),
   ...FLOWERS.map(([x, z, s]) => ({ x, z, rx: s * .85, rz: s * .85, angle: 0, bottom: 0, top: 6 * s })),
   ...WORLD_V3_LANDMARKS.filter(landmark=>landmark.kind==='ancient-tree'||landmark.kind==='moon-shrine').map(landmark=>({x:landmark.visual[0],z:landmark.visual[1],rx:landmark.kind==='ancient-tree'?1.8:2.4,rz:landmark.kind==='ancient-tree'?1.8:2.4,angle:0,bottom:-.5,top:landmark.kind==='ancient-tree'?14:7})),
-  ...CRYSTALS.map(([x, z, s]) => ({ x, z, rx: s * .9, rz: s * .9, angle: 0, bottom: 0, top: 3.8 * s })),
+  ...CRYSTAL_OBSTACLES,
   // The current celestial Arc is visual only; preserve its non-blocking behavior.
 ]
 
@@ -29,6 +33,7 @@ export const MORU_COLLISION={radius:.65,height:2.8}
 export function canOccupy(x:number,z:number,y=surfaceHeight(x,z),obstacles=WORLD_OBSTACLES,body=MORU_COLLISION){
  if(x<=-90||x>=90||z<=-90||z>=90||waterDepth(x,z)>.12)return false
  for(const o of obstacles){
+  if(getRendererMode()==='V4_COZY'&&V4_HIDDEN_OBSTACLES.has(o))continue
   if(o===HOME_DOOR&&homeState.doorOpen>.75)continue
   if(y>=o.top||y+body.height<=o.bottom)continue
   const cos=Math.cos(o.angle),sin=Math.sin(o.angle),dx=x-o.x,dz=z-o.z,localX=dx*cos-dz*sin,localZ=dx*sin+dz*cos,rx=o.rx+body.radius,rz=o.rz+body.radius

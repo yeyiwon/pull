@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {emptyGarden,growthStage,readGarden,GROWTH_MS,gardenStore} from '../src/world/gardenState.ts'
+import {emptyGarden,growthRemainingMs,growthStage,readGarden,GROWTH_MS,gardenStore} from '../src/world/gardenState.ts'
 
 test('garden state starts as a small six-spot loop with one discovered seed family',()=>{
  const state=emptyGarden(100)
@@ -24,6 +24,10 @@ test('growth uses elapsed time, care and season without regressing after soil dr
  assert.equal(growthStage(plant,now+GROWTH_MS,'autumn'),'bloom')
  const dry={...plant,wateredAt:0};assert.equal(growthStage(dry,now+GROWTH_MS),'sprout')
  assert.equal(growthStage(plant,now+GROWTH_MS*.88,'spring'),'bloom')
+ assert.equal(growthRemainingMs(plant,now),GROWTH_MS)
+ assert.equal(growthRemainingMs(plant,now+GROWTH_MS*.5),GROWTH_MS*.5)
+ assert.equal(growthRemainingMs(plant,now+GROWTH_MS),0)
+ assert.ok(growthRemainingMs(dry,now+GROWTH_MS)>GROWTH_MS)
 })
 
 test('play loop plants, waters, grows, collects and places without duplicating inventory',()=>{

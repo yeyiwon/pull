@@ -3,7 +3,7 @@ import { useFrame,useThree } from '@react-three/fiber'
 import { Color,DoubleSide,Group,Mesh,MeshBasicMaterial,MeshStandardMaterial,Shape,ShapeGeometry } from 'three'
 import { useRendererMode } from '../graphics/rendererV2.ts'
 import { environmentState } from './environmentState.ts'
-import { gardenStore,growthStage,soilMoisture,type GardenPlant,type GardenStage } from './gardenState.ts'
+import { gardenStore,growthRemainingMs,growthStage,PLANTS,soilMoisture,type GardenPlant,type GardenStage } from './gardenState.ts'
 import { homeWorldPoint } from './homeSpace.ts'
 import { branch,leafBlade } from './artGeometry.ts'
 import { surfaceHeight } from './terrain.ts'
@@ -16,26 +16,32 @@ import { aliveWorldStore } from './aliveWorldState.ts'
 import { contextAction } from '../ui/contextAction.ts'
 import { HOME } from './worldLayout.ts'
 
-const localGarden=[[-5.2,8.9],[-3.3,9.6],[-1.35,9.85],[-5.25,11],[-3.3,11.6],[-1.35,11.8]] as const
+const localGarden=[[6.4,9.25],[8.5,9.25],[10.6,9.25],[6.4,11.3],[8.5,11.3],[10.6,11.3]] as const
 const localDecor=[[-6.8,7.4],[-4.8,6.6],[-2.5,7.2],[.1,8.2],[-6.7,12.8],[-4.2,13.5],[-1.4,13.7],[1.2,11.8],[2.3,9.7],[3.6,7.8]] as const
 const GARDEN_SPOTS=localGarden.map(([x,z],i)=>({id:`garden-${i+1}`,...homeWorldPoint(x,z)}))
 const DECOR_SPOTS=localDecor.map(([x,z],i)=>({id:`decor-${i+1}`,...homeWorldPoint(x,z)}))
 const colors:Record<GardenPlant,{petal:string;center:string;leaf:string}>={starbell:{petal:'#d6d5ff',center:'#fff0a8',leaf:'#6f9a72'},moondrop:{petal:'#addde6',center:'#f8e7ba',leaf:'#5f8c7d'},cloverlight:{petal:'#edc7d8',center:'#fff2c5',leaf:'#799566'}}
-const gardenCenter=homeWorldPoint(-3.3,10.35)
+const gardenCenter=homeWorldPoint(8.5,10.3)
+function compactRemaining(ms:number){const minutes=Math.max(1,Math.ceil(ms/60_000));return minutes<60?`${minutes}분`:`${Math.ceil(minutes/60)}시간`}
 
 function GardenPlotFrame(){
- const wood='#9b7b58',soil='#665044',edge='#765d49'
+ const wood='#9b7b58'
  return <group name="HomeGardenPlot" position={[gardenCenter.x,surfaceHeight(gardenCenter.x,gardenCenter.z)+.035,gardenCenter.z]} rotation={[0,HOME.yaw,0]}>
-  {([[-.84,'bed-a'],[1.08,'bed-b']] as const).map(([z,id])=><group key={id} position={[0,.03,z]}>
-   <mesh receiveShadow><boxGeometry args={[5.65,.16,1.34]}/><meshStandardMaterial color={edge} roughness={1}/></mesh>
-   <mesh position={[0,.1,0]} receiveShadow><boxGeometry args={[5.38,.07,1.08]}/><meshStandardMaterial color={soil} roughness={1}/></mesh>
-  </group>)}
   {([[-3.3,-2.55],[-1.05,-2.55],[1.05,-2.55],[3.3,-2.55],[-3.3,2.55],[-1.1,2.55],[1.1,2.55],[3.3,2.55],[-3.3,0],[3.3,0]] as const).map(([x,z],index)=><mesh key={index} position={[x,.55,z]} castShadow><boxGeometry args={[.16,1.1,.16]}/><meshStandardMaterial color={wood} roughness={.94}/></mesh>)}
   <mesh position={[0,.72,2.55]} castShadow><boxGeometry args={[6.7,.12,.12]}/><meshStandardMaterial color={wood} roughness={.94}/></mesh>
   <mesh position={[-3.3,.72,0]} castShadow><boxGeometry args={[.12,.12,5.2]}/><meshStandardMaterial color={wood} roughness={.94}/></mesh>
   <mesh position={[3.3,.72,0]} castShadow><boxGeometry args={[.12,.12,5.2]}/><meshStandardMaterial color={wood} roughness={.94}/></mesh>
   {[-2.18,2.18].map(x=><mesh key={x} position={[x,.72,-2.55]} castShadow><boxGeometry args={[2.28,.12,.12]}/><meshStandardMaterial color={wood} roughness={.94}/></mesh>)}
-  <group position={[-2.6,1.18,-2.62]} rotation={[0,0,-.035]}><mesh castShadow><boxGeometry args={[1.35,.58,.11]}/><meshStandardMaterial color="#b99668" roughness={.9}/></mesh>{[-.35,.35].map(x=><mesh key={x} position={[x,-.55,0]}><boxGeometry args={[.09,.75,.09]}/><meshStandardMaterial color={wood} roughness={.95}/></mesh>)}</group>
+  <group position={[2.6,1.18,-2.62]} rotation={[0,0,.035]}><mesh castShadow><boxGeometry args={[1.35,.58,.11]}/><meshStandardMaterial color="#b99668" roughness={.9}/></mesh>{[-.35,.35].map(x=><mesh key={x} position={[x,-.55,0]}><boxGeometry args={[.09,.75,.09]}/><meshStandardMaterial color={wood} roughness={.95}/></mesh>)}</group>
+ </group>
+}
+
+function PlantMarker({kind}:{kind:GardenPlant}){
+ const palette=colors[kind]
+ return <group position={[.45,.08,.44]} rotation={[0,-.32,0]}>
+  <mesh position={[0,.17,0]} castShadow><boxGeometry args={[.045,.34,.045]}/><meshStandardMaterial color="#75563f" roughness={.94}/></mesh>
+  <mesh position={[0,.34,0]} castShadow><boxGeometry args={[.28,.19,.045]}/><meshStandardMaterial color="#b28a60" roughness={.9}/></mesh>
+  <mesh position={[0,.34,.026]}><circleGeometry args={[.052,12]}/><meshStandardMaterial color={palette.petal} emissive={palette.petal} emissiveIntensity={.12} roughness={.72}/></mesh>
  </group>
 }
 
@@ -73,19 +79,22 @@ export default function GardenGameplay({player}:{player:RefObject<Player>}){
  })
  useEffect(()=>()=>{gl.domElement.style.removeProperty('cursor')},[gl])
  useEffect(()=>{if(mode!=='V4_COZY'||!nearSpot||aliveWorldStore.getRuntime().nearCollectible||aliveWorldStore.getRuntime().nearNpc){contextAction.clear('garden');return}
-  const plant=state.plants.find(value=>value.spotId===nearSpot),decor=state.decorations.find(value=>value.spotId===nearSpot),stage=plant&&growthStage(plant,now,worldTime.realWorld.season),kind=nearSpot.startsWith('garden-')?'garden':'decor',wet=soilMoisture(plant,now)>.08
-  const action=kind==='decor'?'PLACE':!plant?'PLANT':stage==='bloom'&&!plant.collectedAt?'COLLECT':wet?null:'WATER';if(!action){contextAction.clear('garden');return}
-  const label=action==='PLACE'?'꽃심기':action==='PLANT'?'꽃심기':action==='COLLECT'?'꽃 받기':'물 주기'
+  const plant=state.plants.find(value=>value.spotId===nearSpot),decor=state.decorations.find(value=>value.spotId===nearSpot),stage=plant&&growthStage(plant,now,worldTime.realWorld.season),kind=nearSpot.startsWith('garden-')?'garden':'decor'
+  const action=kind==='decor'?'PLACE':!plant?'PLANT':'INSPECT'
+  const plantName=plant?PLANTS.find(item=>item.id===plant.kind)?.name??'꽃':null
+  const label=kind==='decor'?'꽃심기':!plant?'꽃심기':stage==='bloom'?`${plantName} · 다 자람`:`${plantName} · ${compactRemaining(growthRemainingMs(plant,now,worldTime.realWorld.season))}`
   contextAction.set('garden',{id:nearSpot,kind:action,label,priority:decor?35:40,perform:()=>gardenStore.select({kind,spotId:nearSpot})});return()=>contextAction.clear('garden')
  },[mode,nearSpot,state,now])
  if(mode!=='V4_COZY')return null
  const select=(kind:'garden'|'decor',spotId:string)=>(event:{stopPropagation:()=>void;nativeEvent:{pointerId:number}})=>{event.stopPropagation();if(spotId!==nearRef.current)return;blockWorldMovement(event.nativeEvent.pointerId);gardenStore.select({kind,spotId})}
  return <group name="PlayableGardenV1">
   <GardenPlotFrame/>
-  {GARDEN_SPOTS.map(spot=>{const plant=state.plants.find(p=>p.spotId===spot.id),moisture=soilMoisture(plant,now),soilColor=new Color('#8a684f').lerp(new Color('#4b352c'),moisture);return <group key={spot.id} position={[spot.x,surfaceHeight(spot.x,spot.z)+.025,spot.z]} onPointerDown={select('garden',spot.id)} onPointerOver={e=>{e.stopPropagation();gl.domElement.style.cursor='pointer'}} onPointerOut={()=>gl.domElement.style.removeProperty('cursor')}>
-   <mesh receiveShadow rotation={[-Math.PI/2,0,0]}><circleGeometry args={[.44,20]}/><meshStandardMaterial color={soilColor} roughness={1-moisture*.22}/></mesh>
+  {GARDEN_SPOTS.map(spot=>{const plant=state.plants.find(p=>p.spotId===spot.id),moisture=soilMoisture(plant,now),soilColor=new Color('#8a684f').lerp(new Color('#4b352c'),moisture);return <group key={spot.id} position={[spot.x,surfaceHeight(spot.x,spot.z)+.025,spot.z]} rotation={[0,HOME.yaw,0]} onPointerDown={select('garden',spot.id)} onPointerOver={e=>{e.stopPropagation();gl.domElement.style.cursor='pointer'}} onPointerOut={()=>gl.domElement.style.removeProperty('cursor')}>
+   <mesh position={[0,-.035,0]} receiveShadow castShadow><boxGeometry args={[1.42,.14,1.42]}/><meshStandardMaterial color="#765d49" roughness={.98}/></mesh>
+   <mesh position={[0,.045,0]} receiveShadow><boxGeometry args={[1.24,.08,1.24]}/><meshStandardMaterial color={soilColor} roughness={1-moisture*.22}/></mesh>
    {!plant&&<>{[-.19,.03,.2].map((x,index)=><mesh key={x} position={[x,.012,(index-1)*.07]} rotation={[-Math.PI/2,0,index*.18]}><planeGeometry args={[.18,.012]}/><meshBasicMaterial color="#6d4f3d" transparent opacity={.28}/></mesh>)}</>}
    {plant&&growthStage(plant,now,worldTime.realWorld.season)==='seed'&&<group><mesh position={[0,.035,0]} scale={[1,.28,1]} castShadow><sphereGeometry args={[.25,14,8]}/><meshStandardMaterial color={soilColor} roughness={.92}/></mesh><mesh position={[0,.11,0]} rotation={[.2,0,.55]}><capsuleGeometry args={[.035,.09,4,7]}/><meshStandardMaterial color="#b99358" roughness={.8}/></mesh></group>}
+   {plant&&<PlantMarker kind={plant.kind}/>}
    {!plant&&nearSpot===spot.id&&!aliveWorldStore.getRuntime().nearNpc&&!aliveWorldStore.getRuntime().nearCollectible&&<GardenSpotCue/>}
    {plant&&<Plant kind={plant.kind} stage={growthStage(plant,now,worldTime.realWorld.season)}/>}
    {plant&&plant.plantedAt>=now-1_200&&<GardenActionEffect key={`seed-${plant.plantedAt}`} kind="SEED"/>}
