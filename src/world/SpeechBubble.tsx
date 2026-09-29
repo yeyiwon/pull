@@ -144,6 +144,10 @@ function SpeechBubble({ player, element }: { player: RefObject<Player>; element:
   useFrame(({ camera, size }, delta) => {
     if (document.hidden) return
     const pState=player.current
+    // Manual movement owns the very first frame of input. This keeps an
+    // autonomous route from competing with the player until its executor
+    // notices the same input on the following update.
+    if(userControlsMoru(pState))autonomy.current?.interrupt('manual control')
     agent.current?.update(pState,Math.min(delta,.05))
     const available=pState.state==='IDLE'&&!pState.actionRequested&&!pState.jumpRequested&&pState.isGrounded
     moru.update(Math.min(delta,.05),{hour:worldTime.canonical.hour+worldTime.canonical.minute/60,season:worldTime.canonical.season,weather:livingWorld.weather?.type??'clear',inside:homeState.inside,

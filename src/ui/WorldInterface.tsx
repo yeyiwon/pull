@@ -15,15 +15,20 @@ import BrainInspector from '../world/brain/BrainInspector.tsx'
 import CharacterInspector from '../characters/CharacterInspector.tsx'
 import { moru } from '../characters/expression.ts'
 import { conversationSession } from '../conversation/session.ts'
-import { setRendererMode,useRendererMode,V2_FULL_BUDGET,V2_SLICE_BUDGET,V3_FULL_BUDGET } from '../graphics/rendererV2.ts'
+import { setRendererMode,useRendererMode,V2_FULL_BUDGET,V2_SLICE_BUDGET,V3_FULL_BUDGET,V4_COZY_BUDGET } from '../graphics/rendererV2.ts'
 import { graphicsState } from '../graphics/quality.ts'
+import GardenContextUI,{GardenQAControls} from './GardenContextUI.tsx'
+import AliveWorldUI,{AliveWorldQAControls} from './AliveWorldUI.tsx'
+import TasksPanel from './TasksPanel.tsx'
+import ContextActionHUD from './ContextActionHUD.tsx'
+import { gameUiMode } from './gameUiMode.ts'
 const AccountPanel=lazy(()=>import('../cloud/AccountPanel.tsx'))
 function moruAttention(){moru.perform('listen','user',false)}
 function clearMovement(p:Player){p.keys.clear();p.touchX=0;p.touchZ=0;p.jumpRequested=false}
 function jump(p:Player){p.jumpRequested=true}
 function openPanel(panel:Parameters<typeof worldInterface.open>[0]){if(conversationSession.getSnapshot().phase!=='closed')conversationSession.cancel();worldInterface.open(panel)}
-const labels={menu:'Menu',world:'World',moru:'Moru',appearance:'Appearance',music:'Music',display:'Settings',controls:'Controls',conversations:'Memories',debug:'Studio'}
-const titles={menu:'Menu',world:'World',moru:'Moru',appearance:'Appearance',music:'Music',display:'Settings',controls:'Controls',conversations:'Memories',debug:'Studio'}
+const labels={menu:'Menu',tasks:'Notes',world:'World',moru:'Moru',appearance:'Appearance',music:'Music',display:'Settings',controls:'Controls',conversations:'Memories',debug:'Studio'}
+const titles={menu:'Menu',tasks:'Notes',world:'World',moru:'Moru',appearance:'Appearance',music:'Music',display:'Settings',controls:'Controls',conversations:'Memories',debug:'Studio'}
 export default function WorldInterface({player,ready,theme,onThemeChange}:{player:RefObject<Player>;ready:boolean;theme:'dark'|'light';onThemeChange:(theme:'dark'|'light')=>void}){
  const rendererMode=useRendererMode()
  useEffect(()=>{
@@ -34,6 +39,7 @@ export default function WorldInterface({player,ready,theme,onThemeChange}:{playe
  },[])
  const bodyReady=useSyncExternalStore(bodySelection.subscribe,bodySelection.getReadySnapshot)
  const requestedPanel=useSyncExternalStore(worldInterface.subscribe,worldInterface.getSnapshot)
+ useEffect(()=>{gameUiMode.set('menu',requestedPanel?'MENU':null);return()=>gameUiMode.set('menu',null)},[requestedPanel])
  const [panel,setPanel]=useState(requestedPanel)
  // Keep the outgoing surface mounted only for its exit transition.
  if(requestedPanel!==null&&requestedPanel!==panel)setPanel(requestedPanel)
@@ -72,6 +78,9 @@ export default function WorldInterface({player,ready,theme,onThemeChange}:{playe
   return()=>{window.removeEventListener('keydown',key,true);if(previous?.isConnected)previous.focus()}
  },[requestedPanel,player])
  return <>
+  {!panel&&conversation.phase==='closed'&&<GardenContextUI/>}
+  {!panel&&conversation.phase==='closed'&&<AliveWorldUI/>}
+  <ContextActionHUD/>
   {ready&&!panel&&conversation.phase==='closed'&&<button className="moru-gesture-entry" aria-label="모루 몸짓" onClick={()=>{moruAttention();openPanel('moru')}}><GestureGlyph/></button>}
   <header className="pull-header"><span className="pull-wordmark">PULL<span className="arc-mark" aria-hidden="true"/></span><WorldClock player={player} mode="status"/>
    <nav aria-label="세계 메뉴"><button aria-label={!soundUnlocked?'Tap to enable sound':muted?'소리 켜기':'소리 끄기'} aria-pressed={soundUnlocked&&!muted} data-muted={!soundUnlocked||muted} title={!soundUnlocked?'Tap to enable sound':muted?'소리 켜기':'소리 끄기'} onClick={()=>{if(!audio.unlocked){setMuted(false);audio.setMaster(.8);void audio.unlock()}else setMuted(value=>!value)}}>♪</button><button aria-label="메뉴 열기" aria-expanded={requestedPanel!==null} onClick={()=>openPanel(panel?null:'menu')}><span className="menu-lines" aria-hidden="true"/></button></nav>
@@ -87,7 +96,8 @@ export default function WorldInterface({player,ready,theme,onThemeChange}:{playe
     <div className="sheet-eyebrow"><button onClick={()=>panel==='menu'?close():back()} aria-label={panel==='menu'?'메뉴 닫기':panel==='controls'?'Settings로 돌아가기':'메뉴로 돌아가기'}>{panel==='menu'?<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg>:<><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m14 6-6 6 6 6M8 12h12"/></svg></>}</button><h1>{titles[panel]}</h1></div>
     </div>
     <div ref={body} className="sheet-scroll-body">
-    {panel==='menu'&&<><Suspense fallback={null}><AccountPanel/></Suspense><nav className="editorial-menu" aria-label="메뉴 항목">{([['world','World','시간 · 계절 · 날씨'],['appearance','Appearance','모루의 모습'],['conversations','Memories','모루와 나눈 이야기'],['music','Music','지금 이 순간의 소리'],['display','Settings','화면 · 조작']] as const).map(([id,title,note])=><button key={id} onClick={()=>worldInterface.open(id)}><span>{title}<em>{note}</em></span></button>)}</nav></>}
+    {panel==='menu'&&<><Suspense fallback={null}><AccountPanel/></Suspense><nav className="editorial-menu" aria-label="메뉴 항목">{([['tasks','Notes','작은 기록들'],['world','World','시간 · 계절 · 날씨'],['appearance','Appearance','모루의 모습'],['conversations','Memories','모루와 나눈 이야기'],['music','Music','지금 이 순간의 소리'],['display','Settings','화면 · 조작']] as const).map(([id,title,note])=><button key={id} onClick={()=>worldInterface.open(id)}><span>{title}<em>{note}</em></span></button>)}</nav></>}
+    {panel==='tasks'&&<TasksPanel/>}
     {panel==='conversations'&&<div className="conversation-history">{conversationSession.getHistory().length?conversationSession.getHistory().map((turn,index)=><div className="conversation-history-turn" key={index}><p className="conversation-history-user">{turn.user}</p><p className="conversation-history-moru">{turn.moru}</p></div>):<p className="sheet-intro">아직 모루와 나눈 이야기가 없어요.</p>}<p className="sheet-intro">이 기기에만 저장돼요. 이전에 저장되지 않았던 대화는 표시할 수 없어요.</p></div>}
     {panel==='world'&&<WorldClock player={player} mode="panel"/>}
     {panel==='music'&&<div ref={setMusicSlot} id="music-panel-slot"/>}
@@ -95,7 +105,7 @@ export default function WorldInterface({player,ready,theme,onThemeChange}:{playe
     {panel==='moru'&&<ActionControls player={player} disabled={!ready||!bodyReady||!conversation.ready}/>}
     {panel==='display'&&<><fieldset className="theme-picker"><legend>Mode</legend><div>{(['light','dark'] as const).map(value=><button key={value} aria-pressed={theme===value} onClick={()=>onThemeChange(value)}>{value==='light'?'Light':'Dark'}<small>{value==='light'?'맑고 부드럽게':'차분하고 깊게'}</small></button>)}</div><p>메뉴와 채팅의 테마예요. 세계의 시간은 그대로 유지돼요.</p></fieldset><p className="section-label">Display quality</p><GraphicsControls diagnostics={false}/><button className="text-link" onClick={()=>worldInterface.open('controls')}>Controls<span>조작 안내</span></button></>}
     {panel==='controls'&&<div className="control-guide"><p><span>이동</span>WASD / 방향키 · 터치 스틱</p><p><span>달리기</span>Shift · 스틱 바깥쪽</p><p><span>둘러보기</span>화면 드래그</p><p><span>점프</span>Space · ↑</p><p><span>인사 / 춤</span>1 / 2</p><p><span>반응</span>E · 모루 메뉴</p><p className="sheet-intro">움직이면 현재 행동을 멈추고 따라가요.</p></div>}
-    {panel==='debug'&&<div className="studio-controls"><WorldClock player={player} mode="debug"/><GraphicsControls/><fieldset className="theme-picker"><legend>Renderer A/B</legend><div>{(['V1','V2_SLICE','V2_FULL','V3_FULL'] as const).map(mode=><button key={mode} aria-pressed={rendererMode===mode} onClick={()=>setRendererMode(mode)}>{mode==='V1'?'World v1':mode==='V2_SLICE'?'Renderer v2 slice':mode==='V2_FULL'?'Renderer v2 full':'World v3'}<small>{mode==='V1'?'기존 World':mode==='V2_SLICE'?'House–Bridge vertical slice':mode==='V2_FULL'?'Full environment migration':'Living magical open world'}</small></button>)}</div><p>Live: {Math.round(graphicsState.fps)} FPS · {graphicsState.calls} calls · {graphicsState.triangles.toLocaleString()} tris</p>{rendererMode!=='V1'&&<p>{rendererMode==='V3_FULL'?'V3':rendererMode==='V2_FULL'?'Full':'Slice'} budget: +{(rendererMode==='V3_FULL'?V3_FULL_BUDGET:rendererMode==='V2_FULL'?V2_FULL_BUDGET:V2_SLICE_BUDGET).drawCalls} calls · ~{(rendererMode==='V3_FULL'?V3_FULL_BUDGET:rendererMode==='V2_FULL'?V2_FULL_BUDGET:V2_SLICE_BUDGET).estimatedTriangles.toLocaleString()} tris · textures +0</p>}</fieldset><BrainInspector/><CharacterInspector/></div>}
+    {panel==='debug'&&<div className="studio-controls"><WorldClock player={player} mode="debug"/><GraphicsControls/><GardenQAControls/><AliveWorldQAControls/><fieldset className="theme-picker"><legend>Renderer A/B</legend><div>{(['V1','V2_SLICE','V2_FULL','V3_FULL','V4_COZY_TEST'] as const).map(mode=><button key={mode} aria-pressed={rendererMode===mode} onClick={()=>setRendererMode(mode)}>{mode==='V1'?'World v1':mode==='V2_SLICE'?'Renderer v2 slice':mode==='V2_FULL'?'Renderer v2 full':mode==='V3_FULL'?'V3_CURRENT':'V4_COZY_TEST'}<small>{mode==='V1'?'기존 World':mode==='V2_SLICE'?'House–Bridge vertical slice':mode==='V2_FULL'?'Full environment migration':mode==='V3_FULL'?'Living magical open world':'Home–Bridge–River cozy slice'}</small></button>)}</div><p>Live: {Math.round(graphicsState.fps)} FPS · {graphicsState.calls} calls · {graphicsState.triangles.toLocaleString()} tris</p>{rendererMode!=='V1'&&<p>{rendererMode==='V4_COZY_TEST'?'V4 Cozy':rendererMode==='V3_FULL'?'V3':rendererMode==='V2_FULL'?'Full':'Slice'} budget: +{(rendererMode==='V4_COZY_TEST'?V4_COZY_BUDGET:rendererMode==='V3_FULL'?V3_FULL_BUDGET:rendererMode==='V2_FULL'?V2_FULL_BUDGET:V2_SLICE_BUDGET).drawCalls} calls · ~{(rendererMode==='V4_COZY_TEST'?V4_COZY_BUDGET:rendererMode==='V3_FULL'?V3_FULL_BUDGET:rendererMode==='V2_FULL'?V2_FULL_BUDGET:V2_SLICE_BUDGET).estimatedTriangles.toLocaleString()} tris · textures +0</p>}</fieldset><BrainInspector/><CharacterInspector/></div>}
     {import.meta.env.DEV&&panel==='menu'&&<button className="studio-link" onClick={()=>worldInterface.open('debug')}>개발 도구</button>}
     </div>
     </div>

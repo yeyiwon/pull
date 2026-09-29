@@ -4,7 +4,7 @@ import { BufferGeometry,Color,CapsuleGeometry,CylinderGeometry,DoubleSide,Icosah
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 import { artMaterial,updateArtMaterial } from '../graphics/artMaterial.ts'
 import { useQuality } from '../graphics/quality.ts'
-import { useRendererMode } from '../graphics/rendererV2.ts'
+import { isV3World,useRendererMode } from '../graphics/rendererV2.ts'
 import { branch,leafBlade } from './artGeometry.ts'
 import { environmentState as env } from './environmentState.ts'
 import { surfaceHeight } from './terrain.ts'
@@ -62,7 +62,7 @@ export default function WorldV3Landscape(){
  }),[])
  useEffect(()=>()=>{for(const g of [r.mountain,r.trunk,r.crown,r.blade,r.fern,r.ancient,r.ancientCrown,r.stone,r.ring,r.waterfall,r.flowerStem,r.flowerHead,r.shoreStone,r.moss])g.dispose();for(const m of [...r.mountainMaterials,r.wood,r.leaves,r.reed,r.fernMat,r.ruin,r.stem,r.petal,r.shoreRock,r.mossMat,r.water,r.garden])m.dispose()},[r])
  useEffect(()=>{
-  if(mode!=='V3_FULL')return
+  if(!isV3World(mode))return
   for(let layer=0;layer<V3_MOUNTAIN_LAYERS.length;layer++){
    const mesh=mountains.current[layer],items=V3_MOUNTAIN_LAYERS[layer].positions;if(!mesh)continue
    items.forEach(([x,y,z,sx,sy,sz],i)=>{r.o.position.set(x,y,z);r.o.rotation.set(0,(i*.73+layer*.41)%Math.PI,0);r.o.scale.set(sx,sy,sz);r.o.updateMatrix();mesh.setMatrixAt(i,r.o.matrix)});mesh.count=items.length;mesh.instanceMatrix.needsUpdate=true;mesh.computeBoundingSphere()
@@ -91,8 +91,8 @@ export default function WorldV3Landscape(){
  },[mode,r,treeLimit,quality])
  // Materials are persistent Three.js resources; frame updates intentionally mutate their runtime uniforms.
  // oxlint-disable-next-line react/immutability
- useFrame((_,delta)=>{if(mode!=='V3_FULL')return;clock.current+=delta;for(const material of [r.wood,r.leaves,r.reed,r.fernMat,r.ruin,r.stem,r.shoreRock,r.mossMat])updateArtMaterial(material,clock.current);const season=worldTime.realWorld.season;if(lastSeason.current!==season){lastSeason.current=season;r.leaves.color.set(seasonalLeaves());r.reed.color.copy(env.grass).multiplyScalar(.88);r.fernMat.color.copy(env.grass).multiplyScalar(.72);r.mossMat.color.copy(env.grass).multiplyScalar(.58);r.petal.color.set(season==='spring'?'#e8afca':season==='autumn'?'#c99450':season==='winter'?'#aab9c2':'#d9c36f')}r.water.opacity=.32+env.rain*.12;r.water.emissiveIntensity=.1+env.night*.16})
- if(mode!=='V3_FULL')return null
+ useFrame((_,delta)=>{if(!isV3World(mode))return;clock.current+=delta;for(const material of [r.wood,r.leaves,r.reed,r.fernMat,r.ruin,r.stem,r.shoreRock,r.mossMat])updateArtMaterial(material,clock.current);const season=worldTime.realWorld.season;if(lastSeason.current!==season){lastSeason.current=season;r.leaves.color.set(seasonalLeaves());r.reed.color.copy(env.grass).multiplyScalar(.88);r.fernMat.color.copy(env.grass).multiplyScalar(.72);r.mossMat.color.copy(env.grass).multiplyScalar(.58);r.petal.color.set(season==='spring'?'#e8afca':season==='autumn'?'#c99450':season==='winter'?'#aab9c2':'#d9c36f')}r.water.opacity=.32+env.rain*.12;r.water.emissiveIntensity=.1+env.night*.16})
+ if(!isV3World(mode))return null
  return <group name="WorldV3LivingLandscape">
   {V3_MOUNTAIN_LAYERS.map((layer,i)=><instancedMesh key={i} ref={mesh=>{if(mesh)mountains.current[i]=mesh}} args={[r.mountain,r.mountainMaterials[i],layer.positions.length]} receiveShadow={false}/>) }
   <instancedMesh ref={trunks} args={[r.trunk,r.wood,treeLimit]} castShadow={false} receiveShadow/>

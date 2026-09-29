@@ -12,14 +12,14 @@ import { SupabaseProfileAdapter,type ProfileInput,type PullProfile } from './pro
 import { setAccountIdentityContext } from './profileContext.ts'
 import { authCooldownRemaining,classifyAuthRequestError,SafeAuthRequestError,startAuthCooldown } from './authRequest.ts'
 import { authCallbackDiagnostics,createAuthCallbackHandler } from './authCallback.ts'
-import { resolveAuthRedirect } from './authRedirect.ts'
+import { isPasswordRecoveryUrl,resolveAuthRedirect } from './authRedirect.ts'
 import { isDevelopmentGuest } from './developmentAccess.ts'
 
-export type AccountSnapshot={phase:SyncPhase;configured:boolean;initialized:boolean;email:string|null;authenticated:boolean;developmentGuest:boolean;profile:PullProfile|null;profileRequired:boolean;message:string;lastSync:string|null}
+export type AccountSnapshot={phase:SyncPhase;configured:boolean;initialized:boolean;email:string|null;authenticated:boolean;developmentGuest:boolean;profile:PullProfile|null;profileRequired:boolean;recoveryRequired:boolean;message:string;lastSync:string|null}
 export type AuthIntent='login'|'signup'
 const listeners=new Set<()=>void>(),guestKey='pull.cloud.guest.v1',cachePrefix='pull.cloud.account.'
 const developmentGuest=isDevelopmentGuest(import.meta.env.DEV,window.location.href)
-let state:AccountSnapshot={phase:'LOCAL',configured:cloudConfigured,initialized:developmentGuest||!cloudConfigured,email:null,authenticated:false,developmentGuest,profile:null,profileRequired:false,message:developmentGuest?'Development Guest':'계정 연결 필요',lastSync:null},currentUser:User|null=null,running:Promise<void>|null=null,periodic=0,lastSessionKey:string|null=null,sessionWork:Promise<void>|null=null
+let state:AccountSnapshot={phase:'LOCAL',configured:cloudConfigured,initialized:developmentGuest||!cloudConfigured,email:null,authenticated:false,developmentGuest,profile:null,profileRequired:false,recoveryRequired:false,message:developmentGuest?'Development Guest':'계정 연결 필요',lastSync:null},currentUser:User|null=null,running:Promise<void>|null=null,periodic=0,lastSessionKey:string|null=null,sessionWork:Promise<void>|null=null
 function emit(patch:Partial<AccountSnapshot>){state={...state,...patch};listeners.forEach(fn=>fn())}
 function storage(){try{return localStorage}catch{return null}}
 function apply(snapshot:PullCloudSnapshot){const target=storage();if(!target)return;writeLocalSnapshot(target,snapshot);getMemorySession().replace(snapshot.moru);getBackgroundWorld().replace(snapshot.world);bodySelection.select(snapshot.appearance)}
@@ -56,7 +56,7 @@ async function handleSession(session:Session|null){
  return sessionWork
 }
 async function applySession(session:Session|null){
- if(!session){currentUser=null;setAccountIdentityContext(null);Object.assign(cloudDiagnostics,{authenticated:false,authState:'SIGNED_OUT',cloudEnabled:false,userId:null,worldId:null,moruId:null,profileState:'UNKNOWN',phase:'LOCAL',lastResult:'Signed out'});emit({initialized:true,authenticated:false,email:null,profile:null,profileRequired:false,phase:'LOCAL',message:'계정 연결 필요'});return}
+ if(!session){currentUser=null;setAccountIdentityContext(null);Object.assign(cloudDiagnostics,{authenticated:false,authState:'SIGNED_OUT',cloudEnabled:false,userId:null,worldId:null,moruId:null,profileState:'UNKNOWN',phase:'LOCAL',lastResult:'Signed out'});emit({initialized:true,authenticated:false,email:null,profile:null,profileRequired:false,recoveryRequired:false,phase:'LOCAL',message:'계정 연결 필요'});return}
  currentUser=session.user;Object.assign(cloudDiagnostics,{authenticated:true,authState:'AUTHENTICATED',cloudEnabled:true,userId:safeShortId(session.user.id),profileState:'UNKNOWN'});emit({initialized:false,authenticated:true,email:session.user.email??'연결된 계정',profile:null,profileRequired:false,message:'프로필 확인 중…'})
  try{
   const found=supabase?await new SupabaseProfileAdapter(supabase).load(session.user):null
@@ -68,10 +68,11 @@ async function initialize(){
  cloudDiagnostics.configured=cloudConfigured
  if(developmentGuest){Object.assign(cloudDiagnostics,{authState:'GUEST',cloudEnabled:false,lastResult:'Development Guest'});return}
  if(!supabase)return;const client=supabase
- client.auth.onAuthStateChange((_event,session)=>{window.setTimeout(()=>void handleSession(session),0)})
+ client.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY')emit({recoveryRequired:true});window.setTimeout(()=>void handleSession(session),0)})
  const callback=createAuthCallbackHandler(code=>client.auth.exchangeCodeForSession(code),url=>window.history.replaceState({},document.title,url),session=>handleSession(session)),copyCallbackDiagnostics=()=>Object.assign(cloudDiagnostics,{callbackDetected:authCallbackDiagnostics.detected,pkceExchange:authCallbackDiagnostics.status,pkceFailure:authCallbackDiagnostics.failure})
- if(Capacitor.isNativePlatform())void App.addListener('appUrlOpen',({url})=>void callback(url,'ios').then(()=>copyCallbackDiagnostics()))
- else await callback(window.location.href,'web')
+ const processCallback=(url:string,source:'web'|'ios')=>{if(isPasswordRecoveryUrl(url))emit({recoveryRequired:true});return callback(url,source).then(()=>copyCallbackDiagnostics())}
+ if(Capacitor.isNativePlatform())void App.addListener('appUrlOpen',({url})=>void processCallback(url,'ios'))
+ else await processCallback(window.location.href,'web')
  copyCallbackDiagnostics()
  const {data}=await client.auth.getSession();cloudDiagnostics.sessionRestored=!!data.session&&!authCallbackDiagnostics.detected;await handleSession(data.session)
  window.addEventListener('online',()=>void syncNow());document.addEventListener('visibilitychange',()=>{if(document.hidden)void syncNow();else void syncNow()})
@@ -80,9 +81,12 @@ async function initialize(){
 void initialize()
 export const cloudSync={
  subscribe(fn:()=>void){listeners.add(fn);return()=>listeners.delete(fn)},getSnapshot:()=>state,
- async requestAuthLink(intent:AuthIntent,email:string){if(!supabase)throw new SafeAuthRequestError('generic');if(authCooldownRemaining()>0)throw new SafeAuthRequestError('cooldown');ensureGuestBackup();const redirectTo=resolveAuthRedirect({native:Capacitor.isNativePlatform(),development:import.meta.env.DEV,origin:window.location.origin});try{const {error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:redirectTo,shouldCreateUser:intent==='signup'}});if(error)throw error;startAuthCooldown();emit({message:'이메일의 인증 링크를 확인해 주세요.'})}catch(error){throw classifyAuthRequestError(error)}},
+ async login(email:string,password:string){if(!supabase)throw new SafeAuthRequestError('generic');ensureGuestBackup();try{const {data,error}=await supabase.auth.signInWithPassword({email,password});if(error)throw error;if(data.session)await handleSession(data.session)}catch(error){throw classifyAuthRequestError(error)}},
+ async signup(email:string,password:string){if(!supabase)throw new SafeAuthRequestError('generic');ensureGuestBackup();const redirectTo=resolveAuthRedirect({native:Capacitor.isNativePlatform(),development:import.meta.env.DEV,origin:window.location.origin});try{const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:redirectTo}});if(error)throw error;if(!data.user)throw new SafeAuthRequestError('generic');if(data.user.identities?.length===0)throw new SafeAuthRequestError('account_exists');if(!data.session){startAuthCooldown();return{confirmationRequired:true}};await handleSession(data.session);return{confirmationRequired:false}}catch(error){throw classifyAuthRequestError(error)}},
+ async requestPasswordReset(email:string){if(!supabase)throw new SafeAuthRequestError('generic');if(authCooldownRemaining()>0)throw new SafeAuthRequestError('cooldown');const redirectTo=resolveAuthRedirect({native:Capacitor.isNativePlatform(),development:import.meta.env.DEV,origin:window.location.origin},'recovery');try{const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo});if(error)throw error;startAuthCooldown()}catch(error){throw classifyAuthRequestError(error)}},
+ async updatePassword(password:string){if(!supabase||!currentUser)throw new SafeAuthRequestError('generic');try{const {error}=await supabase.auth.updateUser({password});if(error)throw error;emit({recoveryRequired:false,message:'비밀번호가 변경됐어요.'});const url=new URL(window.location.href);url.searchParams.delete('flow');window.history.replaceState({},document.title,`${url.pathname}${url.search}${url.hash}`)}catch(error){throw classifyAuthRequestError(error)}},
  async saveProfile(input:ProfileInput){if(!supabase||!currentUser)throw Error('Account session unavailable');const saved=await new SupabaseProfileAdapter(supabase).save(currentUser,input);setAccountIdentityContext(saved.displayName);emit({initialized:false,profile:saved,profileRequired:false,phase:'LOCAL',message:'프로필이 저장됐어요.'});ensureGuestBackup();await syncNow();emit({initialized:true});return saved},
- async logout(){if(!supabase)return;await syncNow();await supabase.auth.signOut();currentUser=null;setAccountIdentityContext(null);restoreGuest();emit({authenticated:false,email:null,profile:null,profileRequired:false,phase:'LOCAL',message:'이 기기에 저장됨'})},
+ async logout(){if(!supabase)return;await syncNow();await supabase.auth.signOut();currentUser=null;setAccountIdentityContext(null);restoreGuest();emit({authenticated:false,email:null,profile:null,profileRequired:false,recoveryRequired:false,phase:'LOCAL',message:'계정 연결 필요'})},
  syncNow,
  dispose(){if(periodic)window.clearInterval(periodic)},
 }

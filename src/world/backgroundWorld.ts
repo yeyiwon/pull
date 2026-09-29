@@ -1,11 +1,13 @@
 import { seasonAt,type Season } from './realWorld.ts'
 import { WORLD_EVENTS,eventDefinition,type WorldEventId,type WorldEventSignificance } from './worldEvents.ts'
 import { WORLD_V3_LANDMARKS } from './worldV3.ts'
+import type { GardenState } from './gardenState.ts'
+import type { AliveWorldState } from './aliveWorldState.ts'
 
 export type BackgroundEvent={id:WorldEventId;startedAt:number;endsAt:number;significance:WorldEventSignificance;location:string|null}
 export type BackgroundMemory={kind:'EVENT'|'DISCOVERY';id:string;at:number;location:string|null}
 export type NotificationCandidate={eventId:WorldEventId;eventType:string;worldTimestamp:number;landmark:string|null;significance:'HIGH'|'VERY_HIGH'}
-export type PersistentWorldState={version:1;updatedAt:number;season:Season;worldTime:number;weather:string;activeEvents:BackgroundEvent[];moruLocation:string;moruState:'QUIET'|'OBSERVING'|'RESTING';moruGoal:string|null;discoveries:Record<string,'discovered'|'familiar'>;recentSignificantEvents:BackgroundMemory[];lastNotificationAt:number;notificationsToday:{day:string;count:number};lastNotifiedEvent:string|null;manual:{season:boolean;time:boolean;weather:boolean;events:boolean}}
+export type PersistentWorldState={version:1;garden?:GardenState;alive?:AliveWorldState;updatedAt:number;season:Season;worldTime:number;weather:string;activeEvents:BackgroundEvent[];moruLocation:string;moruState:'QUIET'|'OBSERVING'|'RESTING';moruGoal:string|null;discoveries:Record<string,'discovered'|'familiar'>;recentSignificantEvents:BackgroundMemory[];lastNotificationAt:number;notificationsToday:{day:string;count:number};lastNotifiedEvent:string|null;manual:{season:boolean;time:boolean;weather:boolean;events:boolean}}
 export const BACKGROUND_WORLD_KEY='pull.world.background.v1'
 const day=(time:number)=>new Date(time).toISOString().slice(0,10)
 const significance=(value:WorldEventSignificance)=>value==='VERY_HIGH'?4:value==='HIGH'?3:value==='MEDIUM'?2:1

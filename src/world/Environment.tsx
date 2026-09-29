@@ -27,7 +27,7 @@ import { RIDGES, ROCKS } from './worldLayout.ts'
 import type { EnvironmentArtSlots } from './artSlots.ts'
 import type { Player } from './locomotion.ts'
 import { skyVertex, skyFragment } from './environmentShaders.ts'
-import { getRendererMode,useRendererMode } from '../graphics/rendererV2.ts'
+import { getRendererMode,isV3World,useRendererMode } from '../graphics/rendererV2.ts'
 
 function setFogRange(fog: Fog, haze: number) { fog.near = 38 / haze; fog.far = 285 / haze }
 function setUniform(uniform: { value: number }, value: number) { uniform.value = value }
@@ -185,12 +185,12 @@ function Environment({ player, art = {} }: { player: RefObject<Player>; art?: En
       <HeroMeadow />
 
       {/* Far ridges overlap the middle islands, leaving a valley toward the aperture. */}
-      {rendererMode!=='V3_FULL'&&RIDGES.map(([x, y, z, sx, sy, sz], i) => (
+      {!isV3World(rendererMode)&&RIDGES.map(([x, y, z, sx, sy, sz], i) => (
         <mesh key={i} geometry={resources.rock} position={[x, y, z]} scale={[sx, sy, sz]} rotation={[0, i * 0.3, 0]}>
           <meshStandardMaterial color={i < 5 ? '#a4a9e1' : '#7e8ccb'} roughness={0.93} />
         </mesh>
       ))}
-      {rendererMode!=='V3_FULL'&&<group ref={islands}>
+      {!isV3World(rendererMode)&&<group ref={islands}>
         {[
           [-36, 19, -85, 13, 4, 9], [64, 27, -133, 18, 6, 11], [-92, 24, 42, 18, 7, 12],
         ].map(([x, y, z, sx, sy, sz], i) => (

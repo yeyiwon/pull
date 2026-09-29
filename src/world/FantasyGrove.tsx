@@ -44,12 +44,12 @@ export default function FantasyGrove() {
   time.current+=delta;updateArtMaterial(r.wood,time.current);updateArtMaterial(r.leaves,time.current);updateArtMaterial(r.grass,time.current);updateArtMaterial(r.cap,time.current)
   r.grass.color.copy(env.grass).multiplyScalar(1.12)
   const season=worldTime.realWorld.season
-  const replacedAll=rendererMode==='V2_FULL'||rendererMode==='V3_FULL'
+  const replacedAll=rendererMode==='V2_FULL'||rendererMode==='V3_FULL'||rendererMode==='V4_COZY_TEST'
   if(foliage.current)foliage.current.count=replacedAll?0:TREES.length*20
   if(snowCaps.current)snowCaps.current.visible=!replacedAll&&env.snow>.02
   if(red.current)red.current.visible=rendererMode==='V1'||rendererMode==='V2_SLICE'&&season==='winter'&&env.night>.2
   if(green.current)green.current.visible=rendererMode==='V1'||rendererMode==='V2_SLICE'&&season==='winter'&&env.night>.2
-  if(grass.current)grass.current.count=rendererMode==='V2_FULL'||rendererMode==='V3_FULL'?0:quality==='PERFORMANCE'?(TREES.length*24):(TREES.length*48)
+  if(grass.current)grass.current.count=rendererMode==='V2_FULL'||rendererMode==='V3_FULL'||rendererMode==='V4_COZY_TEST'?0:quality==='PERFORMANCE'?(TREES.length*24):(TREES.length*48)
   if(canopy.current)canopy.current.rotation.z=Math.sin(time.current*.23)*.003
   if(foliage.current && (Math.abs(lastSnow.current-env.snow)>.002||lastSeason.current!==season||lastRenderer.current!==rendererMode)){
    lastSnow.current=env.snow;lastSeason.current=season;lastRenderer.current=rendererMode
@@ -75,7 +75,7 @@ export default function FantasyGrove() {
   }
  })
  return <>
-  {TREES.map(([x,z,s,family],i)=>(rendererMode==='V2_FULL'||rendererMode==='V3_FULL'||rendererMode==='V2_SLICE'&&V2_SLICE_TREE_INDICES.has(i))?null:<mesh key={i} position={[x,0,z]} scale={s} geometry={r.skeletons[family]} material={r.wood} castShadow={quality!=='PERFORMANCE'||i<5} receiveShadow/>)}
+  {TREES.map(([x,z,s,family],i)=>(rendererMode==='V2_FULL'||rendererMode==='V3_FULL'||rendererMode==='V4_COZY_TEST'||rendererMode==='V2_SLICE'&&V2_SLICE_TREE_INDICES.has(i))?null:<mesh key={i} position={[x,0,z]} scale={s} geometry={r.skeletons[family]} material={r.wood} castShadow={quality!=='PERFORMANCE'||i<5} receiveShadow/>)}
   <group ref={canopy}><instancedMesh ref={foliage} args={[r.crown,r.leaves,(TREES.length*20)]} frustumCulled={false} castShadow={quality!=='PERFORMANCE'} receiveShadow/></group>
   <instancedMesh ref={snowCaps} args={[r.snowCrown,r.snow,TREES.length*20]} frustumCulled={false} receiveShadow/>
   <instancedMesh ref={red} args={[r.bulb,r.red,TREES.length*10]}/><instancedMesh ref={green} args={[r.bulb,r.green,TREES.length*10]}/>

@@ -1,4 +1,4 @@
-export type Panel='menu'|'world'|'moru'|'appearance'|'music'|'display'|'controls'|'conversations'|'debug'|null
+export type Panel='menu'|'tasks'|'world'|'moru'|'appearance'|'music'|'display'|'controls'|'conversations'|'debug'|null
 let panel:Panel=null
 const listeners=new Set<()=>void>()
 export const worldInterface={

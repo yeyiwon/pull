@@ -28,6 +28,11 @@ import WinterIllumination from './WinterIllumination.tsx'
 import WorldV3Landscape from './WorldV3Landscape.tsx'
 import WinterFootprints from './WinterFootprints.tsx'
 import LivingWorldEvents from './LivingWorldEvents.tsx'
+import CozyHomeRiverSlice from './CozyHomeRiverSlice.tsx'
+import GardenGameplay from './GardenGameplay.tsx'
+import { consumeBlockedWorldMovement } from './worldPointer.ts'
+import { gameUiMode } from '../ui/gameUiMode.ts'
+import AliveCuteWorld from './AliveCuteWorld.tsx'
 
 
 class CharacterBoundary extends Component<
@@ -58,7 +63,8 @@ function World({ onReady, onError, player, bubble }: { onReady: () => void; onEr
     const canvas=gl.domElement,controlledPlayer=player.current
     const down=(event:PointerEvent)=>{groundSelection.current={x:event.clientX,y:event.clientY,cancelled:false}}
     const up=(event:PointerEvent)=>{
-      const gesture=groundSelection.current;if(gesture.cancelled||Math.hypot(event.clientX-gesture.x,event.clientY-gesture.y)>=6||conversationActive()||worldInterface.getSnapshot()!==null)return
+      if(consumeBlockedWorldMovement(event.pointerId)){groundSelection.current.cancelled=true;return}
+      const gesture=groundSelection.current;if(gesture.cancelled||Math.hypot(event.clientX-gesture.x,event.clientY-gesture.y)>=6||conversationActive()||gameUiMode.getSnapshot()!=='EXPLORE'||worldInterface.getSnapshot()!==null)return
       const rect=canvas.getBoundingClientRect();raycaster.current.setFromCamera(normalizedPointer(event.clientX,event.clientY,rect),camera)
       const point=pointerMoveGround(raycaster.current.ray);if(!point)return
       const distance=Math.hypot(point.x-controlledPlayer.position.x,point.z-controlledPlayer.position.z)
@@ -70,7 +76,7 @@ function World({ onReady, onError, player, bubble }: { onReady: () => void; onEr
   useEffect(() => {
     const input = player.current
     function down(event: KeyboardEvent) {
-      if(conversationActive())return
+      if(conversationActive()||gameUiMode.getSnapshot()!=='EXPLORE')return
       if (event.target instanceof HTMLElement && (event.target.isContentEditable || event.target.closest('button,summary,[role=dialog]') || /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName))) return
       if (!MOVE_KEYS.has(event.code) || event.metaKey || event.ctrlKey || event.altKey) return
       event.preventDefault()
@@ -107,6 +113,9 @@ function World({ onReady, onError, player, bubble }: { onReady: () => void; onEr
       <RendererV2Slice />
       <WinterIllumination />
       <WorldV3Landscape />
+      <CozyHomeRiverSlice />
+      <GardenGameplay player={player}/>
+      <AliveCuteWorld player={player}/>
       <WinterFootprints player={player} />
       <LivingWorldEvents />
       <CharacterBoundary key={bodyId} onError={onError}>

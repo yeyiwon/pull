@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {PerspectiveCamera} from 'three'
-import {artificialLightLevel,getRendererMode,setRendererMode,V2_FULL_BUDGET,V3_FULL_BUDGET,V2_LIGHTING_PRESETS,V2_SLICE_BUDGET,V2_SLICE_TREE_INDICES} from '../src/graphics/rendererV2.ts'
+import {artificialLightLevel,getRendererMode,isV3World,setRendererMode,V2_FULL_BUDGET,V3_FULL_BUDGET,V4_COZY_BUDGET,V2_LIGHTING_PRESETS,V2_SLICE_BUDGET,V2_SLICE_TREE_INDICES} from '../src/graphics/rendererV2.ts'
 import {createPlayer} from '../src/world/locomotion.ts'
 import {perceiveWorld} from '../src/world/worldPerception.ts'
 
@@ -18,6 +18,10 @@ test('Renderer v2 remains an explicit reversible slice with a bounded mobile bud
  assert.ok(V3_FULL_BUDGET.drawCalls<=20)
  assert.ok(V3_FULL_BUDGET.estimatedTriangles<145000)
  assert.equal(V3_FULL_BUDGET.textures,0)
+ setRendererMode('V4_COZY_TEST');assert.equal(getRendererMode(),'V4_COZY_TEST');assert.equal(isV3World(),true)
+ assert.ok(V4_COZY_BUDGET.drawCalls<=18)
+ assert.ok(V4_COZY_BUDGET.estimatedTriangles<50000)
+ assert.equal(V4_COZY_BUDGET.textures,0)
  setRendererMode('V3_FULL');assert.equal(getRendererMode(),'V3_FULL')
  setRendererMode('V1')
 })

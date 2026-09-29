@@ -12,9 +12,9 @@ function snapshot(id='user-a',now=Date.parse('2026-09-25T00:00:00Z')){const stor
 function experience(state,activity,timestamp='2026-09-25T00:00:00Z'){return recordExperience(state.moru.intelligence,{timestamp,source:'FOREGROUND',location:'AncientTree',activity,nearbyObjects:['AncientTree'],season:'autumn',timeOfDay:'NIGHT',weather:'clear',activeEvent:null,userPresent:true,voluntary:true,novelty:.7,significance:.8,outcome:'completed',dwellSeconds:12})}
 
 test('existing Memory v7 and Background World v1 survive local cloud snapshot roundtrip',()=>{
- const source=snapshot();source.moru.visitCount=9;source.moru.autonomy.discoveries.AncientTree={status:'familiar',firstSeenAt:source.serverUpdatedAt,lastSeenAt:source.serverUpdatedAt,observations:4};source.world.moruLocation='AncientTree';source.world.manual.time=true;experience(source,'inspect')
+ const source=snapshot();source.moru.visitCount=9;source.moru.autonomy.discoveries.AncientTree={status:'familiar',firstSeenAt:source.serverUpdatedAt,lastSeenAt:source.serverUpdatedAt,observations:4};source.world.moruLocation='AncientTree';source.world.manual.time=true;source.world.garden.plants.push({spotId:'garden-1',kind:'starbell',plantedAt:1,wateredAt:1,collectedAt:null});experience(source,'inspect')
  const target=memoryStorage();writeLocalSnapshot(target,source);const restored=readLocalSnapshot(target,identity,Date.parse(source.serverUpdatedAt))
- assert.equal(restored.moru.version,7);assert.equal(restored.moru.visitCount,9);assert.equal(restored.moru.intelligence.experiences.length,1);assert.equal(restored.world.moruLocation,'AncientTree');assert.equal(restored.world.manual.time,true)
+ assert.equal(restored.moru.version,7);assert.equal(restored.moru.visitCount,9);assert.equal(restored.moru.intelligence.experiences.length,1);assert.equal(restored.world.moruLocation,'AncientTree');assert.equal(restored.world.manual.time,true);assert.equal(restored.world.garden.plants[0].kind,'starbell')
 })
 
 test('reconciliation unions stable records and rebuilds evidence without double counting',()=>{

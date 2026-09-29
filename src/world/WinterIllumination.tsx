@@ -39,7 +39,7 @@ export default function WinterIllumination(){
   return()=>{for(const geometry of [r.bulb,r.snowball,r.hat,r.nose,r.crystal])geometry.dispose();for(const material of [...r.materials,r.snowMat,r.hatMat,r.noseMat,r.iceMat])material.dispose()}
  },[r])
  useFrame(()=>{
-  const active=(mode==='V2_FULL'||mode==='V3_FULL')&&worldTime.realWorld.season==='winter',level=active?artificialLightLevel(env.night):0
+  const active=(mode==='V2_FULL'||mode==='V3_FULL'||mode==='V4_COZY_TEST')&&worldTime.realWorld.season==='winter',level=active?artificialLightLevel(env.night):0
 	  for(let i=0;i<r.materials.length;i++){updateBulb(r.materials[i],r.base[i],level,i);if(meshes.current[i])meshes.current[i]!.visible=active}
 	  if(decor.current)decor.current.visible=active
 	  // Three.js owns this persistent runtime material; winter light follows the shared time profile.

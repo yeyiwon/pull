@@ -8,6 +8,8 @@ import { cinematicComposition, idleFramingWeight, skyTargetHeight } from './cine
 import { surfaceHeight } from './terrain.ts'
 import { homeState } from './homeSpace.ts'
 import type { Player } from './locomotion.ts'
+import { aliveNpcPosition,aliveWorldStore } from './aliveWorldState.ts'
+import { gameUiMode } from '../ui/gameUiMode.ts'
 
 // Shared mutable simulation data stays outside React render state.
 function frameCamera(camera:PerspectiveCamera,aspect:number){camera.fov=cinematicComposition(aspect).fov;camera.updateProjectionMatrix()}
@@ -24,6 +26,7 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
   const wardrobeBlend = useRef(0)
   const wardrobeWasOpen = useRef(false)
   const previewTurn = useRef(new Quaternion())
+  const dialogueTarget=useRef(new Vector3()),dialoguePosition=useRef(new Vector3()),dialogueSide=useRef(new Vector3()),dialogueBlend=useRef(0)
   const cameraFloor = useRef(Number.NaN)
   const aspect=size.width/size.height
   const distance = MathUtils.clamp(5.2/aspect,8.3,11.5)
@@ -34,7 +37,7 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
     const canvas = gl.domElement
     const state = orbit.current
     function down(event: PointerEvent) {
-      if(conversationActive())return
+      if(conversationActive()||gameUiMode.getSnapshot()!=='EXPLORE')return
       if (event.button !== 0 || state.pointer !== -1) return
       if(worldInterface.getSnapshot()==='appearance'){
         const rect=canvas.getBoundingClientRect()
@@ -55,7 +58,7 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
       canvas.setPointerCapture(event.pointerId)
     }
     function move(event: PointerEvent) {
-      if(conversationActive()){stop();return}
+      if(conversationActive()||gameUiMode.getSnapshot()!=='EXPLORE'){stop();return}
       if (event.pointerId !== state.pointer) return
       if(worldInterface.getSnapshot()==='appearance'){
         previewTurn.current.setFromAxisAngle(player.current.up,-(event.clientX-state.x)*.009)
@@ -140,6 +143,14 @@ function CameraRig({ player }: { player: RefObject<Player> }) {
     }
     wardrobeWasOpen.current=wardrobe
     wardrobeBlend.current=MathUtils.damp(wardrobeBlend.current,wardrobe?1:0,f.reduced?100:7,dt)
+    const npcDialogue=aliveWorldStore.getRuntime().npcOpen
+    dialogueBlend.current=MathUtils.damp(dialogueBlend.current,npcDialogue?1:0,f.reduced?100:2.6,dt)
+    if(dialogueBlend.current>.001){
+      dialogueTarget.current.set((p.position.x+aliveNpcPosition.x)/2,Math.max(p.groundY,aliveNpcPosition.y)+1.28,(p.position.z+aliveNpcPosition.z)/2)
+      dialogueSide.current.set(aliveNpcPosition.z-p.position.z,0,p.position.x-aliveNpcPosition.x).normalize()
+      dialoguePosition.current.copy(dialogueTarget.current).addScaledVector(dialogueSide.current,3.85);dialoguePosition.current.y+=1.38
+      camera.position.lerp(dialoguePosition.current,dialogueBlend.current);desiredFocus.current.lerp(dialogueTarget.current,dialogueBlend.current)
+    }
     const preview=wardrobeBlend.current
     if(preview>.001 && camera instanceof PerspectiveCamera){
       const portrait=size.width<=600
